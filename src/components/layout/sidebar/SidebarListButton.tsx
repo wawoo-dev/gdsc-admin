@@ -1,9 +1,10 @@
-import StarIcon from "@assets/star.svg?react";
-import NavigateButton from "@components/layout/sidebar/NavigateButton";
+import { Box, Stack, styled } from "@mui/material";
+import StarIcon from "@/assets/star.svg?react";
+import NavigateButton from "@/components/layout/sidebar/NavigateButton";
 import PageListToggleButton, {
   NavigatePage,
-} from "@components/layout/sidebar/PageListToggleButton";
-import { Stack, styled, Typography } from "@mui/material";
+} from "@/components/layout/sidebar/PageListToggleButton";
+import { theme } from "@/styles/theme";
 
 type SidebarListButtonProps = {
   label: string;
@@ -15,7 +16,7 @@ export default function SidebarListButton({ label, path, pageList }: SidebarList
   const title = () => (
     <TitleContainer>
       <StarIcon />
-      <Typography>{label}</Typography>
+      <Box sx={{ ...theme.typo.body1, marginLeft: "12px" }}>{label}</Box>
     </TitleContainer>
   );
 

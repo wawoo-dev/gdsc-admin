@@ -1,7 +1,9 @@
 const RoutePath = {
   Index: "/",
-  AllMembers: "/",
+  AllMembers: "/member/all",
   PendingMembers: "/member/pending",
+  GrantableMembers: "/member/grantable",
+  PaymentStatusMembers: "/member/payment-status",
 
   Signin: "/sign-in",
 

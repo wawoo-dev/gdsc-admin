@@ -1,37 +1,33 @@
 import { PropsWithChildren } from "react";
-import { Link, LinkProps, styled } from "@mui/material";
-import { NavLink, useLocation } from "react-router-dom";
+import styled from "@emotion/styled";
+import { Link, useLocation } from "react-router-dom";
+import { theme } from "@/styles/theme";
 
-type NavigateButtonProps = { path: string } & LinkProps;
+type NavigateButtonProps = { path: string };
 
-export default function NavigateButton({
-  path,
-  children,
-  sx,
-  ...props
-}: PropsWithChildren<NavigateButtonProps>) {
+export default function NavigateButton({ path, children }: PropsWithChildren<NavigateButtonProps>) {
   const { pathname } = useLocation();
-  const isActive = pathname === path || pathname.startsWith(path + "/");
+  const isActive = Number(pathname === path || pathname.startsWith(path + "/"));
 
   return (
-    <Container to={path} {...props} sx={{ ...sx, ...navigateButtonStyles(isActive) }}>
+    <LinkButton to={path} active={isActive}>
       {children}
-    </Container>
+    </LinkButton>
   );
 }
 
-const Container = styled(({ to, ...props }: LinkProps & { to: string }) => (
-  <Link to={to} component={NavLink} {...props} />
-))({
-  "color": "black",
-  "borderRadius": "4px",
-  "padding": "13px 16px",
-  "textDecoration": "none",
-  ":hover": {
-    backgroundColor: `#0000000A`,
-  },
-});
-
-const navigateButtonStyles = (isActive?: boolean) => ({
-  background: isActive ? `#0000000A` : "transparent",
-});
+const LinkButton = styled(Link)<{ active: number }>`
+  ${theme.typo.body3};
+  color: black;
+  border-radius: 4px;
+  padding: 13px 0px 13px 55px;
+  text-decoration: none;
+  &:hover {
+    background-color: ${theme.palette.black1};
+  }
+  ${({ active }) =>
+    active &&
+    `
+    background: ${theme.palette.black1};
+  `}
+`;

@@ -35,7 +35,6 @@ module.exports = {
         location: "anywhere",
       },
     ],
-    "indent": ["error", 2, { SwitchCase: 1 }],
     "no-trailing-spaces": "error",
     "curly": "error",
     "brace-style": "error",
@@ -61,6 +60,7 @@ module.exports = {
     "react-refresh/only-export-components": "off",
     "cypress/no-assigning-return-values": "error",
     "@typescript-eslint/no-var-requires": "off",
+    "@typescript-eslint/no-unused-vars": "off",
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/no-unused-vars": ["warn", { ignoreRestSiblings: true }],
     "cypress/no-unnecessary-waiting": "error",
@@ -68,8 +68,9 @@ module.exports = {
     "cypress/no-force": "warn",
     "cypress/no-async-tests": "error",
     "cypress/no-pause": "error",
+    "no-implicit-coercion": "off",
     "prettier/prettier": [
-      "error",
+      "off",
       {
         endOfLine: "auto",
       },
@@ -85,7 +86,29 @@ module.exports = {
       { format: ["PascalCase"], selector: "interface" },
       { format: ["PascalCase"], selector: "typeAlias" },
     ],
-    "import/order": ["error"],
+    "import/order": [
+      "error",
+      {
+        groups: ["builtin", "external", "internal", "type"],
+        pathGroups: [
+          {
+            pattern: "react+(|-native)",
+            group: "builtin",
+            position: "before",
+          },
+          {
+            pattern: "@**",
+            group: "external",
+            position: "after",
+          },
+        ],
+        alphabetize: {
+          order: "asc",
+          caseInsensitive: true,
+        },
+        pathGroupsExcludedImportTypes: ["builtin"],
+      },
+    ],
   },
   settings: {
     react: {
