@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styled from "@emotion/styled";
 import { Grid, Box, Button } from "@mui/material";
-import EditInfoModal from "../../InfoModal/EditInfoModal";
+import EditInfoModal from "../../Modal/EditInfoModal";
 import { allMemberTableWidthRatio } from "@/constants/table";
 import useDeleteMemberMutation from "@/hooks/mutations/useDeleteMemberMutation";
 import { theme } from "@/styles/theme";
@@ -42,7 +42,8 @@ export default function AllMemberInfoTableBody({ dataList }: AllMemberInfoTableB
         <CellContainer container key={rowIndex} alignItems={"center"} height={64}>
           {Object.entries(row).map(
             ([key, value], index) =>
-              key !== "memberId" && key !== 'requirement' && (
+              key !== "memberId" &&
+              key !== "requirement" && (
                 <TextContainer item key={index} xs={getCellWidthRatio(key)}>
                   <Text sx={{ wordBreak: "keep-all" }}>
                     {(value as { code: string; name: string })?.name ?? formatNullableValue(value)}
