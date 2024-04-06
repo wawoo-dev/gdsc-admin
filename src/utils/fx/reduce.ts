@@ -1,7 +1,7 @@
 import { curry } from "./curry";
 
 export const reduce = curry(
-  <T, U>(f: (acc: U, value: T) => U, acc: U, iter: IterableIterator<T>): U => {
+  <T, U>(f: (acc: U, value: T) => U, acc: any, iter: IterableIterator<T>): U => {
     if (!iter) {
       iter = acc[Symbol.iterator]();
       acc = iter.next().value;
