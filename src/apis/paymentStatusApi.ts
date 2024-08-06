@@ -1,38 +1,52 @@
 import { apiClient } from ".";
-import {
-  MemberPaymentStatusResponseDtoType,
-  PaymentStatusMemberListResponseDtoType,
-} from "@/types/dtos/member";
-import { StatusType } from "@/types/entities/member";
-import { SearchVariantType } from "@/types/entities/store";
+import { SearchVariantType } from "@/types/entities/payment";
+import { formatDateWithDash } from "@/utils/validation/formatDate";
 
 export const paymentStatusApi = {
-  getPaymentStatusMemberList: async (
+  getPaymentList: async (
     page: number,
     size: number,
-    searchVariant: SearchVariantType<"paymentStatus">,
+    searchVariant: SearchVariantType,
     searchText: string,
-  ): Promise<PaymentStatusMemberListResponseDtoType> => {
-    if (searchText) {
-      const searchUrl = `admin/members/payment?${searchVariant}=${searchText}&page=${page}&size=${size}`;
+  ) => {
+    let url = `admin/orders?page=${page}&size=${size}`;
 
-      const response = await apiClient.get(searchUrl);
-      return response.data;
+    if (searchText && searchVariant) {
+      if (searchVariant === "semester") {
+        const [academicYear, semester] = searchText.split("-");
+        if (!semester) {
+          return;
+        }
+
+        url += `&academicYear=${academicYear}&semesterType=${semester === "1" ? "FIRST" : "SECOND"}`;
+      } else if (searchVariant === "approvedDate") {
+        const [, , day] = searchText.split("-");
+
+        if (!day) {
+          return;
+        }
+
+        const formattedDate = formatDateWithDash(searchText);
+
+        url += `&${searchVariant}=${formattedDate}`;
+      } else {
+        url += `&${searchVariant}=${searchText}`;
+      }
     }
 
-    const commonUrl = `admin/members/payment?page=${page}&size=${size}`;
-
-    const response = await apiClient.get(commonUrl);
+    const response = await apiClient.get(url);
     return response.data;
   },
 
-  updateMemberPaymentStatus: async (requestObj: {
-    memberId: number;
-    paymentStatus: StatusType;
-  }): Promise<MemberPaymentStatusResponseDtoType> => {
-    const response = await apiClient.put(`admin/members/payment/${requestObj.memberId}`, {
-      status: requestObj.paymentStatus,
+  getPaymentDetailInfo: async (orderId: number) => {
+    const response = await apiClient.get(`/admin/orders/${orderId}`);
+    return response.data;
+  },
+
+  cancelPayment: async (orderId: number, cancelReason: string) => {
+    const response = await apiClient.post(`/admin/orders/${orderId}/cancel`, {
+      cancelReason,
     });
-    return response.data.status;
+    return response.data;
   },
 };

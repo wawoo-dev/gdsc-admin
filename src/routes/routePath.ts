@@ -2,11 +2,20 @@ import { BASE_URL } from "@/environment";
 
 const RoutePath = {
   Index: "/",
+
   AllMembers: "/member/all",
   PendingMembers: "/member/pending",
-  GrantedMembers: "/member/granted",
-  GrantableMembers: "/member/grantable",
-  PaymentStatusMembers: "/member/payment-status",
+
+  PaymentStatus: "/payment/payment-status",
+  Coupon: "/payment/coupon",
+  IssuedCoupon: "/payment/coupon/issued",
+  CouponProvision: "/payment/coupon/provision",
+
+  Recruitment: "/recruitment",
+  RecruitmentRound: "/recruitment/round",
+
+  AllMemberHistoryPerSemester: "/history/all-member-per-semester",
+  PaymentStatusHistoryPerSemester: "/history/payment-status-per-semester",
 
   Signin: "/sign-in",
 

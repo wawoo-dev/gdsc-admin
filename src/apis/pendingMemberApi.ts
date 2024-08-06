@@ -1,35 +1,22 @@
 import { apiClient } from ".";
-import {
-  GrantPendingMemberResponseDtoType,
-  GrantPendingMemberRequestDtoType,
-  PendingMemberListResponseDtoType,
-} from "@/types/dtos/member";
-import { SearchVariantType } from "@/types/entities/store";
+import { PendingMemberListResponseDtoType } from "@/types/dtos/member";
+import { MemberVariantType, SearchVariantType } from "@/types/entities/member";
 
 export const pendingMemberApi = {
   getPendingMemberList: async (
     page: number,
     size: number,
-    searchVariant: SearchVariantType<"pendingMember">,
+    searchVariant: SearchVariantType,
     searchText: string,
+    memberVariant: MemberVariantType,
   ): Promise<PendingMemberListResponseDtoType> => {
-    if (searchText && searchVariant) {
-      const searchUrl = `admin/members/pending?${searchVariant}=${searchText}&page=${page}&size=${size}`;
+    let url = `admin/members?roles=${memberVariant}&page=${page}&size=${size}`;
 
-      const response = await apiClient.get(searchUrl);
-      return response.data;
+    if (searchText && searchVariant) {
+      url += `&${searchVariant}=${searchText}`;
     }
 
-    const commonUrl = `admin/members/pending?page=${page}&size=${size}`;
-
-    const response = await apiClient.get(commonUrl);
-    return response.data;
-  },
-
-  grantPendingMember: async (
-    memberIdList: GrantPendingMemberRequestDtoType,
-  ): Promise<GrantPendingMemberResponseDtoType> => {
-    const response = await apiClient.put(`admin/members/grant`, memberIdList);
+    const response = await apiClient.get(url);
     return response.data;
   },
 };

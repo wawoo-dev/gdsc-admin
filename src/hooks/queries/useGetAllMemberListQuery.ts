@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { allMemberApi } from "@/apis/allMemberApi";
 import { QueryKey } from "@/constants/queryKey";
-import { SearchVariantType } from "@/types/entities/store";
+import { SearchVariantType } from "@/types/entities/member";
 
 export default function useGetAllMemberListQuery(
   page: number,
   size: number,
-  searchVariant: SearchVariantType<"allMember">,
+  searchVariant: SearchVariantType,
   searchText: string,
 ) {
   const { data } = useQuery({

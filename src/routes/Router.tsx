@@ -1,13 +1,18 @@
 import { RouteObject, createBrowserRouter, Navigate } from "react-router-dom";
-import Layout from "@/components/layout/common/Layout";
+import Layout from "@/components/@layout/Layout";
+import AllMemberHistoryPerSemesterPage from "@/pages/AllMemberHistoryPerSemesterPage";
 import AllMembersPage from "@/pages/AllMembersPage";
 import AuthErrorPage from "@/pages/AuthErrorPage";
 import AuthSuccessRedirectPage from "@/pages/AuthSuccessRedirectPage";
-import GrantableMembersPage from "@/pages/GrantableMembersPage";
-import GrantedMembersPage from "@/pages/GrantedMembersPage";
+import CouponPage from "@/pages/CouponPage";
+import CouponProvisionPage from "@/pages/CouponProvisionPage";
+import IssuedCouponPage from "@/pages/IssuedCouponPage";
 import NotFoundErrorPage from "@/pages/NotFoundErrorPage";
-import PaymentStatusMembersPage from "@/pages/PaymentStatusMembersPage";
+import PaymentStatusHistoryPerSemesterPage from "@/pages/PaymentStatusHistoryPerSemesterPage";
+import PaymentStatusPage from "@/pages/PaymentStatusPage";
 import PendingMembersPage from "@/pages/PendingMembersPage";
+import RecruitmentPage from "@/pages/RecruitmentPage";
+import RecruitmentRoundPage from "@/pages/RecruitmentRoundPage";
 import SigninPage from "@/pages/SigninPage";
 import RoutePath from "@/routes/routePath";
 
@@ -17,11 +22,22 @@ const routes: RouteObject[] = [
     element: <Layout />,
     children: [
       { path: "", element: <Navigate to={RoutePath.AllMembers} replace /> },
-      { path: RoutePath.AllMembers, element: <AllMembersPage /> },
-      { path: RoutePath.GrantedMembers, element: <GrantedMembersPage /> },
+      {
+        path: RoutePath.AllMembers,
+        element: <AllMembersPage />,
+      },
       { path: RoutePath.PendingMembers, element: <PendingMembersPage /> },
-      { path: RoutePath.GrantableMembers, element: <GrantableMembersPage /> },
-      { path: RoutePath.PaymentStatusMembers, element: <PaymentStatusMembersPage /> },
+      { path: RoutePath.PaymentStatus, element: <PaymentStatusPage /> },
+      { path: RoutePath.Coupon, element: <CouponPage /> },
+      { path: RoutePath.IssuedCoupon, element: <IssuedCouponPage /> },
+      { path: RoutePath.CouponProvision, element: <CouponProvisionPage /> },
+      { path: RoutePath.Recruitment, element: <RecruitmentPage /> },
+      { path: RoutePath.RecruitmentRound, element: <RecruitmentRoundPage /> },
+      { path: RoutePath.AllMemberHistoryPerSemester, element: <AllMemberHistoryPerSemesterPage /> },
+      {
+        path: RoutePath.PaymentStatusHistoryPerSemester,
+        element: <PaymentStatusHistoryPerSemesterPage />,
+      },
     ],
   },
   { path: RoutePath.Signin, element: <SigninPage /> },
