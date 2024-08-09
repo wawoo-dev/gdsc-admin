@@ -1,9 +1,7 @@
-import { useEffect } from "react";
 import { Stack, styled } from "@mui/material";
 import LogoIcon from "@/assets/logo.svg?react";
 import { GitHubButton } from "@/components/@common/GitHubButton";
 import RoutePath from "@/routes/routePath";
-import { setCookie } from "@/utils/cookie";
 
 export default function SigninPage() {
   const handleClick = () => {
@@ -11,14 +9,6 @@ export default function SigninPage() {
       document.location.href = RoutePath.GithubLoginRedirect;
     }, 250);
   };
-
-  useEffect(() => {
-    setCookie({
-      key: "oauth-base-uri",
-      value: window.location.origin,
-      encoding: false,
-    });
-  }, []);
 
   return (
     <StyledSigninContainer>
