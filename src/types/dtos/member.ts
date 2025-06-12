@@ -53,7 +53,7 @@ export type DashboardInfoResponseDtoType = {
     };
     feeName: string;
     fee: number;
-    roundType: "FIRST" | "SECOND";
+    roundType: "FIRST" | "SECOND" | "THIRD";
     roundTypeValue: string;
   };
   currentMembership: {
