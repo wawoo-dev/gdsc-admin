@@ -333,6 +333,4 @@ const StyledDatePicker = styled(DatePicker)({
   width: "297px",
 });
 
-const StyledRadioGroup = styled(RadioGroup)({
-  gap: "50px",
-});
+const StyledRadioGroup = styled(RadioGroup)({});
