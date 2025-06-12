@@ -2,7 +2,7 @@ import { Dayjs } from "dayjs";
 
 export type SemesterVariantType = "FIRST" | "SECOND";
 
-export type RoundVariantType = "FIRST" | "SECOND";
+export type RoundVariantType = "FIRST" | "SECOND" | "THIRD";
 
 export type RecruitmentType = {
   recruitmentId: number;
@@ -13,7 +13,7 @@ export type RecruitmentType = {
   feeName: string;
 };
 
-export type RecruitmentRoundType = "1차" | "2차";
+export type RecruitmentRoundType = "1차" | "2차" | "3차";
 
 type RecruitmentRoundBaseInfoType = {
   id: number;
@@ -30,7 +30,7 @@ export type RecruitmentRoundInfoType = Pick<
   RecruitmentRoundBaseInfoType,
   "recruitmentRoundId" | "semester" | "startDate" | "endDate" | "name"
 > & {
-  round: "1차" | "2차";
+  round: "1차" | "2차" | "3차";
 };
 
 export type FilteredRecruitmentRoundInfoType = Pick<

@@ -107,7 +107,7 @@ export default function RecruitmentRoundInfoModal({
       name,
       startDate: toKSTISOString(startDate!.toDate()),
       endDate: toKSTISOString(endDate!.toDate()),
-      roundType: roundType === "1차" ? "FIRST" : "SECOND",
+      roundType: roundType === "1차" ? "FIRST" : roundType === "2차" ? "SECOND" : "THIRD",
     };
 
     const mutationSuccessHandler = () => {
@@ -187,6 +187,7 @@ export default function RecruitmentRoundInfoModal({
             >
               <FormControlLabel value="1차" control={<Radio />} label="1차" />
               <FormControlLabel value="2차" control={<Radio />} label="2차" />
+              <FormControlLabel value="3차" control={<Radio />} label="3차" />
             </StyledRadioGroup>
           </StyledInfoWrapper>
           <StyledInfoWrapper sx={{ gridArea: "item4" }}>
