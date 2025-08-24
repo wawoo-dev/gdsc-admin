@@ -1,9 +1,7 @@
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import { space as wowSpace } from "wowds-tokens";
-import type { space as spaceType } from "wowds-tokens";
-
-type SpaceKey = keyof typeof spaceType;
+type SpaceKey = keyof typeof wowSpace;
 
 export const Flex = styled.div<{
   direction?: string;

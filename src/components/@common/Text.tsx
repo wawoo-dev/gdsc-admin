@@ -1,11 +1,9 @@
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import { color as wowColor, typography as wowTypo } from "wowds-tokens";
-import type { color as colorType, typography as typographyType } from "wowds-tokens";
 
-type ColorKey = keyof typeof colorType;
-type TypoKey = keyof typeof typographyType;
-
+type ColorKey = keyof typeof wowColor;
+type TypoKey = keyof typeof wowTypo;
 /**
  * @description 와우 디자인 시스템 토큰을 사용한 Text 컴포넌트
  */

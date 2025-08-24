@@ -21,7 +21,7 @@ export const OfflineEventManagePage = () => {
       <Space height={54} />
       <Text>행사 신청 폼 목록</Text>
       <Space height="lg" />
-      <Flex gap="sm" css={css({ flexWrap: "wrap" })} justify="left" align="stretch">
+      <Flex gap="sm" css={css({ flexWrap: "wrap" })} justify="start" align="stretch">
         <div onClick={() => navigate(RoutePath.EditEvent)}>
           <Box
             text={
@@ -45,7 +45,7 @@ export const OfflineEventManagePage = () => {
 
                 <Space height={8} />
                 <Text typo="body1" color="sub">
-                  2024년 5월23일 ~ 2024년 5우러 26일
+                  2024년 5월23일 ~ 2024년 5월26일
                 </Text>
                 <Space height="lg" />
                 <Text typo="body1" color="sub">

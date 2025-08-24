@@ -41,11 +41,11 @@ const formFields: FormFieldProps[] = [
   },
   {
     type: "option-select",
-    title: "딧풀이 참여하겠습니까?",
+    title: "뒤풀이에 참여하겠습니까?",
     optional: true,
     options: [
       { value: "참여", label: "참여합니다." },
-      { value: "참여않마", label: "참여하지 않겠습니다." },
+      { value: "불참", label: "참여하지 않겠습니다." },
     ],
   },
   {
