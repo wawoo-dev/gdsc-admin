@@ -8,6 +8,7 @@ import CouponPage from "@/pages/CouponPage";
 import CouponProvisionPage from "@/pages/CouponProvisionPage";
 import IssuedCouponPage from "@/pages/IssuedCouponPage";
 import NotFoundErrorPage from "@/pages/NotFoundErrorPage";
+import { OfflineEventManagePage } from "@/pages/OfflineEventManagePage";
 import PaymentStatusHistoryPerSemesterPage from "@/pages/PaymentStatusHistoryPerSemesterPage";
 import PaymentStatusPage from "@/pages/PaymentStatusPage";
 import PendingMembersPage from "@/pages/PendingMembersPage";
@@ -37,6 +38,10 @@ const routes: RouteObject[] = [
       {
         path: RoutePath.PaymentStatusHistoryPerSemester,
         element: <PaymentStatusHistoryPerSemesterPage />,
+      },
+      {
+        path: RoutePath.OfflineEventManage,
+        element: <OfflineEventManagePage />,
       },
     ],
   },
