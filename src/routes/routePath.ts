@@ -24,6 +24,7 @@ const RoutePath = {
   AuthServerRedirect: "/social-login/redirect",
 
   OfflineEventManage: "/offline-event-manage",
+  EditEvent: "/offline-event-manage/edit",
   Error: "/error",
 } as const;
 
