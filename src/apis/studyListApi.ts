@@ -1,9 +1,9 @@
+import { StudyListApiResponseDto } from "@/types/dtos/study";
 import { apiClient } from ".";
-import { StudyListApiResponseDtoType } from "@/types/dtos/study";
 
 export const studyApi = {
-  getStudyList: async (): Promise<StudyListApiResponseDtoType[]> => {
-    const response = await apiClient.get("/admin/studies");
+  getStudyList: async (): Promise<StudyListApiResponseDto[]> => {
+    const response = await apiClient.get("/v2/admin/studies");
     return response.data;
   },
 };
