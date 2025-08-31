@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Tabs from "wowds-ui/Tabs";
 import TabsContent from "wowds-ui/TabsContent";
