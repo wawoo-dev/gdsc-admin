@@ -12,10 +12,11 @@ export const eventApi = {
     eventId: number,
     page: number = 0,
     size: number = 20,
+    sort: string = "",
   ): Promise<EventParticipantsResponse> => {
     const res = await apiClient.get<EventParticipantsResponse>(
       `/admin/event-participations/applicants`,
-      { params: { event: eventId, page, size } },
+      { params: { event: eventId, page, size, sort } },
     );
     return res.data;
   },

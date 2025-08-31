@@ -1,63 +1,18 @@
-import { useState } from "react";
-import { css } from "@emotion/react";
+import { useMemo, useState } from "react";
+import { Modal } from "@mui/material";
+import { useParams } from "react-router-dom";
 import { color } from "wowds-tokens";
 import DropDown from "wowds-ui/DropDown";
 import DropDownOption from "wowds-ui/DropDownOption";
 import SearchBar from "wowds-ui/SearchBar";
 import Table from "wowds-ui/Table";
 import { Flex } from "../@common/Flex";
+import { Space } from "../@common/Space";
+import { mockEventParticipantsResponse } from "@/constants/mockData";
+import { useDebounce } from "@/hooks/common/useDebounce";
 import { useGetEventParticipants } from "@/hooks/queries/useGetAllParticipants";
-import {
-  AfterPartyApplicationStatus,
-  EventParticipantsResponse,
-  ParticipantRole,
-} from "@/types/dtos/event";
-
-export const mockEventParticipantsResponse: EventParticipantsResponse = {
-  totalElements: 3,
-  totalPages: 1,
-  size: 20,
-  number: 0,
-  sort: { empty: false, sorted: true, unsorted: false },
-  numberOfElements: 3,
-  pageable: {
-    offset: 0,
-    sort: { empty: false, sorted: true, unsorted: false },
-    pageNumber: 0,
-    pageSize: 20,
-    unpaged: false,
-    paged: true,
-  },
-  first: true,
-  last: true,
-  empty: false,
-  content: [
-    {
-      eventParticipationId: 101,
-      participant: { name: "김유진", studentId: "C035087", phone: "010-1234-5678" },
-      afterPartyApplicationStatus: "NOT_APPLIED",
-      participantRole: "NON_MEMBER",
-      discordUsername: "yujin#0420",
-      nickname: "유진유진",
-    },
-    {
-      eventParticipationId: 102,
-      participant: { name: "강해린", studentId: "C011111", phone: "010-0000-0000" },
-      afterPartyApplicationStatus: "NOT_APPLIED",
-      participantRole: "NON_MEMBER",
-      discordUsername: "haerin#7777",
-      nickname: "해맑",
-    },
-    {
-      eventParticipationId: 103,
-      participant: { name: "김민지", studentId: "C234567", phone: "010-2222-3333" },
-      afterPartyApplicationStatus: "NOT_APPLIED",
-      participantRole: "REGULAR",
-      discordUsername: "minji#9999",
-      nickname: "민지짱",
-    },
-  ],
-};
+import { AfterPartyApplicationStatus, ParticipantRole } from "@/types/dtos/event";
+import { isDigitStart, onlyDigits, isEnglishStart, isKoreanStart } from "@/utils/searchQuery";
 
 export function toParticipantRoleLabel(role: ParticipantRole): string {
   switch (role) {
@@ -88,23 +43,68 @@ export function toAfterPartyStatusLabel(status: AfterPartyApplicationStatus): st
 }
 
 export const ApplyMember = () => {
-  //const { data: appliedStudent } = useGetEventParticipants(1, 0, 20);
+  const { eventId } = useParams<{ eventId: string }>();
+  const id = Number(eventId);
+
+  const [sortKey, setSortKey] = useState("");
+  //const { data: appliedStudent } = useGetEventParticipants(id, 0, 20, sortKey);
   const data = mockEventParticipantsResponse.content;
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const handleSelectionChange = (rows: number[]) => setSelectedRows(rows);
 
   const showAfterParty = data.some(d => d.afterPartyApplicationStatus !== "NONE");
 
+  const [searchedValue, setSearchedValue] = useState("");
+  const debouncedQuery = useDebounce(searchedValue, 300); // 300ms 디바운스
+  const filtered = useMemo(() => {
+    const q = debouncedQuery.trim();
+    if (!q) {
+      return data;
+    }
+
+    if (isDigitStart(q)) {
+      // 전화번호: 숫자만 비교
+      const qDigits = onlyDigits(q);
+      return data.filter(row => onlyDigits(row.participant.phone).includes(qDigits));
+    }
+
+    if (isEnglishStart(q)) {
+      // 학번(studentId): 대소문자 무시 포함 검색
+      const qLower = q.toLowerCase();
+      return data.filter(row => row.participant.studentId.toLowerCase().includes(qLower));
+    }
+
+    if (isKoreanStart(q)) {
+      // 이름: 포함 검색
+      return data.filter(row => row.participant.name.includes(q));
+    }
+
+    // 기타 문자는 전체 반환(원하면 여기서 추가 규칙 가능)
+    return data;
+  }, [data, debouncedQuery]);
+
   return (
     <div>
+      <Modal></Modal>
       <Flex gap="sm">
-        <SearchBar placeholder="이름,학번,학과,전화번호로 검색" style={{ flex: 1 }} />
-        <DropDown placeholder="정렬" style={{ flex: "auto" }}>
+        <SearchBar
+          placeholder="이름,학번,학과,전화번호로 검색"
+          style={{ flex: 1 }}
+          value={searchedValue}
+          onChange={setSearchedValue}
+        />
+        <DropDown
+          placeholder="정렬"
+          style={{ flex: "auto" }}
+          value={sortKey}
+          onChange={({ selectedValue }) => setSortKey(selectedValue)}
+        >
           <DropDownOption value="recent" text="최신순" />
           <DropDownOption value="name" text="이름순" />
         </DropDown>
       </Flex>
 
+      <Space height={30} />
       <Table
         selectedRowsProp={selectedRows}
         showCheckbox
@@ -122,7 +122,7 @@ export const ApplyMember = () => {
         </Table.Thead>
 
         <Table.Tbody style={{ width: "100%" }}>
-          {data.map(
+          {filtered.map(
             ({
               participant,
               afterPartyApplicationStatus,
