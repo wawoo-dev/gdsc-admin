@@ -22,7 +22,7 @@ interface ApplicationPeriod {
 }
 
 // 이벤트 타입
-interface Event {
+export interface EventType {
   eventId: number;
   name: string;
   venue: string;
@@ -40,7 +40,7 @@ interface Event {
 
 // content 안에 들어가는 타입
 interface EventContent {
-  event: Event;
+  event: EventType;
   totalAttendeesCount: number;
   eventStatus: "BEFORE_APPLICATION" | "APPLICATION_OPEN" | "APPLICATION_CLOSED" | "EVENT_ENDED";
 }
