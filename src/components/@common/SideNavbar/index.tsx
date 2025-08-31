@@ -27,7 +27,7 @@ export default function SideNavbar() {
             "https://dashboard.tosspayments.com/payment-widget-service/tm/931024/ui-setting-list"
           }
         />
-        <AccordionLinkListButton label="오프라인 행사 관리" path={RoutePath.OfflineEventManage} />
+        <AccordionLinkListButton label="오프라인 행사 관리" path={RoutePath.EventsHomePage} />
       </StyledLinkWrapper>
     </StyledSideNavbarWrapper>
   );
