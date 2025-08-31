@@ -46,7 +46,7 @@ const routes: RouteObject[] = [
       },
 
       {
-        path: RoutePath.EditEvent,
+        path: `${RoutePath.EditEvent}/:eventId`,
         element: <EditEventPage />,
       },
     ],

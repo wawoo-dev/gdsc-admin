@@ -1,3 +1,4 @@
+import { ComponentProps } from "react";
 import { css } from "@emotion/react";
 import { Text } from "components/@common/Text";
 import { useNavigate } from "react-router-dom";
@@ -7,10 +8,17 @@ import SearchBar from "wowds-ui/SearchBar";
 import Tag from "wowds-ui/Tag";
 import { Flex } from "@/components/@common/Flex";
 import { Space } from "@/components/@common/Space";
+import { OfflineEventCard } from "@/components/OfflineEvent/EventBox";
+import { useCountdown } from "@/hooks/contexts/useCountDownDate";
+import { useEventList } from "@/hooks/queries/useGetEventQueries";
 import RoutePath from "@/routes/routePath";
+import { EventStatus } from "@/types/entities/event";
 
 export const OfflineEventManagePage = () => {
   const navigate = useNavigate();
+  const { data, isLoading, error } = useEventList(0, 20);
+  const eventContent = data?.content ?? [];
+
   return (
     <>
       <Text typo="h1" as="h1">
@@ -21,8 +29,17 @@ export const OfflineEventManagePage = () => {
       <Space height={54} />
       <Text>행사 신청 폼 목록</Text>
       <Space height="lg" />
-      <Flex gap="sm" css={css({ flexWrap: "wrap" })} justify="start" align="stretch">
-        <div onClick={() => navigate(RoutePath.EditEvent)}>
+
+      <div
+        css={css({
+          flexWrap: "wrap",
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: "16px",
+        })}
+      >
+        {/* 템플릿 추가하기 박스 */}
+        <div onClick={() => navigate(`${RoutePath.EditEvent}/new`)}>
           <Box
             text={
               <Text typo="h3" color="sub">
@@ -32,39 +49,25 @@ export const OfflineEventManagePage = () => {
             style={boxStyle}
           />
         </div>
-        <div onClick={() => navigate(RoutePath.EditEvent)}>
-          <Box
-            text={
-              <>
-                <Flex justify="start" gap="xs">
-                  <Text typo="h2">개강총회</Text>
-                  <Tag color="blue" variant="solid2">
-                    신청 중
-                  </Tag>
-                </Flex>
 
-                <Space height={8} />
-                <Text typo="body1" color="sub">
-                  2024년 5월23일 ~ 2024년 5월26일
-                </Text>
-                <Space height="lg" />
-                <Text typo="body1" color="sub">
-                  행사일
-                </Text>
-                <Space height={5} />
-                <Text typo="body1" color="sub">
-                  참석인원
-                </Text>
-              </>
-            }
-            style={boxStyle}
+        {/* 실제 이벤트 데이터 리스트 */}
+        {eventContent.map(item => (
+          <OfflineEventCard
+            key={item.event.eventId}
+            eventId={item.event.eventId}
+            name={item.event.name}
+            startAt={item.event.startAt}
+            applicationStart={item.event.applicationPeriod.startDate}
+            applicationEnd={item.event.applicationPeriod.endDate}
+            totalAttendeesCount={item.totalAttendeesCount}
+            eventStatus={item.eventStatus}
+            onClick={() => navigate(`${RoutePath.EditEvent}/${item.event.eventId}`)}
           />
-        </div>
-      </Flex>
+        ))}
+      </div>
     </>
   );
 };
-
 const boxStyle: React.CSSProperties = {
   flex: "0 0 calc(33.333% - 10px)",
   minHeight: "182px",
