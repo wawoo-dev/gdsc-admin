@@ -7,9 +7,9 @@ import AuthServerRedirectPage from "@/pages/AuthServerRedirectPage";
 import CouponPage from "@/pages/CouponPage";
 import CouponProvisionPage from "@/pages/CouponProvisionPage";
 import { EditEventPage } from "@/pages/EditEventPage";
+import { EventsHomePage } from "@/pages/EventsHomePage";
 import IssuedCouponPage from "@/pages/IssuedCouponPage";
 import NotFoundErrorPage from "@/pages/NotFoundErrorPage";
-import { OfflineEventManagePage } from "@/pages/OfflineEventManagePage";
 import PaymentStatusHistoryPerSemesterPage from "@/pages/PaymentStatusHistoryPerSemesterPage";
 import PaymentStatusPage from "@/pages/PaymentStatusPage";
 import PendingMembersPage from "@/pages/PendingMembersPage";
@@ -41,8 +41,8 @@ const routes: RouteObject[] = [
         element: <PaymentStatusHistoryPerSemesterPage />,
       },
       {
-        path: RoutePath.OfflineEventManage,
-        element: <OfflineEventManagePage />,
+        path: RoutePath.EventsHomePage,
+        element: <EventsHomePage />,
       },
 
       {

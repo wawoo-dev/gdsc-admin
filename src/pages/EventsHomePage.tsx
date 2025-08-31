@@ -1,22 +1,18 @@
-import { ComponentProps } from "react";
 import { css } from "@emotion/react";
 import { Text } from "components/@common/Text";
 import { useNavigate } from "react-router-dom";
 import Box from "wowds-ui/Box";
 
 import SearchBar from "wowds-ui/SearchBar";
-import Tag from "wowds-ui/Tag";
-import { Flex } from "@/components/@common/Flex";
+
 import { Space } from "@/components/@common/Space";
 import { OfflineEventCard } from "@/components/OfflineEvent/EventBox";
-import { useCountdown } from "@/hooks/contexts/useCountDownDate";
 import { useEventList } from "@/hooks/queries/useGetEventQueries";
 import RoutePath from "@/routes/routePath";
-import { EventStatus } from "@/types/entities/event";
 
-export const OfflineEventManagePage = () => {
+export const EventsHomePage = () => {
   const navigate = useNavigate();
-  const { data, isLoading, error } = useEventList(0, 20);
+  const { data } = useEventList(0, 20);
   const eventContent = data?.content ?? [];
 
   return (
