@@ -87,7 +87,7 @@ export default function RecruitmentRoundInfoModal({
       return;
     }
 
-    const adjustedDate = name === "endDate" ? newDate.hour(23).minute(59).second(59) : newDate;
+    const adjustedDate = name === "endDate" ? newDate.endOf("day") : newDate;
 
     setRoundModalInfo(prevModalInfo => ({
       ...prevModalInfo,
