@@ -10,7 +10,7 @@ export const useGetEventParticipants = (
   sort = "",
 ) => {
   return useQuery<EventParticipantsResponse>({
-    queryKey: ["eventParticipants"],
+    queryKey: ["eventParticipants", eventId],
     queryFn: () => eventApi.getParticipants(eventId, page, size, sort),
     staleTime: 60_000,
   });

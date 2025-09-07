@@ -1,21 +1,16 @@
 import { useMemo, useState } from "react";
-import { Modal } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { color } from "wowds-tokens";
-import Box from "wowds-ui/Box";
 import Button from "wowds-ui/Button";
 import DropDown from "wowds-ui/DropDown";
 import DropDownOption from "wowds-ui/DropDownOption";
 import SearchBar from "wowds-ui/SearchBar";
 import Table from "wowds-ui/Table";
-import TextField from "wowds-ui/TextField";
 import { Flex } from "../@common/Flex";
 import { Space } from "../@common/Space";
-import { Text } from "../@common/Text";
 import { AddMemberModal } from "./Modal/AddMemberModal";
 import { mockEventParticipantsResponse } from "@/constants/mockData";
 import { useDebounce } from "@/hooks/common/useDebounce";
-import { useGetEventParticipants } from "@/hooks/queries/useGetAllParticipants";
 import { AfterPartyApplicationStatus, ParticipantRole } from "@/types/dtos/event";
 import { isDigitStart, onlyDigits, isEnglishStart, isKoreanStart } from "@/utils/searchQuery";
 
