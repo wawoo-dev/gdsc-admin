@@ -41,4 +41,14 @@ export const eventApi = {
     });
     return response.data;
   },
+  postNoneMemberParticipants: async (
+    eventId: number,
+    participant: { name: string; studentId: string; phone: string },
+  ) => {
+    const response = await apiClient.post(`/admin/event-participations/apply/manual/unregistered`, {
+      eventId: eventId,
+      participant,
+    });
+    return response.data;
+  },
 };

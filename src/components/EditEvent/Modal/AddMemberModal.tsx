@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal } from "@mui/material";
+import { useParams } from "react-router-dom";
 import Box from "wowds-ui/Box";
 import Button from "wowds-ui/Button";
 import Checkbox from "wowds-ui/Checkbox";
@@ -8,6 +9,8 @@ import DropDownOption from "wowds-ui/DropDownOption";
 import SearchBar from "wowds-ui/SearchBar";
 import Table from "wowds-ui/Table";
 import TextField from "wowds-ui/TextField";
+import { NoneMemberParticipate } from "./NoneMemberParticipate";
+import { Space } from "@/components/@common/Space";
 import { Text } from "@/components/@common/Text";
 import usePostParticipantsMutation from "@/hooks/mutations/usePostParticipantsMutation";
 import { useGetSearchMemberListQuery } from "@/hooks/queries/useGetSearchMemberListQuery";
@@ -22,22 +25,23 @@ export const AddMemberModal = ({
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+  const { eventId } = useParams<{ eventId: string }>();
   const [name, setName] = useState("");
   const [phase, setPhase] = useState<Phase>("INPUT");
   const [searchResults, setSearchResults] = useState<SearchMemberListResponse[]>([]);
-  const [searchTrigger, setSearchTrigger] = useState(0); // 검색 트리거
+  const [searchTrigger, setSearchTrigger] = useState(false); // 검색 트리거
   const [selectedMember, setSelectedMember] = useState<SearchMemberListResponse | undefined>(
     undefined,
   );
 
-  // TODO: eventId를 props로 받아야 함
-  const eventId = 1; // 임시로 1 설정
+  // eventId를 숫자로 변환
+  const eventIdNumber = eventId ? parseInt(eventId, 10) : 0;
 
   const {
     data: searchResponse,
     isLoading,
     error,
-  } = useGetSearchMemberListQuery(eventId, name, searchTrigger > 0);
+  } = useGetSearchMemberListQuery(eventIdNumber, name, searchTrigger);
 
   const postParticipantsMutation = usePostParticipantsMutation();
 
@@ -53,7 +57,7 @@ export const AddMemberModal = ({
       return;
     }
     // 검색 트리거를 증가시켜서 API 호출
-    setSearchTrigger(prev => prev + 1);
+    setSearchTrigger(true);
   };
 
   const handleAddMember = async () => {
@@ -63,14 +67,13 @@ export const AddMemberModal = ({
 
     try {
       await postParticipantsMutation.mutateAsync({
-        eventId,
+        eventId: eventIdNumber,
         memberId: selectedMember.memberId,
       });
       // 상태 초기화
       setPhase("PICK");
-      setSearchTrigger(0);
+      setSearchTrigger(false);
       setSearchResults([]);
-      setSelectedMember(undefined);
       setName("");
     } catch (error) {
       console.error("멤버 추가 중 오류 발생:", error);
@@ -80,7 +83,7 @@ export const AddMemberModal = ({
   console.log(selectedMember);
   // 검색 결과에 따라 phase 설정
   useEffect(() => {
-    if (searchTrigger > 0 && !isLoading && searchResponse) {
+    if (searchTrigger && !isLoading && searchResponse) {
       const participableStudents = searchResults.filter(student => student.participable === true);
       if (participableStudents.length > 0) {
         setPhase("MEMBER_SEARCH");
@@ -107,7 +110,9 @@ export const AddMemberModal = ({
                 <Text as="h1" typo="h1">
                   신청 인원 명단에 추가할 학생의 이름을 입력해주세요
                 </Text>
+                <Space height={76} />
                 <TextField placeholder="김홍익" label="" value={name} onChange={setName} />
+                <Space height={121} />
                 <Button disabled={name === "" || isLoading} onClick={handle1PhaseButtonClick}>
                   {isLoading ? "검색 중..." : "다음으로"}
                 </Button>
@@ -143,7 +148,7 @@ export const AddMemberModal = ({
                   <Button
                     onClick={() => {
                       setPhase("INPUT");
-                      setSearchTrigger(0);
+                      setSearchTrigger(false);
                       setSearchResults([]);
                       setSelectedMember(undefined);
                       setName("");
@@ -166,7 +171,7 @@ export const AddMemberModal = ({
                   <div>
                     <Text typo="h3">{selectedMember.name}</Text>
                     <Text typo="body1" color="sub">
-                      {selectedMember.studentId}
+                      {selectedMember.studentId} 님을 행사 신청 인원에 추가했어요.
                     </Text>
                   </div>
                 )}
@@ -174,12 +179,15 @@ export const AddMemberModal = ({
             )}
             {phase === "NONE_MEMBER_SEARCH" && (
               <>
-                <Text as="h1" typo="h1">
-                  검색 결과가 없습니다
-                </Text>
-                <Text typo="body1" color="sub">
-                  입력하신 이름으로 검색된 학생이 없습니다.
-                </Text>
+                <NoneMemberParticipate
+                  handleBack={() => {
+                    setPhase("INPUT");
+                    setSearchTrigger(false);
+                    setSearchResults([]);
+                    setSelectedMember(undefined);
+                    setName("");
+                  }}
+                />
               </>
             )}
           </>
@@ -190,8 +198,9 @@ export const AddMemberModal = ({
           left: "50%",
           top: "50%",
           transform: "translate(-50%, -50%)",
-          width: "fit-content",
+
           height: "fit-content",
+          width: "652px",
         }}
       />
     </Modal>
