@@ -9,7 +9,9 @@ import SearchBar from "wowds-ui/SearchBar";
 import Table from "wowds-ui/Table";
 import TextField from "wowds-ui/TextField";
 import { Text } from "@/components/@common/Text";
+import usePostParticipantsMutation from "@/hooks/mutations/usePostParticipantsMutation";
 import { useGetSearchMemberListQuery } from "@/hooks/queries/useGetSearchMemberListQuery";
+import { SearchMemberListResponse } from "@/types/dtos/event";
 
 type Phase = "INPUT" | "MEMBER_SEARCH" | "PICK" | "NONE_MEMBER_SEARCH";
 
@@ -22,8 +24,11 @@ export const AddMemberModal = ({
 }) => {
   const [name, setName] = useState("");
   const [phase, setPhase] = useState<Phase>("INPUT");
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<SearchMemberListResponse[]>([]);
   const [searchTrigger, setSearchTrigger] = useState(0); // 검색 트리거
+  const [selectedMember, setSelectedMember] = useState<SearchMemberListResponse | undefined>(
+    undefined,
+  );
 
   // TODO: eventId를 props로 받아야 함
   const eventId = 1; // 임시로 1 설정
@@ -33,6 +38,8 @@ export const AddMemberModal = ({
     isLoading,
     error,
   } = useGetSearchMemberListQuery(eventId, name, searchTrigger > 0);
+
+  const postParticipantsMutation = usePostParticipantsMutation();
 
   // API 응답이 변경될 때마다 searchResults 상태 업데이트
   useEffect(() => {
@@ -49,15 +56,33 @@ export const AddMemberModal = ({
     setSearchTrigger(prev => prev + 1);
   };
 
-  const handlePhase2ButtonClick = () => {
-    setPhase("PICK");
-    //post api 찌르기
+  const handleAddMember = async () => {
+    if (!selectedMember) {
+      return;
+    }
+
+    try {
+      await postParticipantsMutation.mutateAsync({
+        eventId,
+        memberId: selectedMember.memberId,
+      });
+      // 상태 초기화
+      setPhase("PICK");
+      setSearchTrigger(0);
+      setSearchResults([]);
+      setSelectedMember(undefined);
+      setName("");
+    } catch (error) {
+      console.error("멤버 추가 중 오류 발생:", error);
+    }
   };
 
+  console.log(selectedMember);
   // 검색 결과에 따라 phase 설정
   useEffect(() => {
     if (searchTrigger > 0 && !isLoading && searchResponse) {
-      if (searchResults && searchResults.length > 0) {
+      const participableStudents = searchResults.filter(student => student.participable === true);
+      if (participableStudents.length > 0) {
         setPhase("MEMBER_SEARCH");
       } else {
         setPhase("NONE_MEMBER_SEARCH");
@@ -96,38 +121,57 @@ export const AddMemberModal = ({
                 </Text>
                 {searchResults &&
                   searchResults.length > 0 &&
-                  searchResults.map((student, index) => (
-                    <div>
-                      <Text typo="h3">{student.name}</Text>
-                      <Text typo="body1" color="sub">
-                        {student.studentId}
-                      </Text>
-                      <Checkbox checked={true} />
-                    </div>
-                  ))}
+                  searchResults.filter(student => student.participable === true).length > 0 &&
+                  searchResults
+                    .filter(student => student.participable === true)
+                    .map((student, index) => (
+                      <div
+                        key={index}
+                        style={{ display: "flex", alignItems: "center", gap: "10px" }}
+                      >
+                        <Text typo="h3">{student.name}</Text>
+                        <Text typo="body1" color="sub">
+                          {student.studentId}
+                        </Text>
+                        <Checkbox
+                          checked={selectedMember?.memberId === student.memberId}
+                          onChange={() => setSelectedMember(student)}
+                        />
+                      </div>
+                    ))}
                 <div style={{ display: "flex", gap: "20px" }}>
                   <Button
                     onClick={() => {
                       setPhase("INPUT");
                       setSearchTrigger(0);
                       setSearchResults([]);
+                      setSelectedMember(undefined);
+                      setName("");
                     }}
                   >
                     다시 검색
                   </Button>
                   <Button
-                    onClick={() => {
-                      setPhase("PICK");
-                      setSearchTrigger(0);
-                      setSearchResults([]);
-                    }}
+                    disabled={!selectedMember || postParticipantsMutation.isPending}
+                    onClick={handleAddMember}
                   >
-                    추가하기
+                    {postParticipantsMutation.isPending ? "추가 중..." : "추가하기"}
                   </Button>
                 </div>
               </>
             )}
-
+            {phase === "PICK" && (
+              <div>
+                {selectedMember && (
+                  <div>
+                    <Text typo="h3">{selectedMember.name}</Text>
+                    <Text typo="body1" color="sub">
+                      {selectedMember.studentId}
+                    </Text>
+                  </div>
+                )}
+              </div>
+            )}
             {phase === "NONE_MEMBER_SEARCH" && (
               <>
                 <Text as="h1" typo="h1">
@@ -136,7 +180,6 @@ export const AddMemberModal = ({
                 <Text typo="body1" color="sub">
                   입력하신 이름으로 검색된 학생이 없습니다.
                 </Text>
-                <Button onClick={handlePhase2ButtonClick}>다시 검색</Button>
               </>
             )}
           </>

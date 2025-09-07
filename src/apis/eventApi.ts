@@ -26,12 +26,19 @@ export const eventApi = {
   },
   getSearchMemberList: async (
     eventId: number,
-    memberId: number,
+    name: string,
   ): Promise<SearchMemberListResponse[]> => {
     const response = await apiClient.get<SearchMemberListResponse[]>(
-      `/admin/event-participations/apply/manual/registeredh`,
+      `/admin/event-participations/members/participable/search`,
       { params: { event: eventId, name } },
     );
+    return response.data;
+  },
+  postParticipants: async (eventId: number, memberId: number) => {
+    const response = await apiClient.post(`/admin/event-participations/apply/manual/registered`, {
+      eventId: eventId,
+      memberId: memberId,
+    });
     return response.data;
   },
 };
