@@ -5,9 +5,9 @@ import TabsContent from "wowds-ui/TabsContent";
 import TabsItem from "wowds-ui/TabsItem";
 import TabsList from "wowds-ui/TabsList";
 import { Space } from "@/components/@common/Space";
+import { ApplyMember } from "@/components/EditEvent/ApplyMembers";
 import { EventForm } from "@/components/EditEvent/EventForm";
 import { EventInformation } from "@/components/EditEvent/EventInformation";
-import { useEventList } from "@/hooks/queries/useGetEventQueries";
 import { EventType } from "@/types/dtos/event";
 
 export const EditEventPage = () => {
@@ -15,16 +15,16 @@ export const EditEventPage = () => {
   const isNew = eventIdParam === "new";
   const id = !isNew ? Number(eventIdParam) : null;
 
-  const { data } = useEventList(0, 20);
+  //const { data } = useEventList(0, 20);
   const [infoValues, setInfoValues] = useState<EventType | null>(null);
 
   useEffect(() => {
     if (isNew || id === null) {
       setInfoValues(null);
     } else {
-      setInfoValues(data?.content.find(c => c.event.eventId === id)?.event ?? null);
+      //setInfoValues(data?.content.find(c => c.event.eventId === id)?.event ?? null);
     }
-  }, [data, id, isNew]);
+  }, [id, isNew]);
 
   return (
     <>
@@ -39,7 +39,9 @@ export const EditEventPage = () => {
         <TabsContent value="tab1">
           <EventForm />
         </TabsContent>
-        <TabsContent value="tab2">신청 인원 내용</TabsContent>
+        <TabsContent value="tab2">
+          <ApplyMember />
+        </TabsContent>
       </Tabs>
     </>
   );

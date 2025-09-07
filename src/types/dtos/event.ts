@@ -61,3 +61,42 @@ export interface EventResponse {
   last: boolean;
   empty: boolean;
 }
+
+export type AfterPartyApplicationStatus = "NONE" | "NOT_APPLIED" | "APPLIED";
+export type ParticipantRole = "NON_MEMBER" | "GUEST" | "ASSOCIATE" | "REGULAR";
+
+export interface Participant {
+  name: string;
+  studentId: string;
+  phone: string;
+}
+
+export interface ParticipationContent {
+  eventParticipationId: number;
+  participant: Participant;
+  afterPartyApplicationStatus: AfterPartyApplicationStatus;
+  participantRole: ParticipantRole;
+  discordUsername: string;
+  nickname: string;
+}
+
+export interface EventParticipantsResponse {
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  content: ParticipationContent[];
+  number: number;
+  sort: Sort;
+  numberOfElements: number;
+  pageable: Pageable;
+  first: boolean;
+  last: boolean;
+  empty: boolean;
+}
+
+export interface SearchMemberListResponse {
+  memberId: number;
+  name: string;
+  studentId: string;
+  participable: boolean;
+}
