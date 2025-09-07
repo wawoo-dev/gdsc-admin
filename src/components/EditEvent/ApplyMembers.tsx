@@ -9,9 +9,13 @@ import Table from "wowds-ui/Table";
 import { Flex } from "../@common/Flex";
 import { Space } from "../@common/Space";
 import { AddMemberModal } from "./Modal/AddMemberModal";
-import { mockEventParticipantsResponse } from "@/constants/mockData";
 import { useDebounce } from "@/hooks/common/useDebounce";
-import { AfterPartyApplicationStatus, ParticipantRole } from "@/types/dtos/event";
+import { useGetEventParticipants } from "@/hooks/queries/useGetAllParticipants";
+import {
+  AfterPartyApplicationStatus,
+  ParticipantRole,
+  ParticipationContent,
+} from "@/types/dtos/event";
 import { isDigitStart, onlyDigits, isEnglishStart, isKoreanStart } from "@/utils/searchQuery";
 
 export function toParticipantRoleLabel(role: ParticipantRole): string {
@@ -44,15 +48,17 @@ export function toAfterPartyStatusLabel(status: AfterPartyApplicationStatus): st
 
 export const ApplyMember = () => {
   const { eventId } = useParams<{ eventId: string }>();
-  // const id = Number(eventId);
+  const id = Number(eventId);
 
   const [sortKey, setSortKey] = useState("");
-  //const { data: appliedStudent } = useGetEventParticipants(id, 0, 20, sortKey);
-  const data = mockEventParticipantsResponse.content;
+  const { data } = useGetEventParticipants(id, 0, 20, sortKey);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const handleSelectionChange = (rows: number[]) => setSelectedRows(rows);
 
-  const showAfterParty = data.some(d => d.afterPartyApplicationStatus !== "NONE");
+  const participants = useMemo(() => data?.content || [], [data]);
+  const showAfterParty = participants.some(
+    (d: ParticipationContent) => d.afterPartyApplicationStatus !== "NONE",
+  );
 
   const [searchedValue, setSearchedValue] = useState("");
   const [open, setOpen] = useState(false);
@@ -61,29 +67,33 @@ export const ApplyMember = () => {
   const filtered = useMemo(() => {
     const q = debouncedQuery.trim();
     if (!q) {
-      return data;
+      return participants;
     }
 
     if (isDigitStart(q)) {
       // 전화번호: 숫자만 비교
       const qDigits = onlyDigits(q);
-      return data.filter(row => onlyDigits(row.participant.phone).includes(qDigits));
+      return participants.filter((row: ParticipationContent) =>
+        onlyDigits(row.participant.phone).includes(qDigits),
+      );
     }
 
     if (isEnglishStart(q)) {
       // 학번(studentId): 대소문자 무시 포함 검색
       const qLower = q.toLowerCase();
-      return data.filter(row => row.participant.studentId.toLowerCase().includes(qLower));
+      return participants.filter((row: ParticipationContent) =>
+        row.participant.studentId.toLowerCase().includes(qLower),
+      );
     }
 
     if (isKoreanStart(q)) {
       // 이름: 포함 검색
-      return data.filter(row => row.participant.name.includes(q));
+      return participants.filter((row: ParticipationContent) => row.participant.name.includes(q));
     }
 
     // 기타 문자는 전체 반환(원하면 여기서 추가 규칙 가능)
-    return data;
-  }, [data, debouncedQuery]);
+    return participants;
+  }, [participants, debouncedQuery]);
 
   return (
     <div>
@@ -135,7 +145,7 @@ export const ApplyMember = () => {
               discordUsername,
               nickname,
               eventParticipationId,
-            }) => {
+            }: ParticipationContent) => {
               const isNonRegular = participantRole !== "REGULAR";
 
               // ✅ 공통 셀 스타일 생성기: 필요 시 추가 스타일을 합쳐서 사용
