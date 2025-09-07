@@ -1,7 +1,11 @@
 // api/events.ts
 
 import { apiClient } from ".";
-import { EventParticipantsResponse, EventResponse } from "@/types/dtos/event";
+import {
+  EventParticipantsResponse,
+  EventResponse,
+  SearchMemberListResponse,
+} from "@/types/dtos/event";
 
 export const eventApi = {
   getEventList: async (page: number = 1, size: number = 20): Promise<EventResponse> => {
@@ -19,5 +23,15 @@ export const eventApi = {
       { params: { event: eventId, page, size, sort } },
     );
     return res.data;
+  },
+  getSearchMemberList: async (
+    eventId: number,
+    memberId: number,
+  ): Promise<SearchMemberListResponse[]> => {
+    const response = await apiClient.get<SearchMemberListResponse[]>(
+      `/admin/event-participations/apply/manual/registeredh`,
+      { params: { event: eventId, name } },
+    );
+    return response.data;
   },
 };

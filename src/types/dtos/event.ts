@@ -91,3 +91,10 @@ export interface EventParticipantsResponse {
   last: boolean;
   empty: boolean;
 }
+
+export interface SearchMemberListResponse {
+  memberId: number;
+  name: string;
+  studentId: string;
+  participable: boolean;
+}

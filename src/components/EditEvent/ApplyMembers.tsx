@@ -2,12 +2,17 @@ import { useMemo, useState } from "react";
 import { Modal } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { color } from "wowds-tokens";
+import Box from "wowds-ui/Box";
+import Button from "wowds-ui/Button";
 import DropDown from "wowds-ui/DropDown";
 import DropDownOption from "wowds-ui/DropDownOption";
 import SearchBar from "wowds-ui/SearchBar";
 import Table from "wowds-ui/Table";
+import TextField from "wowds-ui/TextField";
 import { Flex } from "../@common/Flex";
 import { Space } from "../@common/Space";
+import { Text } from "../@common/Text";
+import { AddMemberModal } from "./Modal/AddMemberModal";
 import { mockEventParticipantsResponse } from "@/constants/mockData";
 import { useDebounce } from "@/hooks/common/useDebounce";
 import { useGetEventParticipants } from "@/hooks/queries/useGetAllParticipants";
@@ -55,6 +60,8 @@ export const ApplyMember = () => {
   const showAfterParty = data.some(d => d.afterPartyApplicationStatus !== "NONE");
 
   const [searchedValue, setSearchedValue] = useState("");
+  const [open, setOpen] = useState(false);
+
   const debouncedQuery = useDebounce(searchedValue, 300); // 300ms 디바운스
   const filtered = useMemo(() => {
     const q = debouncedQuery.trim();
@@ -85,7 +92,10 @@ export const ApplyMember = () => {
 
   return (
     <div>
-      <Modal></Modal>
+      <Button variant="outline" onClick={() => setOpen(true)}>
+        인원 추가
+      </Button>
+      <AddMemberModal open={open} setOpen={setOpen} />
       <Flex gap="sm">
         <SearchBar
           placeholder="이름,학번,학과,전화번호로 검색"
