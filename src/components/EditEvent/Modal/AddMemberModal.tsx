@@ -34,11 +34,11 @@ export const AddMemberModal = ({
   // eventId를 숫자로 변환
   const eventIdNumber = eventId ? parseInt(eventId, 10) : 0;
 
-  const {
-    data: searchResponse,
-    isLoading,
-    error,
-  } = useGetSearchMemberListQuery(eventIdNumber, name, searchTrigger);
+  const { data: searchResponse, isLoading } = useGetSearchMemberListQuery(
+    eventIdNumber,
+    name,
+    searchTrigger,
+  );
 
   const postParticipantsMutation = usePostParticipantsMutation();
 

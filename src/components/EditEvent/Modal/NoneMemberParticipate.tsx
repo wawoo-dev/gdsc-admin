@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import Button from "wowds-ui/Button";
 import TextField from "wowds-ui/TextField";
@@ -22,7 +22,7 @@ export const NoneMemberParticipate = ({
   const postNoneMemberParticipantsMutation = usePostNoneMemberParticipantsMutation();
 
   const handleSubmit = async () => {
-    if (studentId.trim() === "" || name.trim() === "" || phone.trim() === "") {
+    if (studentId.trim() === "" || phone.trim() === "") {
       alert("학번, 이름, 전화번호를 모두 입력해주세요.");
       return;
     }

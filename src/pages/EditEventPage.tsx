@@ -8,7 +8,6 @@ import { Space } from "@/components/@common/Space";
 import { ApplyMember } from "@/components/EditEvent/ApplyMembers";
 import { EventForm } from "@/components/EditEvent/EventForm";
 import { EventInformation } from "@/components/EditEvent/EventInformation";
-import { useEventList } from "@/hooks/queries/useGetEventQueries";
 import { EventType } from "@/types/dtos/event";
 
 export const EditEventPage = () => {
