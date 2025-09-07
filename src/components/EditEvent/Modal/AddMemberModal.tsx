@@ -188,6 +188,7 @@ export const AddMemberModal = ({
             {phase === "NONE_MEMBER_SEARCH" && (
               <>
                 <NoneMemberParticipate
+                  name={name}
                   handleBack={() => {
                     setPhase("INPUT");
                     setSearchTrigger(false);

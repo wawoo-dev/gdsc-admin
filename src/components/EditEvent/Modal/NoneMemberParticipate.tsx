@@ -5,10 +5,15 @@ import TextField from "wowds-ui/TextField";
 import { Text } from "@/components/@common/Text";
 import usePostNoneMemberParticipantsMutation from "@/hooks/mutations/usePostNoneMemberParticipantsMutation";
 
-export const NoneMemberParticipate = ({ handleBack }: { handleBack: () => void }) => {
+export const NoneMemberParticipate = ({
+  name: selectedName,
+  handleBack,
+}: {
+  name: string;
+  handleBack: () => void;
+}) => {
   const { eventId } = useParams<{ eventId: string }>();
   const [studentId, setStudentId] = useState("");
-  const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
 
   // eventId를 숫자로 변환
@@ -26,7 +31,7 @@ export const NoneMemberParticipate = ({ handleBack }: { handleBack: () => void }
       await postNoneMemberParticipantsMutation.mutateAsync({
         eventId: eventIdNumber,
         participant: {
-          name: name.trim(),
+          name: selectedName,
           studentId: studentId.trim(),
           phone: phone.trim(),
         },
@@ -34,7 +39,6 @@ export const NoneMemberParticipate = ({ handleBack }: { handleBack: () => void }
 
       // 성공 시 입력값 초기화
       setStudentId("");
-      setName("");
       setPhone("");
       alert("비회원 참가자가 성공적으로 등록되었습니다.");
     } catch (error) {
@@ -46,17 +50,19 @@ export const NoneMemberParticipate = ({ handleBack }: { handleBack: () => void }
   const handleReset = () => {
     handleBack();
     setStudentId("");
-    setName("");
     setPhone("");
   };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px", padding: "20px" }}>
-      <Text typo="h2">비회원 참가자 정보 입력</Text>
+      <Text typo="h1">
+        {selectedName} 이름의 학생이 어드민에 없어요. <br />
+        신청 명단에 새로 추가하시겠어요?
+      </Text>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         <TextField placeholder="C123456" label="학번" value={studentId} onChange={setStudentId} />
-        <TextField placeholder="김홍익" label="이름" value={name} onChange={setName} />
+
         <TextField placeholder="010-1234-5678" label="전화번호" value={phone} onChange={setPhone} />
       </div>
 
@@ -67,7 +73,6 @@ export const NoneMemberParticipate = ({ handleBack }: { handleBack: () => void }
         <Button
           disabled={
             studentId.trim() === "" ||
-            name.trim() === "" ||
             phone.trim() === "" ||
             postNoneMemberParticipantsMutation.isPending
           }
