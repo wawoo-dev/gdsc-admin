@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Modal } from "@mui/material";
 import { useParams } from "react-router-dom";
+import { color } from "wowds-tokens";
 import Box from "wowds-ui/Box";
 import Button from "wowds-ui/Button";
 import Checkbox from "wowds-ui/Checkbox";
-import DropDown from "wowds-ui/DropDown";
-import DropDownOption from "wowds-ui/DropDownOption";
-import SearchBar from "wowds-ui/SearchBar";
-import Table from "wowds-ui/Table";
 import TextField from "wowds-ui/TextField";
 import { NoneMemberParticipate } from "./NoneMemberParticipate";
 import { Space } from "@/components/@common/Space";
@@ -80,8 +77,6 @@ export const AddMemberModal = ({
     }
   };
 
-  console.log(selectedMember);
-  // 검색 결과에 따라 phase 설정
   useEffect(() => {
     if (searchTrigger && !isLoading && searchResponse) {
       const participableStudents = searchResults.filter(student => student.participable === true);
@@ -113,7 +108,11 @@ export const AddMemberModal = ({
                 <Space height={76} />
                 <TextField placeholder="김홍익" label="" value={name} onChange={setName} />
                 <Space height={121} />
-                <Button disabled={name === "" || isLoading} onClick={handle1PhaseButtonClick}>
+                <Button
+                  disabled={name === "" || isLoading}
+                  onClick={handle1PhaseButtonClick}
+                  style={{ width: "100% !important" }}
+                >
                   {isLoading ? "검색 중..." : "다음으로"}
                 </Button>
               </>
@@ -124,6 +123,7 @@ export const AddMemberModal = ({
                 <Text as="h1" typo="h1">
                   아래의 학생이 맞는지 확인해주세요
                 </Text>
+                <Space height={76} />
                 {searchResults &&
                   searchResults.length > 0 &&
                   searchResults.filter(student => student.participable === true).length > 0 &&
@@ -132,7 +132,14 @@ export const AddMemberModal = ({
                     .map((student, index) => (
                       <div
                         key={index}
-                        style={{ display: "flex", alignItems: "center", gap: "10px" }}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                          border: "1px solid black",
+                          borderRadius: "10px",
+                          padding: "10px",
+                        }}
                       >
                         <Text typo="h3">{student.name}</Text>
                         <Text typo="body1" color="sub">
@@ -144,6 +151,7 @@ export const AddMemberModal = ({
                         />
                       </div>
                     ))}
+                <Space height={76} />
                 <div style={{ display: "flex", gap: "20px" }}>
                   <Button
                     onClick={() => {
@@ -169,9 +177,9 @@ export const AddMemberModal = ({
               <div>
                 {selectedMember && (
                   <div>
-                    <Text typo="h3">{selectedMember.name}</Text>
-                    <Text typo="body1" color="sub">
-                      {selectedMember.studentId} 님을 행사 신청 인원에 추가했어요.
+                    <Text typo="h1" as="h1">
+                      <span style={{ color: color.primary }}> {selectedMember.name}</span> 님을 행사
+                      신청 인원에 추가했어요.
                     </Text>
                   </div>
                 )}
@@ -198,8 +206,7 @@ export const AddMemberModal = ({
           left: "50%",
           top: "50%",
           transform: "translate(-50%, -50%)",
-
-          height: "fit-content",
+          height: "450px",
           width: "652px",
         }}
       />
