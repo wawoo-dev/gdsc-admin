@@ -44,7 +44,7 @@ export function toAfterPartyStatusLabel(status: AfterPartyApplicationStatus): st
 
 export const ApplyMember = () => {
   const { eventId } = useParams<{ eventId: string }>();
-  const id = Number(eventId);
+  // const id = Number(eventId);
 
   const [sortKey, setSortKey] = useState("");
   //const { data: appliedStudent } = useGetEventParticipants(id, 0, 20, sortKey);
