@@ -1,6 +1,6 @@
 import { css } from "@emotion/react";
 import { Text } from "components/@common/Text";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Box from "wowds-ui/Box";
 
 import SearchBar from "wowds-ui/SearchBar";
@@ -35,7 +35,7 @@ export const EventsHomePage = () => {
         })}
       >
         {/* 템플릿 추가하기 박스 */}
-        <div onClick={() => navigate(`${RoutePath.EditEvent}/new`)}>
+        <Link to={`${RoutePath.EditEvent}/new`}>
           <Box
             text={
               <Text typo="h3" color="sub">
@@ -44,7 +44,7 @@ export const EventsHomePage = () => {
             }
             style={boxStyle}
           />
-        </div>
+        </Link>
 
         {/* 실제 이벤트 데이터 리스트 */}
         {eventContent.map(item => (

@@ -1,3 +1,5 @@
+import { EventStatus } from "../entities/event";
+
 // 정렬 관련 타입
 interface Sort {
   empty: boolean;
@@ -39,10 +41,10 @@ export interface EventType {
 }
 
 // content 안에 들어가는 타입
-interface EventContent {
+export interface EventContent {
   event: EventType;
   totalAttendeesCount: number;
-  eventStatus: "BEFORE_APPLICATION" | "APPLICATION_OPEN" | "APPLICATION_CLOSED" | "EVENT_ENDED";
+  eventStatus: EventStatus;
 }
 
 // 최상위 API 응답 타입
