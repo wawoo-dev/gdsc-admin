@@ -12,6 +12,5 @@ export const enum QueryKey {
   recruitmentRound = "recruitmentRound",
   studyList = "studyList",
   searchMemberList = "searchMemberList",
-  eventList= "eventList",
-  event = "event",
+  eventList = "eventList",
 }
