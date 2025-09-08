@@ -6,7 +6,8 @@ import { FormField } from "./FormField";
 import { FormFieldProps } from "./FormField";
 import { Flex } from "../@common/Flex";
 import { Space } from "../@common/Space";
-import { EventType } from "@/types/dtos/event";
+import { EventType, CreateEventRequest } from "@/types/dtos/event";
+import { useCreateEventMutation } from "@/hooks/mutations/useCreateEventMutation";
 
 const getFormFields = (formValue: EventType | null): FormFieldProps[] => {
   return [
@@ -64,8 +65,16 @@ export const EventForm = ({
     Object.fromEntries(formFields.map((_, i) => [i, true])),
   );
 
+  const createEventMutation = useCreateEventMutation();
+
   const handleRequiredToggle = (index: number, next: boolean) => {
     setRequiredByIndex(prev => ({ ...prev, [index]: next }));
+
+    //TODO: 유의사항 토글 업데이트
+    if (index === 3) {
+     
+    }
+
 
     // 뒷풀이 질문 (index 4) 토글 시 afterPartyStatus 업데이트
     if (index === 4) {
@@ -109,20 +118,41 @@ export const EventForm = ({
     }
   }, [formValue]);
 
-  console.log("EventForm formValue:", formValue);
-  console.log("EventForm description:", description);
-  console.log("EventForm formFields:", formFields);
-  console.log("EventForm requiredByIndex:", requiredByIndex);
-  console.log("EventForm afterPartyStatus:", formValue?.afterPartyStatus);
-  console.log("EventForm prePaymentStatus:", formValue?.prePaymentStatus);
   const handleDescriptionChange = (value: string) => {
-    console.log("handleDescriptionChange called with:", value);
     setDescription(value);
+  };
+
+  const handlePublish = () => {
+    if (!formValue) {
+      console.error("formValue가 없습니다.");
+      return;
+    }
+
+    //TODO: 입력값을 formValue 에 업데이트 하는 건 게시하기를 누르고 함
+    setFormValues(prev => (prev ? { ...prev, applicationDescription: description } : prev));
+    const createEventData: CreateEventRequest = {
+      name: formValue.name,
+      venue: formValue.venue,
+      startAt: formValue.startAt,
+      applicationDescription: formValue.applicationDescription,
+      applicationPeriod: formValue.applicationPeriod,
+      regularRoleOnlyStatus: formValue.regularRoleOnlyStatus,
+      afterPartyStatus: formValue.afterPartyStatus,
+      prePaymentStatus: formValue.prePaymentStatus,
+      postPaymentStatus: formValue.postPaymentStatus,
+      rsvpQuestionStatus: formValue.rsvpQuestionStatus,
+      mainEventMaxApplicantCount: formValue.mainEventMaxApplicantCount,
+      afterPartyMaxApplicantCount: formValue.afterPartyMaxApplicantCount,
+    };
+
+    createEventMutation.mutate(createEventData);
   };
   return (
     <div>
       <Space height={16} />
-      <Button size="sm">게시하기</Button>
+      <Button size="sm" onClick={handlePublish} disabled={createEventMutation.isPending}>
+        {createEventMutation.isPending ? "게시 중..." : "게시하기"}
+      </Button>
       <Space height={30} />
       <textarea
         placeholder="행사 신청 폼 설명을 입력해주세요"
