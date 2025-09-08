@@ -49,6 +49,9 @@ export const EventInformation = ({
   const [afterPartyMaxCount, setAfterPartyMaxCount] = useState<string>(
     formValue?.afterPartyMaxApplicantCount?.toString() || "",
   );
+  const [regularRoleOnlyStatus, setRegularRoleOnlyStatus] = useState<"ENABLED" | "DISABLED">(
+    formValue?.regularRoleOnlyStatus || "DISABLED",
+  );
 
   useEffect(() => {
     if (formValue) {
@@ -62,6 +65,7 @@ export const EventInformation = ({
       setTitle(formValue.name);
       setMainEventMaxCount(formValue.mainEventMaxApplicantCount?.toString() || "");
       setAfterPartyMaxCount(formValue.afterPartyMaxApplicantCount?.toString() || "");
+      setRegularRoleOnlyStatus(formValue.regularRoleOnlyStatus);
     } else {
       setSelectedRange(undefined);
       setSelectedEventDate(undefined);
@@ -69,6 +73,7 @@ export const EventInformation = ({
       setTitle("");
       setMainEventMaxCount("");
       setAfterPartyMaxCount("");
+      setRegularRoleOnlyStatus("DISABLED");
     }
   }, [formValue]);
 
@@ -78,7 +83,6 @@ export const EventInformation = ({
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
-    // setFormValues(prev => (prev ? { ...prev, name: event.target.value } : prev));
   };
 
   const handleMainEventMaxCountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,6 +91,26 @@ export const EventInformation = ({
 
   const handleAfterPartyMaxCountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAfterPartyMaxCount(event.target.value);
+  };
+
+  const handleSave = () => {
+    setFormValues(prev =>
+      prev
+        ? {
+            ...prev,
+            name: title,
+            venue: venue,
+            regularRoleOnlyStatus: regularRoleOnlyStatus,
+            applicationPeriod: {
+              startDate: toISOOrEmpty(selectedRange?.from),
+              endDate: toISOOrEmpty(selectedRange?.to),
+            },
+            startAt: toISOOrEmpty(selectedEventDate),
+            mainEventMaxApplicantCount: parseInt(mainEventMaxCount) || 0,
+            afterPartyMaxApplicantCount: parseInt(afterPartyMaxCount) || 0,
+          }
+        : prev,
+    );
   };
   console.log(formValue, "formValue");
   return (
@@ -116,16 +140,10 @@ export const EventInformation = ({
             label="신청범위"
             placeholder="신청 범위를 선택해주세요"
             style={formItemStyle}
-            value={formValue?.regularRoleOnlyStatus === "ENABLED" ? "only-member" : "everyone"}
+            value={regularRoleOnlyStatus === "ENABLED" ? "only-member" : "everyone"}
             onChange={value =>
-              setFormValues(prev =>
-                prev
-                  ? {
-                      ...prev,
-                      regularRoleOnlyStatus:
-                        value.selectedValue === "only-member" ? "ENABLED" : "DISABLED",
-                    }
-                  : prev,
+              setRegularRoleOnlyStatus(
+                value.selectedValue === "only-member" ? "ENABLED" : "DISABLED",
               )
             }
           >
@@ -143,17 +161,6 @@ export const EventInformation = ({
                     to: selectedRange?.to,
                   };
                   setSelectedRange(newRange);
-                  setFormValues(prev =>
-                    prev
-                      ? {
-                          ...prev,
-                          applicationPeriod: {
-                            startDate: toISOOrEmpty(newRange.from),
-                            endDate: toISOOrEmpty(newRange.to),
-                          },
-                        }
-                      : prev,
-                  );
                 }}
                 slotProps={{
                   textField: {
@@ -171,17 +178,6 @@ export const EventInformation = ({
                     to: newValue?.toDate(),
                   };
                   setSelectedRange(newRange);
-                  setFormValues(prev =>
-                    prev
-                      ? {
-                          ...prev,
-                          applicationPeriod: {
-                            startDate: toISOOrEmpty(newRange.from),
-                            endDate: toISOOrEmpty(newRange.to),
-                          },
-                        }
-                      : prev,
-                  );
                 }}
                 slotProps={{
                   textField: {
@@ -209,9 +205,6 @@ export const EventInformation = ({
                 onChange={newValue => {
                   const newDate = newValue?.toDate();
                   setSelectedEventDate(newDate);
-                  setFormValues(prev =>
-                    prev ? { ...prev, startAt: toISOOrEmpty(newDate) } : prev,
-                  );
                 }}
                 slotProps={{
                   textField: {
@@ -226,9 +219,6 @@ export const EventInformation = ({
                 onChange={newValue => {
                   const newDate = newValue?.toDate();
                   setSelectedEventDate(newDate);
-                  setFormValues(prev =>
-                    prev ? { ...prev, startAt: toISOOrEmpty(newDate) } : prev,
-                  );
                 }}
                 views={["hours", "minutes"]}
                 format="HH:mm"
@@ -263,7 +253,7 @@ export const EventInformation = ({
             type="number"
           />
         </Flex>
-        <Button>저장</Button>
+        <Button onClick={handleSave}>저장</Button>
       </div>
     </>
   );
@@ -271,4 +261,5 @@ export const EventInformation = ({
 const formItemStyle: CSSProperties = {
   flex: "0 0 calc(50% - 8px)",
   boxSizing: "border-box",
+  backgroundColor: color.backgroundNormal,
 };
