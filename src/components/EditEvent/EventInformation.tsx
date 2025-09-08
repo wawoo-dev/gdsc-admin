@@ -1,13 +1,14 @@
 import { CSSProperties, useEffect, useState } from "react";
 import { css } from "@emotion/react";
 import { TextField } from "@mui/material";
+import { DatePicker, TimePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import dayjs from "dayjs";
 import { color, space } from "wowds-tokens";
+import Button from "wowds-ui/Button";
 import DropDown from "wowds-ui/DropDown";
 import DropDownOption from "wowds-ui/DropDownOption";
-import PickerGroup from "wowds-ui/PickerGroup";
-import RangeDatePicker from "wowds-ui/RangeDatePicker";
-import DatePicker from "wowds-ui/SingleDatePicker";
-import TimePicker from "wowds-ui/TimePicker";
 import { Flex } from "@/components/@common/Flex";
 import { Space } from "@/components/@common/Space";
 import { Text } from "@/components/@common/Text";
@@ -87,6 +88,7 @@ export const EventInformation = ({
   const handleAfterPartyMaxCountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAfterPartyMaxCount(event.target.value);
   };
+  console.log(formValue, "formValue");
   return (
     <>
       <div
@@ -130,30 +132,66 @@ export const EventInformation = ({
             <DropDownOption value="only-member" text="정회원만 신청 가능" />
             <DropDownOption value="everyone" text="모두 신청 가능" />
           </DropDown>
-          <RangeDatePicker
-            label="행사 신청 기간"
-            selected={selectedRange}
-            onSelect={range => {
-              setSelectedRange({
-                from: range?.from,
-                to: range?.to,
-              });
-
-              // 2) 서버 DTO도 함께 업데이트
-              setFormValues(prev =>
-                prev
-                  ? {
-                      ...prev,
-                      applicationPeriod: {
-                        startDate: toISOOrEmpty(range?.from),
-                        endDate: toISOOrEmpty(range?.to),
-                      },
-                    }
-                  : prev,
-              );
-            }}
-            style={formItemStyle}
-          />
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <Flex gap="sm" style={{ flex: "0 0 calc(50% - 8px)" }}>
+              <DatePicker
+                label="신청 시작일"
+                value={selectedRange?.from ? dayjs(selectedRange.from) : null}
+                onChange={newValue => {
+                  const newRange = {
+                    from: newValue?.toDate(),
+                    to: selectedRange?.to,
+                  };
+                  setSelectedRange(newRange);
+                  setFormValues(prev =>
+                    prev
+                      ? {
+                          ...prev,
+                          applicationPeriod: {
+                            startDate: toISOOrEmpty(newRange.from),
+                            endDate: toISOOrEmpty(newRange.to),
+                          },
+                        }
+                      : prev,
+                  );
+                }}
+                slotProps={{
+                  textField: {
+                    size: "small",
+                    fullWidth: true,
+                  },
+                }}
+              />
+              <DatePicker
+                label="신청 종료일"
+                value={selectedRange?.to ? dayjs(selectedRange.to) : null}
+                onChange={newValue => {
+                  const newRange = {
+                    from: selectedRange?.from,
+                    to: newValue?.toDate(),
+                  };
+                  setSelectedRange(newRange);
+                  setFormValues(prev =>
+                    prev
+                      ? {
+                          ...prev,
+                          applicationPeriod: {
+                            startDate: toISOOrEmpty(newRange.from),
+                            endDate: toISOOrEmpty(newRange.to),
+                          },
+                        }
+                      : prev,
+                  );
+                }}
+                slotProps={{
+                  textField: {
+                    size: "small",
+                    fullWidth: true,
+                  },
+                }}
+              />
+            </Flex>
+          </LocalizationProvider>
           <TextField
             value={venue}
             onChange={handleVenueChange}
@@ -163,17 +201,47 @@ export const EventInformation = ({
             variant="outlined"
             fullWidth
           />
-          <PickerGroup
-            selectedDate={selectedEventDate}
-            setSelectedDate={date => {
-              setSelectedEventDate(date);
-              setFormValues(prev => (prev ? { ...prev, startAt: toISOOrEmpty(date) } : prev));
-            }}
-            label=""
-          >
-            <DatePicker label="행사 진행 날짜" />
-            <TimePicker label="행사 진행 시간" />
-          </PickerGroup>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <Flex gap="sm" style={{ flex: "0 0 calc(50% - 8px)" }}>
+              <DatePicker
+                label="행사 진행 날짜"
+                value={selectedEventDate ? dayjs(selectedEventDate) : null}
+                onChange={newValue => {
+                  const newDate = newValue?.toDate();
+                  setSelectedEventDate(newDate);
+                  setFormValues(prev =>
+                    prev ? { ...prev, startAt: toISOOrEmpty(newDate) } : prev,
+                  );
+                }}
+                slotProps={{
+                  textField: {
+                    size: "small",
+                    fullWidth: true,
+                  },
+                }}
+              />
+              <TimePicker
+                label="행사 진행 시간"
+                value={selectedEventDate ? dayjs(selectedEventDate) : null}
+                onChange={newValue => {
+                  const newDate = newValue?.toDate();
+                  setSelectedEventDate(newDate);
+                  setFormValues(prev =>
+                    prev ? { ...prev, startAt: toISOOrEmpty(newDate) } : prev,
+                  );
+                }}
+                views={["hours", "minutes"]}
+                format="HH:mm"
+                slotProps={{
+                  textField: {
+                    size: "small",
+                    fullWidth: true,
+                  },
+                }}
+              />
+            </Flex>
+          </LocalizationProvider>
+          <br />
           <TextField
             label="행사 인원 제한"
             placeholder="제한 인원(20)"
@@ -195,6 +263,7 @@ export const EventInformation = ({
             type="number"
           />
         </Flex>
+        <Button>저장</Button>
       </div>
     </>
   );
