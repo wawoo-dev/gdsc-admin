@@ -150,7 +150,7 @@ export const EventInformation = ({
             <TextField
               label="행사이름"
               placeholder="행사 이름을 입력해주세요"
-              style={formItemStyle}
+              style={{ ...formItemStyle, backgroundColor: "white" }}
               value={title}
               onChange={handleTitleChange}
               variant="outlined"
@@ -159,7 +159,7 @@ export const EventInformation = ({
             <DropDown
               label="신청범위"
               placeholder="신청 범위를 선택해주세요"
-              style={formItemStyle}
+              style={{ ...formItemStyle }}
               value={regularRoleOnlyStatus === "ENABLED" ? "only-member" : "everyone"}
               onChange={value =>
                 setRegularRoleOnlyStatus(
@@ -192,8 +192,8 @@ export const EventInformation = ({
                   }}
                   slotProps={{
                     textField: {
-                      size: "small",
                       fullWidth: true,
+                      sx: { backgroundColor: "white" },
                     },
                   }}
                 />
@@ -209,8 +209,8 @@ export const EventInformation = ({
                   }}
                   slotProps={{
                     textField: {
-                      size: "small",
                       fullWidth: true,
+                      sx: { backgroundColor: "white" },
                     },
                   }}
                 />
@@ -221,7 +221,7 @@ export const EventInformation = ({
               onChange={handleVenueChange}
               label="행사 장소"
               placeholder="행사 장소를 입력해주세요"
-              style={{ flex: "0 0 calc(33.33% - 8px)" }}
+              style={{ flex: "0 0 calc(33.33% - 8px)", backgroundColor: "white" }}
               variant="outlined"
               fullWidth
             />
@@ -244,8 +244,8 @@ export const EventInformation = ({
                   }}
                   slotProps={{
                     textField: {
-                      size: "small",
                       fullWidth: true,
+                      sx: { backgroundColor: "white" },
                     },
                   }}
                 />
@@ -260,8 +260,8 @@ export const EventInformation = ({
                   format="HH:mm"
                   slotProps={{
                     textField: {
-                      size: "small",
                       fullWidth: true,
+                      sx: { backgroundColor: "white" },
                     },
                   }}
                 />
@@ -310,6 +310,7 @@ export const EventInformation = ({
                   variant="outlined"
                   fullWidth
                   type="number"
+                  style={{ backgroundColor: "white" }}
                 />
               )}
             </div>
@@ -348,6 +349,7 @@ export const EventInformation = ({
                   variant="outlined"
                   fullWidth
                   type="number"
+                  style={{ backgroundColor: "white" }}
                 />
               )}
             </div>
