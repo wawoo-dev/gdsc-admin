@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { css } from "@emotion/react";
+import { typography } from "wowds-tokens";
 import Button from "wowds-ui/Button";
-import TextField from "wowds-ui/TextField";
 import { FormField } from "./FormField";
 import { FormFieldProps } from "./FormField";
 import { Flex } from "../@common/Flex";
@@ -124,15 +124,23 @@ export const EventForm = ({
       <Space height={16} />
       <Button size="sm">게시하기</Button>
       <Space height={30} />
-      <TextField
-        label=""
+      <textarea
         placeholder="행사 신청 폼 설명을 입력해주세요"
-        defaultValue={description}
-        onChange={handleDescriptionChange}
+        value={description}
+        onChange={e => handleDescriptionChange(e.target.value)}
         css={css({
           "width": "100%",
-          "& textarea": {
-            height: "100px !important",
+          "height": "100px",
+          "padding": "12px",
+          "border": "1px solid #ccc",
+          "borderRadius": "4px",
+          ...typography.body1,
+          "fontFamily": "inherit",
+          "resize": "vertical",
+          "&:focus": {
+            outline: "none",
+            borderColor: "#1976d2",
+            boxShadow: "0 0 0 2px rgba(25, 118, 210, 0.2)",
           },
         })}
       />
