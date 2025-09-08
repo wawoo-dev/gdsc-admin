@@ -23,6 +23,22 @@ interface ApplicationPeriod {
   endDate: string;
 }
 
+// 이벤트 생성 요청 타입
+export interface CreateEventRequest {
+  name: string;
+  venue: string;
+  startAt: string; // ISO 8601 날짜 문자열
+  applicationDescription: string;
+  applicationPeriod: ApplicationPeriod;
+  regularRoleOnlyStatus: "ENABLED" | "DISABLED";
+  afterPartyStatus: "ENABLED" | "DISABLED";
+  prePaymentStatus: "ENABLED" | "DISABLED";
+  postPaymentStatus: "ENABLED" | "DISABLED";
+  rsvpQuestionStatus: "ENABLED" | "DISABLED";
+  mainEventMaxApplicantCount: number;
+  afterPartyMaxApplicantCount: number;
+}
+
 // 이벤트 타입
 export interface EventType {
   eventId: number;
