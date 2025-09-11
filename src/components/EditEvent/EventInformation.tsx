@@ -2,10 +2,10 @@ import { CSSProperties, useEffect, useState } from "react";
 import { css } from "@emotion/react";
 import { TextField } from "@mui/material";
 import { DatePicker, TimePicker } from "@mui/x-date-pickers";
-import {DateRangePicker} from "@mui/x-date-pickers-pro";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { AdapterDayjs as AdapterDayjsPro } from "@mui/x-date-pickers-pro/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DateRangePicker } from "@mui/x-date-pickers-pro";
+import { AdapterDayjs as AdapterDayjsPro } from "@mui/x-date-pickers-pro/AdapterDayjs";
 import { LocalizationProvider as LocalizationProviderPro } from "@mui/x-date-pickers-pro/LocalizationProvider";
 import dayjs from "dayjs";
 import "dayjs/locale/ko";
@@ -25,13 +25,17 @@ import { Text } from "@/components/@common/Text";
 import { EventType } from "@/types/dtos/event";
 
 const parseISO = (s?: string): Date | undefined => {
-  if (!s) return undefined;
+  if (!s) {
+    return undefined;
+  }
   // 한국 시간대를 고려하여 파싱
   return dayjs(s).tz("Asia/Seoul").toDate();
 };
 
 const parseDate = (date?: Date): string => {
-  if (!date) return "";
+  if (!date) {
+    return "";
+  }
   // 한국 시간대를 고려하여 ISO 문자열 생성 (.000Z 제거)
   return dayjs(date).tz("Asia/Seoul").format("YYYY-MM-DDTHH:mm:ss");
 };
@@ -82,7 +86,9 @@ export const EventInformation = ({
 
   // 신청 기간이 지났는지 확인하는 함수
   const isApplicationPeriodExpired = () => {
-    if (!formValue?.applicationPeriod?.startDate || !formValue?.applicationPeriod?.endDate) return false;
+    if (!formValue?.applicationPeriod?.startDate || !formValue?.applicationPeriod?.endDate) {
+      return false;
+    }
     const startDate = new Date(formValue.applicationPeriod.startDate);
     const endDate = new Date(formValue.applicationPeriod.endDate);
     const now = new Date();
@@ -151,8 +157,7 @@ export const EventInformation = ({
               : null,
             afterPartyMaxApplicantCount: afterPartyLimitEnabled
               ? parseInt(afterPartyMaxCount) || 0
-              : null
-              
+              : null,
           }
         : prev,
     );
@@ -190,10 +195,10 @@ export const EventInformation = ({
             <DropDown
               label="신청범위"
               placeholder="신청 범위를 선택해주세요"
-              style={{ 
-                ...formItemStyle, 
-                pointerEvents: (eventId && isApplicationPeriodExpired()) ? "none" : "auto",
-                opacity: (eventId && isApplicationPeriodExpired()) ? 0.6 : 1
+              style={{
+                ...formItemStyle,
+                pointerEvents: eventId && isApplicationPeriodExpired() ? "none" : "auto",
+                opacity: eventId && isApplicationPeriodExpired() ? 0.6 : 1,
               }}
               value={regularRoleOnlyStatus === "ENABLED" ? "only-member" : "everyone"}
               onChange={value =>
@@ -220,7 +225,7 @@ export const EventInformation = ({
                   selectedRange?.to ? dayjs(selectedRange.to) : null,
                 ]}
                 calendars={1}
-                label='행사 신청 기간'
+                label="행사 신청 기간"
                 onChange={newValue => {
                   const [startDate, endDate] = newValue || [null, null];
 
@@ -353,6 +358,7 @@ export const EventInformation = ({
                   fullWidth
                   type="number"
                   style={{ backgroundColor: "white" }}
+                  inputProps={{ min: 1 }}
                 />
               )}
             </div>
@@ -392,6 +398,7 @@ export const EventInformation = ({
                   fullWidth
                   type="number"
                   style={{ backgroundColor: "white" }}
+                  inputProps={{ min: 1 }}
                 />
               )}
             </div>

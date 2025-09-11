@@ -6,7 +6,7 @@ import { EventResponse } from "@/types/dtos/event";
 
 export const useEventList = (page: number = 1, size: number = 20) => {
   return useQuery<EventResponse>({
-    queryKey: [QueryKey.eventList],
+    queryKey: [QueryKey.eventList, page, size],
     queryFn: () => eventApi.getEventList(page, size),
     staleTime: 1000 * 600,
   });

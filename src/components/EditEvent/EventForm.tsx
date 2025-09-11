@@ -6,9 +6,9 @@ import { FormField } from "./FormField";
 import { FormFieldProps } from "./FormField";
 import { Flex } from "../@common/Flex";
 import { Space } from "../@common/Space";
-import { EventType, CreateEventRequest } from "@/types/dtos/event";
 import { useCreateEventMutation } from "@/hooks/mutations/useCreateEventMutation";
 import { useUpdateEventMutation } from "@/hooks/mutations/useUpdateEventMutation";
+import { EventType, CreateEventRequest } from "@/types/dtos/event";
 
 const getFormFields = (formValue: EventType | null): FormFieldProps[] => {
   return [
@@ -31,13 +31,14 @@ const getFormFields = (formValue: EventType | null): FormFieldProps[] => {
       type: "option-select",
       title: "유의사항을 확인하셨나요?",
       optional: true,
+      optionalChecked: formValue?.noticeConfirmQuestionStatus === "ENABLED",
       options: [{ value: "확인", label: "예, 확인했습니다." }],
     },
     {
       type: "option-select",
       title: "뒤풀이에 참여하겠습니까?",
       optional: true,
-      optionalChecked: formValue?.afterPartyStatus === "ENABLED", // ENABLED일 때 true
+      optionalChecked: formValue?.afterPartyStatus === "ENABLED",
       options: [
         { value: "참여", label: "참여합니다." },
         { value: "불참", label: "참여하지 않겠습니다." },
@@ -64,10 +65,8 @@ const getFormFields = (formValue: EventType | null): FormFieldProps[] => {
       optionalChecked: formValue?.rsvpQuestionStatus === "ENABLED", // ENABLED일 때 true
       options: [{ value: "RSVP 작성", label: "예, 완료했습니다." }],
     },
-   
   ];
 };
-
 
 export const EventForm = ({
   formValue,
@@ -87,10 +86,11 @@ export const EventForm = ({
   const createEventMutation = useCreateEventMutation();
   const updateEventMutation = useUpdateEventMutation();
 
-  
   // 신청 기간이 지났는지 확인하는 함수
   const isApplicationPeriodExpired = () => {
-    if (!formValue?.applicationPeriod?.startDate || !formValue?.applicationPeriod?.endDate) return false;
+    if (!formValue?.applicationPeriod?.startDate || !formValue?.applicationPeriod?.endDate) {
+      return false;
+    }
     const startDate = new Date(formValue.applicationPeriod.startDate);
     const endDate = new Date(formValue.applicationPeriod.endDate);
     const now = new Date();
@@ -100,7 +100,6 @@ export const EventForm = ({
   const handleRequiredToggle = (index: number, next: boolean) => {
     setRequiredByIndex(prev => ({ ...prev, [index]: next }));
 
-    //TODO: 유의사항 토글 업데이트
     if (index === 3) {
       setFormValues(prev =>
         prev
@@ -111,8 +110,6 @@ export const EventForm = ({
           : prev,
       );
     }
- 
-
 
     // 뒷풀이 질문 (index 4) 토글 시 afterPartyStatus 업데이트
     if (index === 4) {
@@ -127,7 +124,7 @@ export const EventForm = ({
             }
           : prev,
       );
-      
+
       // 뒷풀이가 DISABLED면 선입금/후정산 질문도 비활성화
       if (!next) {
         setRequiredByIndex(prev => ({ ...prev, [5]: false }));
@@ -169,7 +166,7 @@ export const EventForm = ({
           : prev,
       );
     }
-  }
+  };
 
   useEffect(() => {
     if (formValue) {
@@ -198,28 +195,28 @@ export const EventForm = ({
       return;
     }
 
-    //TODO: 행사 설명을 formValue 에 업데이트 하는 건 게시하기를 누르고 함
+    // 최신 description을 병합하여 페이로드 생성
     setFormValues(prev => (prev ? { ...prev, applicationDescription: description } : prev));
-    
+    const nextEvent = { ...formValue, applicationDescription: description };
     if (eventId) {
       // 수정 모드
-      updateEventMutation.mutate({ eventId, eventData: formValue });
+      updateEventMutation.mutate({ eventId, eventData: nextEvent });
     } else {
       // 생성 모드
       const createEventData: CreateEventRequest = {
-        name: formValue.name,
-        venue: formValue.venue,
-        startAt: formValue.startAt,
-        applicationDescription: formValue.applicationDescription,
-        applicationPeriod: formValue.applicationPeriod,
-        regularRoleOnlyStatus: formValue.regularRoleOnlyStatus,
-        afterPartyStatus: formValue.afterPartyStatus,
-        prePaymentStatus: formValue.prePaymentStatus,
-        postPaymentStatus: formValue.postPaymentStatus,
-        rsvpQuestionStatus: formValue.rsvpQuestionStatus,
-        noticeConfirmQuestionStatus: formValue.noticeConfirmQuestionStatus,
-        mainEventMaxApplicantCount: formValue.mainEventMaxApplicantCount,
-        afterPartyMaxApplicantCount: formValue.afterPartyMaxApplicantCount,
+        name: nextEvent.name,
+        venue: nextEvent.venue,
+        startAt: nextEvent.startAt,
+        applicationDescription: nextEvent.applicationDescription,
+        applicationPeriod: nextEvent.applicationPeriod,
+        regularRoleOnlyStatus: nextEvent.regularRoleOnlyStatus,
+        afterPartyStatus: nextEvent.afterPartyStatus,
+        prePaymentStatus: nextEvent.prePaymentStatus,
+        postPaymentStatus: nextEvent.postPaymentStatus,
+        rsvpQuestionStatus: nextEvent.rsvpQuestionStatus,
+        noticeConfirmQuestionStatus: nextEvent.noticeConfirmQuestionStatus,
+        mainEventMaxApplicantCount: nextEvent.mainEventMaxApplicantCount,
+        afterPartyMaxApplicantCount: nextEvent.afterPartyMaxApplicantCount,
       };
       createEventMutation.mutate(createEventData);
     }
@@ -227,15 +224,18 @@ export const EventForm = ({
   return (
     <div>
       <Space height={16} />
-      <Button 
-        size="sm" 
-        onClick={handlePublish} 
+      <Button
+        size="sm"
+        onClick={handlePublish}
         disabled={createEventMutation.isPending || updateEventMutation.isPending}
       >
-        {createEventMutation.isPending || updateEventMutation.isPending 
-          ? (eventId ? "수정 중..." : "게시 중...") 
-          : (eventId ? "수정하기" : "게시하기")
-        }
+        {createEventMutation.isPending || updateEventMutation.isPending
+          ? eventId
+            ? "수정 중..."
+            : "게시 중..."
+          : eventId
+            ? "수정하기"
+            : "게시하기"}
       </Button>
       <Space height={30} />
       <textarea
@@ -266,7 +266,11 @@ export const EventForm = ({
             {...field}
             optionalChecked={field.optionalChecked ?? requiredByIndex[index]}
             onOptionalChange={checked => handleRequiredToggle(index, checked)}
-            isDisabled={eventId && isApplicationPeriodExpired() && (index === 4 || index === 5 || index === 6 ) ? true : false}
+            isDisabled={
+              eventId && isApplicationPeriodExpired() && (index === 4 || index === 5 || index === 6)
+                ? true
+                : false
+            }
           />
         ))}
       </Flex>
