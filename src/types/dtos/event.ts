@@ -23,6 +23,8 @@ interface ApplicationPeriod {
   endDate: string;
 }
 
+// 이벤트 생성 요청 타입
+export type CreateEventRequest = Omit<EventType, "eventId">;
 // 이벤트 타입
 export interface EventType {
   eventId: number;
@@ -36,8 +38,9 @@ export interface EventType {
   prePaymentStatus: "ENABLED" | "DISABLED";
   postPaymentStatus: "ENABLED" | "DISABLED";
   rsvpQuestionStatus: "ENABLED" | "DISABLED";
-  mainEventMaxApplicantCount: number;
-  afterPartyMaxApplicantCount: number;
+  noticeConfirmQuestionStatus: "ENABLED" | "DISABLED";
+  mainEventMaxApplicantCount: number | null;
+  afterPartyMaxApplicantCount: number | null;
 }
 
 // content 안에 들어가는 타입

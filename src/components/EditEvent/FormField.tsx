@@ -17,18 +17,20 @@ interface TextFieldProps extends OptionalControlled {
   type: "textfield";
   title: string;
   value: string;
+  isDisabled?: boolean;
 }
 
 interface OptionSelectProps extends OptionalControlled {
   type: "option-select";
   title: string;
   options: Option[];
+  isDisabled?: boolean;
 }
 
 export type FormFieldProps = TextFieldProps | OptionSelectProps;
 
 export const FormField = (props: FormFieldProps) => {
-  const { title, type, optional = false } = props;
+  const { title, type, optional = false, isDisabled = false } = props;
 
   const enabled = "optional" in props && props.optional ? props.optionalChecked : true;
 
@@ -68,6 +70,7 @@ export const FormField = (props: FormFieldProps) => {
               checked={enabled}
               onChange={handleSwitchChange}
               value={title}
+              disabled={isDisabled}
             />
           )}
         </Flex>
