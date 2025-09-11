@@ -12,7 +12,7 @@ export const useUpdateEventMutation = () => {
       // 이벤트 목록 캐시 무효화
       queryClient.invalidateQueries({ queryKey: [QueryKey.eventList] });
       // 특정 이벤트 캐시 업데이트
-      queryClient.setQueryData([QueryKey.event, variables.eventId], data);
+      queryClient.setQueryData([QueryKey.eventList, variables.eventId], data);
       console.log("이벤트가 성공적으로 수정되었습니다:", data);
     },
     onError: error => {
