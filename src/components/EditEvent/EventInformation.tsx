@@ -2,9 +2,19 @@ import { CSSProperties, useEffect, useState } from "react";
 import { css } from "@emotion/react";
 import { TextField } from "@mui/material";
 import { DatePicker, TimePicker } from "@mui/x-date-pickers";
+import {DateRangePicker} from "@mui/x-date-pickers-pro";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { AdapterDayjs as AdapterDayjsPro } from "@mui/x-date-pickers-pro/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { LocalizationProvider as LocalizationProviderPro } from "@mui/x-date-pickers-pro/LocalizationProvider";
 import dayjs from "dayjs";
+import "dayjs/locale/ko";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.locale("ko");
 import { color, space } from "wowds-tokens";
 import Button from "wowds-ui/Button";
 import DropDown from "wowds-ui/DropDown";
@@ -14,8 +24,17 @@ import { Space } from "@/components/@common/Space";
 import { Text } from "@/components/@common/Text";
 import { EventType } from "@/types/dtos/event";
 
-const parseISO = (s?: string): Date | undefined => (s ? new Date(s) : undefined);
-const toISOOrEmpty = (d?: Date) => (d ? d.toISOString() : "");
+const parseISO = (s?: string): Date | undefined => {
+  if (!s) return undefined;
+  // 한국 시간대를 고려하여 파싱
+  return dayjs(s).tz("Asia/Seoul").toDate();
+};
+
+const parseDate = (date?: Date): string => {
+  if (!date) return "";
+  // 한국 시간대를 고려하여 ISO 문자열 생성 (.000Z 제거)
+  return dayjs(date).tz("Asia/Seoul").format("YYYY-MM-DDTHH:mm:ss");
+};
 
 export const EventInformation = ({
   formValue,
@@ -112,16 +131,17 @@ export const EventInformation = ({
             venue: venue,
             regularRoleOnlyStatus: regularRoleOnlyStatus,
             applicationPeriod: {
-              startDate: toISOOrEmpty(selectedRange?.from),
-              endDate: toISOOrEmpty(selectedRange?.to),
+              startDate: parseDate(selectedRange?.from),
+              endDate: parseDate(selectedRange?.to),
             },
-            startAt: toISOOrEmpty(selectedEventDate),
+            startAt: parseDate(selectedEventDate),
             mainEventMaxApplicantCount: mainEventLimitEnabled
               ? parseInt(mainEventMaxCount) || 0
-              : 0,
+              : null,
             afterPartyMaxApplicantCount: afterPartyLimitEnabled
               ? parseInt(afterPartyMaxCount) || 0
-              : 0,
+              : null
+              
           }
         : prev,
     );
@@ -178,44 +198,43 @@ export const EventInformation = ({
             align="start"
             style={{ flex: "0 0 100%", marginBottom: "16px" }}
           >
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Flex gap="sm" style={{ flex: "0 0 calc(33.33 - 8px)" }}>
-                <DatePicker
-                  label="신청 시작일"
-                  value={selectedRange?.from ? dayjs(selectedRange.from) : null}
-                  onChange={newValue => {
-                    const newRange = {
-                      from: newValue?.toDate(),
-                      to: selectedRange?.to,
-                    };
-                    setSelectedRange(newRange);
-                  }}
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      sx: { backgroundColor: "white" },
-                    },
-                  }}
-                />
-                <DatePicker
-                  label="신청 종료일"
-                  value={selectedRange?.to ? dayjs(selectedRange.to) : null}
-                  onChange={newValue => {
-                    const newRange = {
-                      from: selectedRange?.from,
-                      to: newValue?.toDate(),
-                    };
-                    setSelectedRange(newRange);
-                  }}
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      sx: { backgroundColor: "white" },
-                    },
-                  }}
-                />
-              </Flex>
-            </LocalizationProvider>
+            <LocalizationProviderPro dateAdapter={AdapterDayjsPro} adapterLocale="ko">
+              <DateRangePicker
+                value={[
+                  selectedRange?.from ? dayjs(selectedRange.from) : null,
+                  selectedRange?.to ? dayjs(selectedRange.to) : null,
+                ]}
+                calendars={1}
+                label='행사 신청 기간'
+                onChange={newValue => {
+                  const [startDate, endDate] = newValue || [null, null];
+
+                  const processedStartDate = startDate?.toDate();
+                  const processedEndDate = endDate?.toDate();
+
+                  if (processedStartDate) {
+                    // 시작일 시간을 00:00:00으로 설정
+                    processedStartDate.setHours(0, 0, 0, 0);
+                  }
+
+                  if (processedEndDate) {
+                    // 종료일 시간을 23:59:59로 설정
+                    processedEndDate.setHours(23, 59, 59, 0);
+                  }
+
+                  setSelectedRange({
+                    from: processedStartDate,
+                    to: processedEndDate,
+                  });
+                }}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    sx: { backgroundColor: "white" },
+                  },
+                }}
+              />
+            </LocalizationProviderPro>
             <TextField
               value={venue}
               onChange={handleVenueChange}
@@ -233,7 +252,7 @@ export const EventInformation = ({
             align="start"
             style={{ flex: "0 0 100%", marginBottom: "16px" }}
           >
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ko">
               <Flex gap="sm" style={{ flex: "0 0 calc(50% - 8px)" }}>
                 <DatePicker
                   label="행사 진행 날짜"
@@ -251,10 +270,18 @@ export const EventInformation = ({
                 />
                 <TimePicker
                   label="행사 진행 시간"
-                  value={selectedEventDate ? dayjs(selectedEventDate) : null}
+                  value={selectedEventDate ? dayjs(selectedEventDate).tz("Asia/Seoul") : null}
                   onChange={newValue => {
-                    const newDate = newValue?.toDate();
-                    setSelectedEventDate(newDate);
+                    if (newValue && selectedEventDate) {
+                      // 기존 날짜에 새로운 시간을 적용 (한국 시간대 기준)
+                      const newDate = dayjs(selectedEventDate)
+                        .hour(newValue.hour())
+                        .minute(newValue.minute())
+                        .second(0)
+                        .millisecond(0)
+                        .toDate();
+                      setSelectedEventDate(newDate);
+                    }
                   }}
                   views={["hours", "minutes"]}
                   format="HH:mm"
