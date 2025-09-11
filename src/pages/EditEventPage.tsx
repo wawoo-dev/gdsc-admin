@@ -9,26 +9,63 @@ import { ApplyMember } from "@/components/EditEvent/ApplyMembers";
 import { EventForm } from "@/components/EditEvent/EventForm";
 import { EventInformation } from "@/components/EditEvent/EventInformation";
 import { EventType } from "@/types/dtos/event";
+import { useGetEvent } from "@/hooks/queries/useGetEvent";
 
 export const EditEventPage = () => {
   const { eventId: eventIdParam } = useParams<{ eventId?: string }>();
   const isNew = eventIdParam === "new";
-  const id = !isNew ? Number(eventIdParam) : null;
+  const id = !isNew && eventIdParam ? Number(eventIdParam) : null;
 
-  //const { data } = useEventList(0, 20);
-  const [infoValues, setInfoValues] = useState<EventType | null>(null);
+  const { data: eventData, isLoading, error } = useGetEvent (id ?? null);
+  const [formValues, setformValues] = useState<EventType | null>(null);
+
+  // 디버깅용 로그
+  console.log("EditEventPage Debug:", { eventIdParam, isNew, id, eventData, isLoading, error });
 
   useEffect(() => {
     if (isNew || id === null) {
-      setInfoValues(null);
-    } else {
-      //setInfoValues(data?.content.find(c => c.event.eventId === id)?.event ?? null);
+      // 새로운 이벤트 생성 시 초기값 설정
+      const initialEventData: EventType = {
+        eventId: -1, //TODO: 0이 아니라 새로운 이벤트 생성 시 이벤트 ID 생성
+        name: "",
+        venue: "추후 공지 예정",
+        startAt: "",
+        applicationDescription: "",
+        applicationPeriod: {
+          startDate: new Date().toISOString(),
+          endDate: new Date().toISOString(),
+        },
+        regularRoleOnlyStatus: "ENABLED",
+        afterPartyStatus: "ENABLED",
+        prePaymentStatus: "ENABLED",
+        postPaymentStatus: "ENABLED",
+        rsvpQuestionStatus: "ENABLED",
+        noticeConfirmQuestionStatus: "ENABLED",
+
+        mainEventMaxApplicantCount: null,
+        afterPartyMaxApplicantCount: null,
+      };
+      setformValues(initialEventData);
+    } else if (eventData) {
+      setformValues(eventData);
     }
-  }, [id, isNew]);
+  }, [id, isNew, eventData]);
+
+  if (isLoading) {
+    return <div>이벤트 정보를 불러오는 중...</div>;
+  }
+
+  if (error) {
+    return <div>이벤트 정보를 불러오는 중 오류가 발생했습니다.</div>;
+  }
 
   return (
     <>
-      <EventInformation formValue={infoValues} setFormValues={setInfoValues} />
+      <EventInformation 
+        formValue={formValues} 
+        setFormValues={setformValues} 
+        eventId={id || undefined} 
+      />
 
       <Space height={54} />
       <Tabs defaultValue="tab1">
@@ -37,7 +74,7 @@ export const EditEventPage = () => {
           <TabsItem value="tab2">신청 인원</TabsItem>
         </TabsList>
         <TabsContent value="tab1">
-          <EventForm />
+          <EventForm formValue={formValues} setFormValues={setformValues} eventId={id || undefined} />
         </TabsContent>
         <TabsContent value="tab2">
           <ApplyMember />
