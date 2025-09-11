@@ -39,9 +39,11 @@ const parseDate = (date?: Date): string => {
 export const EventInformation = ({
   formValue,
   setFormValues,
+  eventId,
 }: {
   formValue: EventType | null;
   setFormValues: (value: React.SetStateAction<EventType | null>) => void;
+  eventId?: number;
 }) => {
   //const [formValues, setFormValues] = useState<EventType | null>(formValue);
   const [selectedRange, setSelectedRange] = useState<
@@ -77,6 +79,15 @@ export const EventInformation = ({
   const [afterPartyLimitEnabled, setAfterPartyLimitEnabled] = useState<boolean>(
     (formValue?.afterPartyMaxApplicantCount || 0) > 0,
   );
+
+  // 신청 기간이 지났는지 확인하는 함수
+  const isApplicationPeriodExpired = () => {
+    if (!formValue?.applicationPeriod?.startDate || !formValue?.applicationPeriod?.endDate) return false;
+    const startDate = new Date(formValue.applicationPeriod.startDate);
+    const endDate = new Date(formValue.applicationPeriod.endDate);
+    const now = new Date();
+    return now > endDate || now < startDate;
+  };
 
   useEffect(() => {
     if (formValue) {
@@ -179,7 +190,11 @@ export const EventInformation = ({
             <DropDown
               label="신청범위"
               placeholder="신청 범위를 선택해주세요"
-              style={{ ...formItemStyle }}
+              style={{ 
+                ...formItemStyle, 
+                pointerEvents: (eventId && isApplicationPeriodExpired()) ? "none" : "auto",
+                opacity: (eventId && isApplicationPeriodExpired()) ? 0.6 : 1
+              }}
               value={regularRoleOnlyStatus === "ENABLED" ? "only-member" : "everyone"}
               onChange={value =>
                 setRegularRoleOnlyStatus(
