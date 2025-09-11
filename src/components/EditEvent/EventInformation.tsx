@@ -408,9 +408,3 @@ const formItemStyle: CSSProperties = {
   flex: "0 0 calc(50% - 20px)",
   boxSizing: "border-box",
 };
-
-const textFieldStyle3: CSSProperties = {
-  flex: "0 0 calc(50% - 20px)",
-  boxSizing: "border-box",
-  justifyContent: "left",
-};
