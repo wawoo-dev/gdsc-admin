@@ -49,6 +49,20 @@ const getFormFields = (formValue: EventType | null): FormFieldProps[] => {
       optionalChecked: formValue?.prePaymentStatus === "ENABLED", // ENABLED일 때 true
       options: [{ value: "선입금", label: "예, 완료했습니다." }],
     },
+    {
+      type: "option-select",
+      title: "RSVP 작성을 완료하셨나요?",
+      optional: true,
+      optionalChecked: formValue?.rsvpQuestionStatus === "ENABLED", // ENABLED일 때 true
+      options: [{ value: "RSVP 작성", label: "예, 완료했습니다." }],
+    },
+    {
+      type: "option-select",
+      title: "후정산을 완료하셨나요",
+      optional: true,
+      optionalChecked: formValue?.postPaymentStatus === "ENABLED", // ENABLED일 때 true
+      options: [{ value: "후입금", label: "예, 완료했습니다." }],
+    },
   ];
 };
 
@@ -72,8 +86,16 @@ export const EventForm = ({
 
     //TODO: 유의사항 토글 업데이트
     if (index === 3) {
-     
+      setFormValues(prev =>
+        prev
+          ? {
+              ...prev,
+              noticeConfirmQuestionStatus: next ? "ENABLED" : "DISABLED",
+            }
+          : prev,
+      );
     }
+ 
 
 
     // 뒷풀이 질문 (index 4) 토글 시 afterPartyStatus 업데이트
@@ -85,13 +107,15 @@ export const EventForm = ({
               afterPartyStatus: next ? "ENABLED" : "DISABLED",
               // 뒷풀이가 DISABLED면 선입금도 DISABLED로 설정
               prePaymentStatus: next ? prev.prePaymentStatus : "DISABLED",
+              postPaymentStatus: next ? prev.postPaymentStatus : "DISABLED",
             }
           : prev,
       );
       
-      // 뒷풀이가 DISABLED면 선입금 질문도 비활성화
+      // 뒷풀이가 DISABLED면 선입금/후정산 질문도 비활성화
       if (!next) {
         setRequiredByIndex(prev => ({ ...prev, [5]: false }));
+        setRequiredByIndex(prev => ({ ...prev, [6]: false }));
       }
     }
 
@@ -106,7 +130,30 @@ export const EventForm = ({
           : prev,
       );
     }
-  };
+
+    // 후정산 질문 (index 6) 토글 시 postPaymentStatus 업데이트
+    if (index === 6) {
+      setFormValues(prev =>
+        prev
+          ? {
+              ...prev,
+              postPaymentStatus: next ? "ENABLED" : "DISABLED",
+            }
+          : prev,
+      );
+    }
+
+    if (index === 7) {
+      setFormValues(prev =>
+        prev
+          ? {
+              ...prev,
+              rsvpQuestionStatus: next ? "ENABLED" : "DISABLED",
+            }
+          : prev,
+      );
+    }
+  }
 
   useEffect(() => {
     if (formValue) {
@@ -135,7 +182,7 @@ export const EventForm = ({
       return;
     }
 
-    //TODO: 입력값을 formValue 에 업데이트 하는 건 게시하기를 누르고 함
+    //TODO: 행사 설명을 formValue 에 업데이트 하는 건 게시하기를 누르고 함
     setFormValues(prev => (prev ? { ...prev, applicationDescription: description } : prev));
     const createEventData: CreateEventRequest = {
       name: formValue.name,
@@ -148,6 +195,7 @@ export const EventForm = ({
       prePaymentStatus: formValue.prePaymentStatus,
       postPaymentStatus: formValue.postPaymentStatus,
       rsvpQuestionStatus: formValue.rsvpQuestionStatus,
+      noticeConfirmQuestionStatus: formValue.noticeConfirmQuestionStatus,
       mainEventMaxApplicantCount: formValue.mainEventMaxApplicantCount,
       afterPartyMaxApplicantCount: formValue.afterPartyMaxApplicantCount,
     };
