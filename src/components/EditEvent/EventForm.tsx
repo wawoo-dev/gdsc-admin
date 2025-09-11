@@ -8,6 +8,7 @@ import { Flex } from "../@common/Flex";
 import { Space } from "../@common/Space";
 import { EventType, CreateEventRequest } from "@/types/dtos/event";
 import { useCreateEventMutation } from "@/hooks/mutations/useCreateEventMutation";
+import { useUpdateEventMutation } from "@/hooks/mutations/useUpdateEventMutation";
 
 const getFormFields = (formValue: EventType | null): FormFieldProps[] => {
   return [
@@ -51,27 +52,31 @@ const getFormFields = (formValue: EventType | null): FormFieldProps[] => {
     },
     {
       type: "option-select",
-      title: "RSVP 작성을 완료하셨나요?",
-      optional: true,
-      optionalChecked: formValue?.rsvpQuestionStatus === "ENABLED", // ENABLED일 때 true
-      options: [{ value: "RSVP 작성", label: "예, 완료했습니다." }],
-    },
-    {
-      type: "option-select",
       title: "후정산을 완료하셨나요",
       optional: true,
       optionalChecked: formValue?.postPaymentStatus === "ENABLED", // ENABLED일 때 true
       options: [{ value: "후입금", label: "예, 완료했습니다." }],
     },
+    {
+      type: "option-select",
+      title: "RSVP 작성을 완료하셨나요?",
+      optional: true,
+      optionalChecked: formValue?.rsvpQuestionStatus === "ENABLED", // ENABLED일 때 true
+      options: [{ value: "RSVP 작성", label: "예, 완료했습니다." }],
+    },
+   
   ];
 };
+
 
 export const EventForm = ({
   formValue,
   setFormValues,
+  eventId,
 }: {
   formValue: EventType | null;
   setFormValues: (value: React.SetStateAction<EventType | null>) => void;
+  eventId?: number;
 }) => {
   const [description, setDescription] = useState<string>(formValue?.applicationDescription || "");
   const [formFields, setFormFields] = useState<FormFieldProps[]>(getFormFields(formValue));
@@ -80,6 +85,17 @@ export const EventForm = ({
   );
 
   const createEventMutation = useCreateEventMutation();
+  const updateEventMutation = useUpdateEventMutation();
+
+  
+  // 신청 기간이 지났는지 확인하는 함수
+  const isApplicationPeriodExpired = () => {
+    if (!formValue?.applicationPeriod?.startDate || !formValue?.applicationPeriod?.endDate) return false;
+    const startDate = new Date(formValue.applicationPeriod.startDate);
+    const endDate = new Date(formValue.applicationPeriod.endDate);
+    const now = new Date();
+    return now > endDate || now < startDate;
+  };
 
   const handleRequiredToggle = (index: number, next: boolean) => {
     setRequiredByIndex(prev => ({ ...prev, [index]: next }));
@@ -184,29 +200,42 @@ export const EventForm = ({
 
     //TODO: 행사 설명을 formValue 에 업데이트 하는 건 게시하기를 누르고 함
     setFormValues(prev => (prev ? { ...prev, applicationDescription: description } : prev));
-    const createEventData: CreateEventRequest = {
-      name: formValue.name,
-      venue: formValue.venue,
-      startAt: formValue.startAt,
-      applicationDescription: formValue.applicationDescription,
-      applicationPeriod: formValue.applicationPeriod,
-      regularRoleOnlyStatus: formValue.regularRoleOnlyStatus,
-      afterPartyStatus: formValue.afterPartyStatus,
-      prePaymentStatus: formValue.prePaymentStatus,
-      postPaymentStatus: formValue.postPaymentStatus,
-      rsvpQuestionStatus: formValue.rsvpQuestionStatus,
-      noticeConfirmQuestionStatus: formValue.noticeConfirmQuestionStatus,
-      mainEventMaxApplicantCount: formValue.mainEventMaxApplicantCount,
-      afterPartyMaxApplicantCount: formValue.afterPartyMaxApplicantCount,
-    };
-
-    createEventMutation.mutate(createEventData);
+    
+    if (eventId) {
+      // 수정 모드
+      updateEventMutation.mutate({ eventId, eventData: formValue });
+    } else {
+      // 생성 모드
+      const createEventData: CreateEventRequest = {
+        name: formValue.name,
+        venue: formValue.venue,
+        startAt: formValue.startAt,
+        applicationDescription: formValue.applicationDescription,
+        applicationPeriod: formValue.applicationPeriod,
+        regularRoleOnlyStatus: formValue.regularRoleOnlyStatus,
+        afterPartyStatus: formValue.afterPartyStatus,
+        prePaymentStatus: formValue.prePaymentStatus,
+        postPaymentStatus: formValue.postPaymentStatus,
+        rsvpQuestionStatus: formValue.rsvpQuestionStatus,
+        noticeConfirmQuestionStatus: formValue.noticeConfirmQuestionStatus,
+        mainEventMaxApplicantCount: formValue.mainEventMaxApplicantCount,
+        afterPartyMaxApplicantCount: formValue.afterPartyMaxApplicantCount,
+      };
+      createEventMutation.mutate(createEventData);
+    }
   };
   return (
     <div>
       <Space height={16} />
-      <Button size="sm" onClick={handlePublish} disabled={createEventMutation.isPending}>
-        {createEventMutation.isPending ? "게시 중..." : "게시하기"}
+      <Button 
+        size="sm" 
+        onClick={handlePublish} 
+        disabled={createEventMutation.isPending || updateEventMutation.isPending}
+      >
+        {createEventMutation.isPending || updateEventMutation.isPending 
+          ? (eventId ? "수정 중..." : "게시 중...") 
+          : (eventId ? "수정하기" : "게시하기")
+        }
       </Button>
       <Space height={30} />
       <textarea
@@ -237,6 +266,7 @@ export const EventForm = ({
             {...field}
             optionalChecked={field.optionalChecked ?? requiredByIndex[index]}
             onOptionalChange={checked => handleRequiredToggle(index, checked)}
+            isDisabled={eventId && isApplicationPeriodExpired() && (index === 4 || index === 5 || index === 6 ) ? true : false}
           />
         ))}
       </Flex>
