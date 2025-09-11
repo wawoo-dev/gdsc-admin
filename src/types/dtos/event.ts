@@ -24,21 +24,7 @@ interface ApplicationPeriod {
 }
 
 // 이벤트 생성 요청 타입
-export interface CreateEventRequest {
-  name: string;
-  venue: string;
-  startAt: string; // ISO 8601 날짜 문자열
-  applicationDescription: string;
-  applicationPeriod: ApplicationPeriod;
-  regularRoleOnlyStatus: "ENABLED" | "DISABLED";
-  afterPartyStatus: "ENABLED" | "DISABLED";
-  prePaymentStatus: "ENABLED" | "DISABLED";
-  postPaymentStatus: "ENABLED" | "DISABLED";
-  rsvpQuestionStatus: "ENABLED" | "DISABLED";
-  mainEventMaxApplicantCount: number;
-  afterPartyMaxApplicantCount: number;
-}
-
+export type CreateEventRequest = Omit<EventType, "eventId">;
 // 이벤트 타입
 export interface EventType {
   eventId: number;
@@ -52,8 +38,9 @@ export interface EventType {
   prePaymentStatus: "ENABLED" | "DISABLED";
   postPaymentStatus: "ENABLED" | "DISABLED";
   rsvpQuestionStatus: "ENABLED" | "DISABLED";
-  mainEventMaxApplicantCount: number;
-  afterPartyMaxApplicantCount: number;
+  noticeConfirmQuestionStatus: "ENABLED" | "DISABLED";
+  mainEventMaxApplicantCount: number | null;
+  afterPartyMaxApplicantCount: number | null;
 }
 
 // content 안에 들어가는 타입
