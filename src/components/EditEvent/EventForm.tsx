@@ -83,9 +83,16 @@ export const EventForm = ({
           ? {
               ...prev,
               afterPartyStatus: next ? "ENABLED" : "DISABLED",
+              // 뒷풀이가 DISABLED면 선입금도 DISABLED로 설정
+              prePaymentStatus: next ? prev.prePaymentStatus : "DISABLED",
             }
           : prev,
       );
+      
+      // 뒷풀이가 DISABLED면 선입금 질문도 비활성화
+      if (!next) {
+        setRequiredByIndex(prev => ({ ...prev, [5]: false }));
+      }
     }
 
     // 선입금 질문 (index 5) 토글 시 prePaymentStatus 업데이트
