@@ -14,6 +14,10 @@ export const eventApi = {
     const response = await apiClient.post<EventType>("/admin/events", eventData);
     return response.data;
   },
+  updateEvent: async (eventId: number, eventData: EventType): Promise<EventType> => {
+    const response = await apiClient.put<EventType>(`/admin/events/${eventId}`, eventData);
+    return response.data;
+  },
   getEventList: async (page: number = 1, size: number = 20): Promise<EventResponse> => {
     const response = await apiClient.get<EventResponse>(`/admin/events?page=${page}&size=${size}`);
     return response.data;
@@ -51,7 +55,7 @@ export const eventApi = {
     eventId: number,
     participant: { name: string; studentId: string; phone: string },
   ) => {
-    const response = await apiClient.post(`/admin/event-participations/apply/manual/unregistered`, {
+    const response = await apiClient.post(`/admin/event-participations/apply/manual`, {
       eventId: eventId,
       participant,
     });
