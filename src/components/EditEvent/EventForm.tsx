@@ -285,7 +285,8 @@ export const EventForm = ({
               //NOTE: 신청 인원이 한 명이라도 생긴 경우 뒷풀이, 선입금, 후정산 질문은 비활성화
               eventId &&
               totalAttendeesCount > 0 &&
-              (field.id === "afterParty" ||
+              (field.id === "noticeConfirm" ||
+                field.id === "afterParty" ||
                 field.id === "prePayment" ||
                 field.id === "postPayment" ||
                 field.id === "rsvp")

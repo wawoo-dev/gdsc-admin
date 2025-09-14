@@ -9,6 +9,8 @@ import Table from "wowds-ui/Table";
 import { Flex } from "../@common/Flex";
 import { Space } from "../@common/Space";
 import { AddMemberModal } from "./Modal/AddMemberModal";
+import { DeleteMemberModal } from "./Modal/DeleteMemberModal";
+import { Text } from "../@common/Text";
 import { useDebounce } from "@/hooks/common/useDebounce";
 import { useGetEventParticipants } from "@/hooks/queries/useGetAllParticipants";
 import {
@@ -51,7 +53,7 @@ export const ApplyMember = () => {
   const id = Number(eventId);
 
   const [sortKey, setSortKey] = useState("");
-  const { data } = useGetEventParticipants(id, 0, 20, sortKey);
+  const { data } = useGetEventParticipants(id, 0, 50, sortKey);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const handleSelectionChange = (rows: number[]) => setSelectedRows(rows);
 
@@ -61,7 +63,8 @@ export const ApplyMember = () => {
   );
 
   const [searchedValue, setSearchedValue] = useState("");
-  const [open, setOpen] = useState(false);
+  const [addMemberOpen, setAddMemberOpen] = useState(false);
+  const [deleteMemberOpen, setDeleteMemberOpen] = useState(false);
 
   const debouncedQuery = useDebounce(searchedValue, 300); // 300ms 디바운스
   const filtered = useMemo(() => {
@@ -95,12 +98,47 @@ export const ApplyMember = () => {
     return participants;
   }, [participants, debouncedQuery]);
 
+  // 선택된 참가자들 가져오기
+  const selectedParticipants = useMemo(() => {
+    const filtered = participants.filter(p => selectedRows.includes(p.eventParticipationId));
+    console.log("ApplyMembers - selectedRows:", selectedRows);
+    console.log("ApplyMembers - participants:", participants);
+    console.log("ApplyMembers - selectedParticipants:", filtered);
+    return filtered;
+  }, [participants, selectedRows]);
+
+  // 삭제 버튼 클릭 핸들러
+  const handleDeleteClick = () => {
+    if (selectedRows.length === 0) {
+      alert("삭제할 참가자를 선택해주세요.");
+      return;
+    }
+    setDeleteMemberOpen(true);
+  };
+
   return (
     <div>
-      <Button variant="outline" onClick={() => setOpen(true)}>
-        인원 추가
-      </Button>
-      <AddMemberModal open={open} setOpen={setOpen} />
+      <Space height={30} />
+      <Flex justify="space-between">
+        <Text typo="h2">행사 신청 인원 {participants.length}명</Text>
+
+        <Flex gap="sm" justify="end">
+          <Button variant="outline" onClick={() => setAddMemberOpen(true)} size="sm">
+            인원 추가
+          </Button>
+          <Button variant="outline" onClick={handleDeleteClick} size="sm">
+            인원 삭제
+          </Button>
+        </Flex>
+      </Flex>
+      <Space height={30} />
+      <AddMemberModal open={addMemberOpen} setOpen={setAddMemberOpen} />
+      <DeleteMemberModal
+        open={deleteMemberOpen}
+        setOpen={setDeleteMemberOpen}
+        selectedParticipants={selectedParticipants}
+        onDeleteSuccess={() => setSelectedRows([])}
+      />
       <Flex gap="sm">
         <SearchBar
           placeholder="이름,학번,학과,전화번호로 검색"

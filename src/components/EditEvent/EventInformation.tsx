@@ -44,10 +44,12 @@ export const EventInformation = ({
   formValue,
   setFormValues,
   eventId,
+  totalAttendeesCount,
 }: {
   formValue: EventType | null;
   setFormValues: (value: React.SetStateAction<EventType | null>) => void;
   eventId?: number;
+  totalAttendeesCount: number;
 }) => {
   //const [formValues, setFormValues] = useState<EventType | null>(formValue);
   const [selectedRange, setSelectedRange] = useState<
@@ -359,7 +361,7 @@ export const EventInformation = ({
                   fullWidth
                   type="number"
                   style={{ backgroundColor: "white" }}
-                  inputProps={{ min: 1 }}
+                  inputProps={{ min: totalAttendeesCount > 0 ? totalAttendeesCount : 1 }}
                 />
               )}
             </div>

@@ -62,4 +62,10 @@ export const eventApi = {
     });
     return response.data;
   },
+  deleteParticipants: async (eventParticipationIds: number[]) => {
+    const response = await apiClient.delete(`/admin/event-participations`, {
+      data: { eventParticipationIds },
+    });
+    return response.data;
+  },
 };
