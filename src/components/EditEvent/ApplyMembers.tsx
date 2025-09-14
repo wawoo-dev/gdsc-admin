@@ -74,7 +74,7 @@ export const ApplyMember = () => {
       // 전화번호: 숫자만 비교
       const qDigits = onlyDigits(q);
       return participants.filter((row: ParticipationContent) =>
-        onlyDigits(row.participant.phone).includes(qDigits),
+        onlyDigits(row.participant.phone)?.includes(qDigits),
       );
     }
 
@@ -82,13 +82,13 @@ export const ApplyMember = () => {
       // 학번(studentId): 대소문자 무시 포함 검색
       const qLower = q.toLowerCase();
       return participants.filter((row: ParticipationContent) =>
-        row.participant.studentId.toLowerCase().includes(qLower),
+        row.participant.studentId?.toLowerCase()?.includes(qLower),
       );
     }
 
     if (isKoreanStart(q)) {
       // 이름: 포함 검색
-      return participants.filter((row: ParticipationContent) => row.participant.name.includes(q));
+      return participants.filter((row: ParticipationContent) => row.participant.name?.includes(q));
     }
 
     // 기타 문자는 전체 반환(원하면 여기서 추가 규칙 가능)
