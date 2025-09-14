@@ -101,9 +101,7 @@ export const ApplyMember = () => {
   // 선택된 참가자들 가져오기
   const selectedParticipants = useMemo(() => {
     const filtered = participants.filter(p => selectedRows.includes(p.eventParticipationId));
-    console.log("ApplyMembers - selectedRows:", selectedRows);
-    console.log("ApplyMembers - participants:", participants);
-    console.log("ApplyMembers - selectedParticipants:", filtered);
+
     return filtered;
   }, [participants, selectedRows]);
 
@@ -120,7 +118,12 @@ export const ApplyMember = () => {
     <div>
       <Space height={30} />
       <Flex justify="space-between">
-        <Text typo="h2">행사 신청 인원 {participants.length}명</Text>
+        <Text typo="h2">
+          행사 신청 인원{" "}
+          <Text as="span" color="primary" typo="h2">
+            {participants.length}명
+          </Text>
+        </Text>
 
         <Flex gap="sm" justify="end">
           <Button variant="outline" onClick={() => setAddMemberOpen(true)} size="sm">

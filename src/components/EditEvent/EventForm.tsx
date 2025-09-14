@@ -52,7 +52,7 @@ const getFormFields = (formValue: EventType | null): FormFieldProps[] => {
     {
       id: "prePayment",
       type: "option-select",
-      title: "선입금을 완료하였나요",
+      title: "선입금을 완료하였나요?",
       optional: true,
       optionalChecked: formValue?.prePaymentStatus === "ENABLED", // ENABLED일 때 true
       options: [{ value: "선입금", label: "예, 완료했습니다." }],
@@ -60,7 +60,7 @@ const getFormFields = (formValue: EventType | null): FormFieldProps[] => {
     {
       id: "postPayment",
       type: "option-select",
-      title: "후정산을 완료하셨나요",
+      title: "후정산을 완료하였나요?",
       optional: true,
       optionalChecked: formValue?.postPaymentStatus === "ENABLED", // ENABLED일 때 true
       options: [{ value: "후입금", label: "예, 완료했습니다." }],
@@ -68,7 +68,7 @@ const getFormFields = (formValue: EventType | null): FormFieldProps[] => {
     {
       id: "rsvp",
       type: "option-select",
-      title: "RSVP 작성을 완료하셨나요?",
+      title: "RSVP 작성을 완료하였나요?",
       optional: true,
       optionalChecked: formValue?.rsvpQuestionStatus === "ENABLED", // ENABLED일 때 true
       options: [{ value: "RSVP 작성", label: "예, 완료했습니다." }],
@@ -184,7 +184,6 @@ export const EventForm = ({
     }
   }, [formValue]);
 
-  console.log(eventId, totalAttendeesCount, "eventId, totalAttendeesCount");
   const handleDescriptionChange = (value: string) => {
     setDescription(value);
   };
@@ -239,19 +238,21 @@ export const EventForm = ({
   return (
     <div>
       <Space height={16} />
-      <Button
-        size="sm"
-        onClick={handlePublish}
-        disabled={createEventMutation.isPending || updateEventMutation.isPending}
-      >
-        {createEventMutation.isPending || updateEventMutation.isPending
-          ? eventId
-            ? "수정 중..."
-            : "게시 중..."
-          : eventId
-            ? "수정하기"
-            : "게시하기"}
-      </Button>
+      <Flex justify="end">
+        <Button
+          size="sm"
+          onClick={handlePublish}
+          disabled={createEventMutation.isPending || updateEventMutation.isPending}
+        >
+          {createEventMutation.isPending || updateEventMutation.isPending
+            ? eventId
+              ? "수정 중..."
+              : "게시 중..."
+            : eventId
+              ? "수정하기"
+              : "게시하기"}
+        </Button>
+      </Flex>
       <Space height={30} />
       <textarea
         placeholder="행사 신청 폼 설명을 입력해주세요"

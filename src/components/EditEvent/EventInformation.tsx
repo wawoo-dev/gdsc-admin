@@ -183,7 +183,7 @@ export const EventInformation = ({
           <Flex
             gap="sm"
             justify="start"
-            align="start"
+            align="end"
             style={{ flex: "0 0 100%", marginBottom: "16px" }}
           >
             <TextField
@@ -194,6 +194,7 @@ export const EventInformation = ({
               onChange={handleTitleChange}
               variant="outlined"
               fullWidth
+              size="small"
             />
             <DropDown
               label="신청범위"
@@ -254,6 +255,7 @@ export const EventInformation = ({
                   textField: {
                     fullWidth: true,
                     sx: { backgroundColor: "white" },
+                    size: "small",
                   },
                 }}
               />
@@ -266,6 +268,7 @@ export const EventInformation = ({
               style={{ flex: "0 0 calc(33.33% - 8px)", backgroundColor: "white" }}
               variant="outlined"
               fullWidth
+              size="small"
             />
           </Flex>
           {/* 진행 날짜/시간 */}
@@ -288,6 +291,7 @@ export const EventInformation = ({
                     textField: {
                       fullWidth: true,
                       sx: { backgroundColor: "white" },
+                      size: "small",
                     },
                   }}
                 />
@@ -312,6 +316,7 @@ export const EventInformation = ({
                     textField: {
                       fullWidth: true,
                       sx: { backgroundColor: "white" },
+                      size: "small",
                     },
                   }}
                 />
@@ -362,6 +367,7 @@ export const EventInformation = ({
                   type="number"
                   style={{ backgroundColor: "white" }}
                   inputProps={{ min: totalAttendeesCount > 0 ? totalAttendeesCount : 1 }}
+                  size="small"
                 />
               )}
             </div>
@@ -401,7 +407,8 @@ export const EventInformation = ({
                   fullWidth
                   type="number"
                   style={{ backgroundColor: "white" }}
-                  inputProps={{ min: 1 }}
+                  inputProps={{ min: totalAttendeesCount > 0 ? totalAttendeesCount : 1 }}
+                  size="small"
                 />
               )}
             </div>
