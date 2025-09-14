@@ -10,7 +10,7 @@ export const useDeleteEventParticipants = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ eventId, eventParticipationIds }: DeleteEventParticipantsRequest) =>
+    mutationFn: ({ eventParticipationIds }: DeleteEventParticipantsRequest) =>
       eventApi.deleteParticipants(eventParticipationIds),
     onSuccess: (_, { eventId }) => {
       // 이벤트 참가자 목록 쿼리 무효화하여 새로고침

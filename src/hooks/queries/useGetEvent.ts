@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { eventApi } from "@/apis/eventApi";
-import { EventContent, EventType } from "@/types/dtos/event";
 
 export const useGetEvent = (eventId: number | null) => {
   return useQuery({

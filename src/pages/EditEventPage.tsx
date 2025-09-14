@@ -65,6 +65,7 @@ export const EditEventPage = () => {
         formValue={formValues}
         setFormValues={setformValues}
         eventId={id || undefined}
+        totalAttendeesCount={eventData?.totalAttendeesCount || 0}
       />
 
       <Space height={54} />
