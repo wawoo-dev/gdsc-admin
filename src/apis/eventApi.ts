@@ -7,6 +7,7 @@ import {
   EventResponse,
   EventType,
   SearchMemberListResponse,
+  UpdateEventRequest,
 } from "@/types/dtos/event";
 
 export const eventApi = {
@@ -14,7 +15,7 @@ export const eventApi = {
     const response = await apiClient.post<EventType>("/admin/events", eventData);
     return response.data;
   },
-  updateEvent: async (eventId: number, eventData: EventType): Promise<EventType> => {
+  updateEvent: async (eventId: number, eventData: UpdateEventRequest): Promise<EventType> => {
     const response = await apiClient.put<EventType>(`/admin/events/${eventId}`, eventData);
     return response.data;
   },
