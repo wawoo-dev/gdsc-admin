@@ -52,7 +52,7 @@ export const eventApi = {
     });
     return response.data;
   },
-  postNoneMemberParticipants: async (
+  postMemberParticipants: async (
     eventId: number,
     participant: { name: string; studentId: string; phone: string },
   ) => {

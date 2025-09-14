@@ -9,7 +9,7 @@ import TextField from "wowds-ui/TextField";
 import { NoneMemberParticipate } from "./NoneMemberParticipate";
 import { Space } from "@/components/@common/Space";
 import { Text } from "@/components/@common/Text";
-import usePostParticipantsMutation from "@/hooks/mutations/usePostParticipantsMutation";
+import usePostNoneMemberParticipantsMutation from "@/hooks/mutations/usePostMemberParticipants";
 import { useGetSearchMemberListQuery } from "@/hooks/queries/useGetSearchMemberListQuery";
 import { SearchMemberListResponse } from "@/types/dtos/event";
 
@@ -40,8 +40,7 @@ export const AddMemberModal = ({
     searchTrigger,
   );
 
-  const postParticipantsMutation = usePostParticipantsMutation();
-
+  const postParticipantsMutation = usePostNoneMemberParticipantsMutation();
   // API 응답이 변경될 때마다 searchResults 상태 업데이트
   useEffect(() => {
     if (searchResponse) {
@@ -65,7 +64,11 @@ export const AddMemberModal = ({
     try {
       await postParticipantsMutation.mutateAsync({
         eventId: eventIdNumber,
-        memberId: selectedMember.memberId,
+        participant: {
+          name: selectedMember.name,
+          studentId: selectedMember.studentId.trim(),
+          phone: "", //TODO: dto 추가
+        },
       });
       // 상태 초기화
       setPhase("PICK");
