@@ -164,8 +164,7 @@ export const EventInformation = ({
         : prev,
     );
   };
-  console.log(formValue, "formValue");
-  console.log(isApplicationInPeriod(), "isApplicationPeriodExpired");
+
   return (
     <>
       <div
