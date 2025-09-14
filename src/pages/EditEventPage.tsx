@@ -8,15 +8,15 @@ import { Space } from "@/components/@common/Space";
 import { ApplyMember } from "@/components/EditEvent/ApplyMembers";
 import { EventForm } from "@/components/EditEvent/EventForm";
 import { EventInformation } from "@/components/EditEvent/EventInformation";
-import { EventType } from "@/types/dtos/event";
 import { useGetEvent } from "@/hooks/queries/useGetEvent";
+import { EventType } from "@/types/dtos/event";
 
 export const EditEventPage = () => {
   const { eventId: eventIdParam } = useParams<{ eventId?: string }>();
   const isNew = eventIdParam === "new";
   const id = !isNew && eventIdParam ? Number(eventIdParam) : null;
 
-  const { data: eventData, isLoading, error } = useGetEvent (id ?? null);
+  const { data: eventData, isLoading, error } = useGetEvent(id ?? null);
   const [formValues, setformValues] = useState<EventType | null>(null);
 
   // 디버깅용 로그
@@ -47,7 +47,7 @@ export const EditEventPage = () => {
       };
       setformValues(initialEventData);
     } else if (eventData) {
-      setformValues(eventData);
+      setformValues(eventData.eventData);
     }
   }, [id, isNew, eventData]);
 
@@ -61,10 +61,10 @@ export const EditEventPage = () => {
 
   return (
     <>
-      <EventInformation 
-        formValue={formValues} 
-        setFormValues={setformValues} 
-        eventId={id || undefined} 
+      <EventInformation
+        formValue={formValues}
+        setFormValues={setformValues}
+        eventId={id || undefined}
       />
 
       <Space height={54} />
@@ -74,7 +74,12 @@ export const EditEventPage = () => {
           <TabsItem value="tab2">신청 인원</TabsItem>
         </TabsList>
         <TabsContent value="tab1">
-          <EventForm formValue={formValues} setFormValues={setformValues} eventId={id || undefined} />
+          <EventForm
+            formValue={formValues}
+            setFormValues={setformValues}
+            eventId={id || undefined}
+            totalAttendeesCount={eventData?.totalAttendeesCount || 0}
+          />
         </TabsContent>
         <TabsContent value="tab2">
           <ApplyMember />

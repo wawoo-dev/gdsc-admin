@@ -1,12 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { eventApi } from "@/apis/eventApi";
 import { QueryKey } from "@/constants/queryKey";
-import { EventType } from "@/types/dtos/event";
+import { EventType, UpdateEventRequest } from "@/types/dtos/event";
 
 export const useUpdateEventMutation = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<EventType, Error, { eventId: number; eventData: EventType }>({
+  return useMutation<EventType, Error, { eventId: number; eventData: UpdateEventRequest }>({
     mutationFn: ({ eventId, eventData }) => eventApi.updateEvent(eventId, eventData),
     onSuccess: (data, variables) => {
       // 이벤트 목록 캐시 무효화

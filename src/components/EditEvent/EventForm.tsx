@@ -8,7 +8,7 @@ import { Flex } from "../@common/Flex";
 import { Space } from "../@common/Space";
 import { useCreateEventMutation } from "@/hooks/mutations/useCreateEventMutation";
 import { useUpdateEventMutation } from "@/hooks/mutations/useUpdateEventMutation";
-import { EventType, CreateEventRequest } from "@/types/dtos/event";
+import { EventType, CreateEventRequest, UpdateEventRequest } from "@/types/dtos/event";
 
 const getFormFields = (formValue: EventType | null): FormFieldProps[] => {
   return [
@@ -72,10 +72,12 @@ export const EventForm = ({
   formValue,
   setFormValues,
   eventId,
+  totalAttendeesCount,
 }: {
   formValue: EventType | null;
   setFormValues: (value: React.SetStateAction<EventType | null>) => void;
   eventId?: number;
+  totalAttendeesCount: number;
 }) => {
   const [description, setDescription] = useState<string>(formValue?.applicationDescription || "");
   const [formFields, setFormFields] = useState<FormFieldProps[]>(getFormFields(formValue));
@@ -85,17 +87,6 @@ export const EventForm = ({
 
   const createEventMutation = useCreateEventMutation();
   const updateEventMutation = useUpdateEventMutation();
-
-  // 신청 기간이 지났는지 확인하는 함수
-  const isApplicationPeriodExpired = () => {
-    if (!formValue?.applicationPeriod?.startDate || !formValue?.applicationPeriod?.endDate) {
-      return false;
-    }
-    const startDate = new Date(formValue.applicationPeriod.startDate);
-    const endDate = new Date(formValue.applicationPeriod.endDate);
-    const now = new Date();
-    return now > endDate || now < startDate;
-  };
 
   const handleRequiredToggle = (index: number, next: boolean) => {
     setRequiredByIndex(prev => ({ ...prev, [index]: next }));
@@ -185,6 +176,7 @@ export const EventForm = ({
     }
   }, [formValue]);
 
+  console.log(eventId, totalAttendeesCount, "eventId, totalAttendeesCount");
   const handleDescriptionChange = (value: string) => {
     setDescription(value);
   };
@@ -200,7 +192,22 @@ export const EventForm = ({
     const nextEvent = { ...formValue, applicationDescription: description };
     if (eventId) {
       // 수정 모드
-      updateEventMutation.mutate({ eventId, eventData: nextEvent });
+      const updateEventData: UpdateEventRequest = {
+        name: nextEvent.name,
+        venue: nextEvent.venue,
+        startAt: nextEvent.startAt,
+        applicationDescription: nextEvent.applicationDescription,
+        applicationPeriod: nextEvent.applicationPeriod,
+        regularRoleOnlyStatus: nextEvent.regularRoleOnlyStatus,
+        afterPartyStatus: nextEvent.afterPartyStatus,
+        prePaymentStatus: nextEvent.prePaymentStatus,
+        postPaymentStatus: nextEvent.postPaymentStatus,
+        rsvpQuestionStatus: nextEvent.rsvpQuestionStatus,
+        noticeConfirmQuestionStatus: nextEvent.noticeConfirmQuestionStatus,
+        mainEventMaxApplicantCount: nextEvent.mainEventMaxApplicantCount,
+        afterPartyMaxApplicantCount: nextEvent.afterPartyMaxApplicantCount,
+      };
+      updateEventMutation.mutate({ eventId, eventData: updateEventData });
     } else {
       // 생성 모드
       const createEventData: CreateEventRequest = {
@@ -267,7 +274,8 @@ export const EventForm = ({
             optionalChecked={field.optionalChecked ?? requiredByIndex[index]}
             onOptionalChange={checked => handleRequiredToggle(index, checked)}
             isDisabled={
-              eventId && isApplicationPeriodExpired() && (index === 4 || index === 5 || index === 6)
+              //NOTE: 신청 인원이 한 명이라도 생긴 경우 뒷풀이, 선입금, 후정산 질문은 비활성화
+              eventId && totalAttendeesCount > 0 && (index === 4 || index === 5 || index === 6)
                 ? true
                 : false
             }
