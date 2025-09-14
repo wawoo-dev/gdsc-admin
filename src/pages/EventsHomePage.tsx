@@ -1,8 +1,9 @@
+import { useState } from "react";
 import { css } from "@emotion/react";
 import { Text } from "components/@common/Text";
 import { Link, useNavigate } from "react-router-dom";
 import Box from "wowds-ui/Box";
-
+import Pagination from "wowds-ui/Pagination";
 import SearchBar from "wowds-ui/SearchBar";
 
 import { Space } from "@/components/@common/Space";
@@ -12,8 +13,16 @@ import RoutePath from "@/routes/routePath";
 
 export const EventsHomePage = () => {
   const navigate = useNavigate();
-  const { data } = useEventList(0, 20);
+  const [currentPage, setCurrentPage] = useState(0);
+  const pageSize = 20;
+
+  const { data } = useEventList(currentPage, pageSize); // useEventList는 1부터 시작
   const eventContent = data?.content ?? [];
+
+  // 페이지 변경 핸들러
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page - 1); // Pagination은 1부터 시작하지만 API는 0부터 시작
+  };
 
   return (
     <>
@@ -60,6 +69,17 @@ export const EventsHomePage = () => {
             onClick={() => navigate(`${RoutePath.EditEvent}/${item.event.eventId}`)}
           />
         ))}
+      </div>
+
+      <Space height={54} />
+
+      {/* Pagination */}
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <Pagination
+          onChange={handlePageChange}
+          totalPages={data?.totalPages || 1}
+          currentPage={currentPage + 1} // Pagination은 1부터 시작
+        />
       </div>
     </>
   );

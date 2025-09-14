@@ -1,9 +1,10 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { color } from "wowds-tokens";
 import Button from "wowds-ui/Button";
 import DropDown from "wowds-ui/DropDown";
 import DropDownOption from "wowds-ui/DropDownOption";
+import Pagination from "wowds-ui/Pagination";
 import SearchBar from "wowds-ui/SearchBar";
 import Table from "wowds-ui/Table";
 import { Flex } from "../@common/Flex";
@@ -53,9 +54,12 @@ export const ApplyMember = () => {
   const id = Number(eventId);
 
   const [sortKey, setSortKey] = useState("");
-  const { data } = useGetEventParticipants(id, 0, 50, sortKey);
+  const [currentPage, setCurrentPage] = useState(0);
+  const pageSize = 20;
+
+  const { data } = useGetEventParticipants(id, currentPage, pageSize, sortKey);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
-  const handleSelectionChange = (rows: number[]) => setSelectedRows(rows);
+  const handleSelectionChange = useCallback((rows: number[]) => setSelectedRows(rows), []);
 
   const participants = useMemo(() => data?.content || [], [data]);
   const showAfterParty = participants.some(
@@ -100,9 +104,7 @@ export const ApplyMember = () => {
 
   // 선택된 참가자들 가져오기
   const selectedParticipants = useMemo(() => {
-    const filtered = participants.filter(p => selectedRows.includes(p.eventParticipationId));
-
-    return filtered;
+    return participants.filter(p => selectedRows.includes(p.eventParticipationId));
   }, [participants, selectedRows]);
 
   // 삭제 버튼 클릭 핸들러
@@ -113,6 +115,17 @@ export const ApplyMember = () => {
     }
     setDeleteMemberOpen(true);
   };
+
+  // 페이지 변경 핸들러
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page - 1); // Pagination은 1부터 시작하지만 API는 0부터 시작
+    setSelectedRows([]); // 페이지 변경 시 선택된 행들 초기화
+  }, []);
+
+  // 삭제 성공 핸들러
+  const handleDeleteSuccess = useCallback(() => {
+    setSelectedRows([]);
+  }, []);
 
   return (
     <div>
@@ -140,7 +153,7 @@ export const ApplyMember = () => {
         open={deleteMemberOpen}
         setOpen={setDeleteMemberOpen}
         selectedParticipants={selectedParticipants}
-        onDeleteSuccess={() => setSelectedRows([])}
+        onDeleteSuccess={handleDeleteSuccess}
       />
       <Flex gap="sm">
         <SearchBar
@@ -221,6 +234,17 @@ export const ApplyMember = () => {
           )}
         </Table.Tbody>
       </Table>
+
+      <Space height={30} />
+
+      {/* Pagination */}
+      <Flex justify="center">
+        <Pagination
+          onChange={handlePageChange}
+          totalPages={data?.totalPages || 1}
+          currentPage={currentPage + 1} // Pagination은 1부터 시작
+        />
+      </Flex>
     </div>
   );
 };
