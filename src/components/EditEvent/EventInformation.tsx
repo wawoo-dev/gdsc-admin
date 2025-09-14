@@ -44,10 +44,12 @@ export const EventInformation = ({
   formValue,
   setFormValues,
   eventId,
+  totalAttendeesCount,
 }: {
   formValue: EventType | null;
   setFormValues: (value: React.SetStateAction<EventType | null>) => void;
   eventId?: number;
+  totalAttendeesCount: number;
 }) => {
   //const [formValues, setFormValues] = useState<EventType | null>(formValue);
   const [selectedRange, setSelectedRange] = useState<
@@ -85,14 +87,14 @@ export const EventInformation = ({
   );
 
   // 신청 기간이 지났는지 확인하는 함수
-  const isApplicationPeriodExpired = () => {
+  const isApplicationInPeriod = () => {
     if (!formValue?.applicationPeriod?.startDate || !formValue?.applicationPeriod?.endDate) {
       return false;
     }
     const startDate = new Date(formValue.applicationPeriod.startDate);
     const endDate = new Date(formValue.applicationPeriod.endDate);
     const now = new Date();
-    return now > endDate || now < startDate;
+    return now > startDate && now < endDate;
   };
 
   useEffect(() => {
@@ -162,7 +164,7 @@ export const EventInformation = ({
         : prev,
     );
   };
-  console.log(formValue, "formValue");
+
   return (
     <>
       <div
@@ -180,7 +182,7 @@ export const EventInformation = ({
           <Flex
             gap="sm"
             justify="start"
-            align="start"
+            align="end"
             style={{ flex: "0 0 100%", marginBottom: "16px" }}
           >
             <TextField
@@ -191,14 +193,15 @@ export const EventInformation = ({
               onChange={handleTitleChange}
               variant="outlined"
               fullWidth
+              size="small"
             />
             <DropDown
               label="신청범위"
               placeholder="신청 범위를 선택해주세요"
               style={{
                 ...formItemStyle,
-                pointerEvents: eventId && isApplicationPeriodExpired() ? "none" : "auto",
-                opacity: eventId && isApplicationPeriodExpired() ? 0.6 : 1,
+                pointerEvents: eventId && isApplicationInPeriod() ? "none" : "auto",
+                opacity: eventId && isApplicationInPeriod() ? 0.6 : 1,
               }}
               value={regularRoleOnlyStatus === "ENABLED" ? "only-member" : "everyone"}
               onChange={value =>
@@ -251,6 +254,7 @@ export const EventInformation = ({
                   textField: {
                     fullWidth: true,
                     sx: { backgroundColor: "white" },
+                    size: "small",
                   },
                 }}
               />
@@ -263,6 +267,7 @@ export const EventInformation = ({
               style={{ flex: "0 0 calc(33.33% - 8px)", backgroundColor: "white" }}
               variant="outlined"
               fullWidth
+              size="small"
             />
           </Flex>
           {/* 진행 날짜/시간 */}
@@ -285,6 +290,7 @@ export const EventInformation = ({
                     textField: {
                       fullWidth: true,
                       sx: { backgroundColor: "white" },
+                      size: "small",
                     },
                   }}
                 />
@@ -309,6 +315,7 @@ export const EventInformation = ({
                     textField: {
                       fullWidth: true,
                       sx: { backgroundColor: "white" },
+                      size: "small",
                     },
                   }}
                 />
@@ -358,7 +365,8 @@ export const EventInformation = ({
                   fullWidth
                   type="number"
                   style={{ backgroundColor: "white" }}
-                  inputProps={{ min: 1 }}
+                  inputProps={{ min: totalAttendeesCount > 0 ? totalAttendeesCount : 1 }}
+                  size="small"
                 />
               )}
             </div>
@@ -398,7 +406,8 @@ export const EventInformation = ({
                   fullWidth
                   type="number"
                   style={{ backgroundColor: "white" }}
-                  inputProps={{ min: 1 }}
+                  inputProps={{ min: totalAttendeesCount > 0 ? totalAttendeesCount : 1 }}
+                  size="small"
                 />
               )}
             </div>

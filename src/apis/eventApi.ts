@@ -7,6 +7,7 @@ import {
   EventResponse,
   EventType,
   SearchMemberListResponse,
+  UpdateEventRequest,
 } from "@/types/dtos/event";
 
 export const eventApi = {
@@ -14,7 +15,7 @@ export const eventApi = {
     const response = await apiClient.post<EventType>("/admin/events", eventData);
     return response.data;
   },
-  updateEvent: async (eventId: number, eventData: EventType): Promise<EventType> => {
+  updateEvent: async (eventId: number, eventData: UpdateEventRequest): Promise<EventType> => {
     const response = await apiClient.put<EventType>(`/admin/events/${eventId}`, eventData);
     return response.data;
   },
@@ -51,13 +52,19 @@ export const eventApi = {
     });
     return response.data;
   },
-  postNoneMemberParticipants: async (
+  postMemberParticipants: async (
     eventId: number,
     participant: { name: string; studentId: string; phone: string },
   ) => {
     const response = await apiClient.post(`/admin/event-participations/apply/manual`, {
       eventId: eventId,
       participant,
+    });
+    return response.data;
+  },
+  deleteParticipants: async (eventParticipationIds: number[]) => {
+    const response = await apiClient.delete(`/admin/event-participations`, {
+      data: { eventParticipationIds },
     });
     return response.data;
   },

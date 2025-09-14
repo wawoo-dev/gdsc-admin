@@ -14,6 +14,7 @@ type OptionalControlled = {
 };
 
 interface TextFieldProps extends OptionalControlled {
+  id: string;
   type: "textfield";
   title: string;
   value: string;
@@ -21,6 +22,7 @@ interface TextFieldProps extends OptionalControlled {
 }
 
 interface OptionSelectProps extends OptionalControlled {
+  id: string;
   type: "option-select";
   title: string;
   options: Option[];

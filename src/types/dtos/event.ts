@@ -25,6 +25,9 @@ interface ApplicationPeriod {
 
 // 이벤트 생성 요청 타입
 export type CreateEventRequest = Omit<EventType, "eventId">;
+
+// 이벤트 생성 요청 타입
+export type UpdateEventRequest = Omit<EventType, "eventId">;
 // 이벤트 타입
 export interface EventType {
   eventId: number;

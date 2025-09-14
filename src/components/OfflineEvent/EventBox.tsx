@@ -28,11 +28,11 @@ export const getStatusMeta = (
     case "APPLICATION_OPEN":
       return { label: "신청 중", color: "blue" };
     case "APPLICATION_CLOSED":
-      return { label: "신청 마감", color: "green" };
+      return { label: "신청 종료", color: "green" };
     case "ONGOING":
       return { label: "진행 중", color: "green" };
     case "EVENT_ENDED":
-      return { label: "종료", color: "grey" };
+      return { label: "행사 종료", color: "grey" };
     default:
       return { label: "알 수 없음", color: "grey" };
   }
@@ -68,7 +68,10 @@ export const OfflineEventCard = ({
             <Space height={8} />
             {eventStatus === "APPLICATION_OPEN" ? (
               <Text typo="body1" color="sub">
-                신청 마감까지 {remainText} 남음
+                <Text as="span" color="error">
+                  신청 마감까지{" "}
+                </Text>
+                {remainText} 남음
               </Text>
             ) : (
               <Text typo="body1" color="sub">

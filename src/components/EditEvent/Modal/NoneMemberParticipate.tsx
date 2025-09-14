@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import Button from "wowds-ui/Button";
 import TextField from "wowds-ui/TextField";
 import { Text } from "@/components/@common/Text";
-import usePostNoneMemberParticipantsMutation from "@/hooks/mutations/usePostNoneMemberParticipantsMutation";
+import usePostMemberParticipantsMutation from "@/hooks/mutations/usePostMemberParticipants";
 
 export const NoneMemberParticipate = ({
   name: selectedName,
@@ -19,7 +19,7 @@ export const NoneMemberParticipate = ({
   // eventId를 숫자로 변환
   const eventIdNumber = eventId ? parseInt(eventId, 10) : 0;
 
-  const postNoneMemberParticipantsMutation = usePostNoneMemberParticipantsMutation();
+  const postNoneMemberParticipantsMutation = usePostMemberParticipantsMutation();
 
   const handleSubmit = async () => {
     if (studentId.trim() === "" || phone.trim() === "") {
