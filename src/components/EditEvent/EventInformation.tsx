@@ -85,14 +85,14 @@ export const EventInformation = ({
   );
 
   // 신청 기간이 지났는지 확인하는 함수
-  const isApplicationPeriodExpired = () => {
+  const isApplicationInPeriod = () => {
     if (!formValue?.applicationPeriod?.startDate || !formValue?.applicationPeriod?.endDate) {
       return false;
     }
     const startDate = new Date(formValue.applicationPeriod.startDate);
     const endDate = new Date(formValue.applicationPeriod.endDate);
     const now = new Date();
-    return now > endDate || now < startDate;
+    return now > startDate && now < endDate;
   };
 
   useEffect(() => {
@@ -163,6 +163,7 @@ export const EventInformation = ({
     );
   };
   console.log(formValue, "formValue");
+  console.log(isApplicationInPeriod(), "isApplicationPeriodExpired");
   return (
     <>
       <div
@@ -197,8 +198,8 @@ export const EventInformation = ({
               placeholder="신청 범위를 선택해주세요"
               style={{
                 ...formItemStyle,
-                pointerEvents: eventId && isApplicationPeriodExpired() ? "none" : "auto",
-                opacity: eventId && isApplicationPeriodExpired() ? 0.6 : 1,
+                pointerEvents: eventId && isApplicationInPeriod() ? "none" : "auto",
+                opacity: eventId && isApplicationInPeriod() ? 0.6 : 1,
               }}
               value={regularRoleOnlyStatus === "ENABLED" ? "only-member" : "everyone"}
               onChange={value =>
