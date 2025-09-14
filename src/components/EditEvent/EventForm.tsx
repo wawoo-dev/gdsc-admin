@@ -187,6 +187,21 @@ export const EventForm = ({
   const handleDescriptionChange = (value: string) => {
     setDescription(value);
   };
+  const buildEventPayload = (event: EventType): Omit<EventType, "eventId"> => ({
+    name: event.name,
+    venue: event.venue,
+    startAt: event.startAt,
+    applicationDescription: event.applicationDescription,
+    applicationPeriod: event.applicationPeriod,
+    regularRoleOnlyStatus: event.regularRoleOnlyStatus,
+    afterPartyStatus: event.afterPartyStatus,
+    prePaymentStatus: event.prePaymentStatus,
+    postPaymentStatus: event.postPaymentStatus,
+    rsvpQuestionStatus: event.rsvpQuestionStatus,
+    noticeConfirmQuestionStatus: event.noticeConfirmQuestionStatus,
+    mainEventMaxApplicantCount: event.mainEventMaxApplicantCount,
+    afterPartyMaxApplicantCount: event.afterPartyMaxApplicantCount,
+  });
 
   const handlePublish = () => {
     if (!formValue) {
@@ -197,42 +212,11 @@ export const EventForm = ({
     // 최신 description을 병합하여 페이로드 생성
     setFormValues(prev => (prev ? { ...prev, applicationDescription: description } : prev));
     const nextEvent = { ...formValue, applicationDescription: description };
+    const eventPayload = buildEventPayload(nextEvent);
     if (eventId) {
-      // 수정 모드
-      const updateEventData: UpdateEventRequest = {
-        name: nextEvent.name,
-        venue: nextEvent.venue,
-        startAt: nextEvent.startAt,
-        applicationDescription: nextEvent.applicationDescription,
-        applicationPeriod: nextEvent.applicationPeriod,
-        regularRoleOnlyStatus: nextEvent.regularRoleOnlyStatus,
-        afterPartyStatus: nextEvent.afterPartyStatus,
-        prePaymentStatus: nextEvent.prePaymentStatus,
-        postPaymentStatus: nextEvent.postPaymentStatus,
-        rsvpQuestionStatus: nextEvent.rsvpQuestionStatus,
-        noticeConfirmQuestionStatus: nextEvent.noticeConfirmQuestionStatus,
-        mainEventMaxApplicantCount: nextEvent.mainEventMaxApplicantCount,
-        afterPartyMaxApplicantCount: nextEvent.afterPartyMaxApplicantCount,
-      };
-      updateEventMutation.mutate({ eventId, eventData: updateEventData });
+      updateEventMutation.mutate({ eventId, eventData: eventPayload });
     } else {
-      // 생성 모드
-      const createEventData: CreateEventRequest = {
-        name: nextEvent.name,
-        venue: nextEvent.venue,
-        startAt: nextEvent.startAt,
-        applicationDescription: nextEvent.applicationDescription,
-        applicationPeriod: nextEvent.applicationPeriod,
-        regularRoleOnlyStatus: nextEvent.regularRoleOnlyStatus,
-        afterPartyStatus: nextEvent.afterPartyStatus,
-        prePaymentStatus: nextEvent.prePaymentStatus,
-        postPaymentStatus: nextEvent.postPaymentStatus,
-        rsvpQuestionStatus: nextEvent.rsvpQuestionStatus,
-        noticeConfirmQuestionStatus: nextEvent.noticeConfirmQuestionStatus,
-        mainEventMaxApplicantCount: nextEvent.mainEventMaxApplicantCount,
-        afterPartyMaxApplicantCount: nextEvent.afterPartyMaxApplicantCount,
-      };
-      createEventMutation.mutate(createEventData);
+      createEventMutation.mutate(eventPayload);
     }
   };
   return (
