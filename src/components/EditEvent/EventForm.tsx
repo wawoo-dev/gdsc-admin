@@ -13,21 +13,25 @@ import { EventType, CreateEventRequest, UpdateEventRequest } from "@/types/dtos/
 const getFormFields = (formValue: EventType | null): FormFieldProps[] => {
   return [
     {
+      id: "name",
       type: "textfield",
       title: "이름을 입력해주세요",
       value: "예: 홍길동",
     },
     {
+      id: "phone",
       type: "textfield",
       title: "전화번호를 입력해주세요",
       value: "예: 010-1234-5678",
     },
     {
+      id: "studentId",
       type: "textfield",
       title: "학번을 입력해주세요",
       value: "예: 20241234",
     },
     {
+      id: "noticeConfirm",
       type: "option-select",
       title: "유의사항을 확인하셨나요?",
       optional: true,
@@ -35,6 +39,7 @@ const getFormFields = (formValue: EventType | null): FormFieldProps[] => {
       options: [{ value: "확인", label: "예, 확인했습니다." }],
     },
     {
+      id: "afterParty",
       type: "option-select",
       title: "뒤풀이에 참여하겠습니까?",
       optional: true,
@@ -45,6 +50,7 @@ const getFormFields = (formValue: EventType | null): FormFieldProps[] => {
       ],
     },
     {
+      id: "prePayment",
       type: "option-select",
       title: "선입금을 완료하였나요",
       optional: true,
@@ -52,6 +58,7 @@ const getFormFields = (formValue: EventType | null): FormFieldProps[] => {
       options: [{ value: "선입금", label: "예, 완료했습니다." }],
     },
     {
+      id: "postPayment",
       type: "option-select",
       title: "후정산을 완료하셨나요",
       optional: true,
@@ -59,6 +66,7 @@ const getFormFields = (formValue: EventType | null): FormFieldProps[] => {
       options: [{ value: "후입금", label: "예, 완료했습니다." }],
     },
     {
+      id: "rsvp",
       type: "option-select",
       title: "RSVP 작성을 완료하셨나요?",
       optional: true,
@@ -81,17 +89,17 @@ export const EventForm = ({
 }) => {
   const [description, setDescription] = useState<string>(formValue?.applicationDescription || "");
   const [formFields, setFormFields] = useState<FormFieldProps[]>(getFormFields(formValue));
-  const [requiredByIndex, setRequiredByIndex] = useState<Record<number, boolean>>(() =>
-    Object.fromEntries(formFields.map((_, i) => [i, true])),
+  const [requiredById, setRequiredById] = useState<Record<string, boolean>>(() =>
+    Object.fromEntries(formFields.map(field => [field.id, true])),
   );
 
   const createEventMutation = useCreateEventMutation();
   const updateEventMutation = useUpdateEventMutation();
 
-  const handleRequiredToggle = (index: number, next: boolean) => {
-    setRequiredByIndex(prev => ({ ...prev, [index]: next }));
+  const handleRequiredToggle = (id: string, next: boolean) => {
+    setRequiredById(prev => ({ ...prev, [id]: next }));
 
-    if (index === 3) {
+    if (id === "noticeConfirm") {
       setFormValues(prev =>
         prev
           ? {
@@ -102,8 +110,8 @@ export const EventForm = ({
       );
     }
 
-    // 뒷풀이 질문 (index 4) 토글 시 afterPartyStatus 업데이트
-    if (index === 4) {
+    // 뒷풀이 질문 토글 시 afterPartyStatus 업데이트
+    if (id === "afterParty") {
       setFormValues(prev =>
         prev
           ? {
@@ -118,13 +126,13 @@ export const EventForm = ({
 
       // 뒷풀이가 DISABLED면 선입금/후정산 질문도 비활성화
       if (!next) {
-        setRequiredByIndex(prev => ({ ...prev, [5]: false }));
-        setRequiredByIndex(prev => ({ ...prev, [6]: false }));
+        setRequiredById(prev => ({ ...prev, prePayment: false }));
+        setRequiredById(prev => ({ ...prev, postPayment: false }));
       }
     }
 
-    // 선입금 질문 (index 5) 토글 시 prePaymentStatus 업데이트
-    if (index === 5) {
+    // 선입금 질문 토글 시 prePaymentStatus 업데이트
+    if (id === "prePayment") {
       setFormValues(prev =>
         prev
           ? {
@@ -135,8 +143,8 @@ export const EventForm = ({
       );
     }
 
-    // 후정산 질문 (index 6) 토글 시 postPaymentStatus 업데이트
-    if (index === 6) {
+    // 후정산 질문 토글 시 postPaymentStatus 업데이트
+    if (id === "postPayment") {
       setFormValues(prev =>
         prev
           ? {
@@ -147,7 +155,7 @@ export const EventForm = ({
       );
     }
 
-    if (index === 7) {
+    if (id === "rsvp") {
       setFormValues(prev =>
         prev
           ? {
@@ -164,15 +172,15 @@ export const EventForm = ({
       setDescription(formValue.applicationDescription);
       const newFormFields = getFormFields(formValue);
       setFormFields(newFormFields);
-      // optionalChecked 값에 따라 requiredByIndex 설정
-      setRequiredByIndex(
-        Object.fromEntries(newFormFields.map((field, i) => [i, field.optionalChecked ?? true])),
+      // optionalChecked 값에 따라 requiredById 설정
+      setRequiredById(
+        Object.fromEntries(newFormFields.map(field => [field.id, field.optionalChecked ?? true])),
       );
     } else {
       setDescription("");
       const newFormFields = getFormFields(null);
       setFormFields(newFormFields);
-      setRequiredByIndex(Object.fromEntries(newFormFields.map((_, i) => [i, true])));
+      setRequiredById(Object.fromEntries(newFormFields.map(field => [field.id, true])));
     }
   }, [formValue]);
 
@@ -267,15 +275,20 @@ export const EventForm = ({
       />
       <Space height={32} />
       <Flex gap="sm" direction="column">
-        {formFields.map((field, index) => (
+        {formFields.map(field => (
           <FormField
-            key={`${field.title} - ${index}`}
+            key={field.id}
             {...field}
-            optionalChecked={field.optionalChecked ?? requiredByIndex[index]}
-            onOptionalChange={checked => handleRequiredToggle(index, checked)}
+            optionalChecked={field.optionalChecked ?? requiredById[field.id]}
+            onOptionalChange={checked => handleRequiredToggle(field.id, checked)}
             isDisabled={
               //NOTE: 신청 인원이 한 명이라도 생긴 경우 뒷풀이, 선입금, 후정산 질문은 비활성화
-              eventId && totalAttendeesCount > 0 && (index === 4 || index === 5 || index === 6)
+              eventId &&
+              totalAttendeesCount > 0 &&
+              (field.id === "afterParty" ||
+                field.id === "prePayment" ||
+                field.id === "postPayment" ||
+                field.id === "rsvp")
                 ? true
                 : false
             }

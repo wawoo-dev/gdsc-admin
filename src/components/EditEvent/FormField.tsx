@@ -14,6 +14,7 @@ type OptionalControlled = {
 };
 
 interface TextFieldProps extends OptionalControlled {
+  id: string;
   type: "textfield";
   title: string;
   value: string;
@@ -21,6 +22,7 @@ interface TextFieldProps extends OptionalControlled {
 }
 
 interface OptionSelectProps extends OptionalControlled {
+  id: string;
   type: "option-select";
   title: string;
   options: Option[];
@@ -30,7 +32,7 @@ interface OptionSelectProps extends OptionalControlled {
 export type FormFieldProps = TextFieldProps | OptionSelectProps;
 
 export const FormField = (props: FormFieldProps) => {
-  const { title, type, optional = false, isDisabled = false } = props;
+  const { id, title, type, optional = false, isDisabled = false } = props;
 
   const enabled = "optional" in props && props.optional ? props.optionalChecked : true;
 
