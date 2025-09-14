@@ -26,7 +26,7 @@ export const EditEventPage = () => {
     if (isNew || id === null) {
       // 새로운 이벤트 생성 시 초기값 설정
       const initialEventData: EventType = {
-        eventId: -1, //TODO: 0이 아니라 새로운 이벤트 생성 시 이벤트 ID 생성
+        eventId: -1, //NOTE: 0이 아니라 새로운 이벤트 생성 시 이벤트 ID 생성
         name: "",
         venue: "추후 공지 예정",
         startAt: "",

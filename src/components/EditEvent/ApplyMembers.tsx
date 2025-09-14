@@ -168,7 +168,7 @@ export const ApplyMember = () => {
           value={sortKey}
           onChange={({ selectedValue }) => setSortKey(selectedValue)}
         >
-          <DropDownOption value="recent" text="최신순" />
+          <DropDownOption value="createdAt" text="최신순" />
           <DropDownOption value="name" text="이름순" />
         </DropDown>
       </Flex>
