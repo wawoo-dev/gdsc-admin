@@ -8,7 +8,7 @@ import { Flex } from "../@common/Flex";
 import { Space } from "../@common/Space";
 import { useCreateEventMutation } from "@/hooks/mutations/useCreateEventMutation";
 import { useUpdateEventMutation } from "@/hooks/mutations/useUpdateEventMutation";
-import { EventType, CreateEventRequest, UpdateEventRequest } from "@/types/dtos/event";
+import { EventType } from "@/types/dtos/event";
 
 const getFormFields = (formValue: EventType | null): FormFieldProps[] => {
   return [

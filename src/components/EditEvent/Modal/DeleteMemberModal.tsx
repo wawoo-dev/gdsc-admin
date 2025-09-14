@@ -36,7 +36,7 @@ export const DeleteMemberModal = ({
         setOpen(false);
         onDeleteSuccess?.();
       } catch (error) {
-        alert("삭제 중 오류가 발생했습니다:", error);
+        alert("삭제 중 오류가 발생했습니다:");
         // 에러 처리 로직 추가 가능 (예: 토스트 메시지 표시)
       }
     }
