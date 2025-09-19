@@ -139,11 +139,19 @@ export const EventInformation = ({
   };
 
   const handleMainEventMaxCountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setMainEventMaxCount(event.target.value);
+    const value = event.target.value;
+    // 숫자만 허용 (빈 문자열도 허용)
+    if (value === "" || /^\d+$/.test(value)) {
+      setMainEventMaxCount(value);
+    }
   };
 
   const handleAfterPartyMaxCountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAfterPartyMaxCount(event.target.value);
+    const value = event.target.value;
+    // 숫자만 허용 (빈 문자열도 허용)
+    if (value === "" || /^\d+$/.test(value)) {
+      setAfterPartyMaxCount(value);
+    }
   };
 
   const handleSave = () => {
@@ -335,6 +343,7 @@ export const EventInformation = ({
                     const newDate = newValue?.toDate();
                     setSelectedEventDate(newDate);
                   }}
+                  minDate={selectedRange?.to ? dayjs(selectedRange.to) : undefined}
                   slotProps={{
                     textField: {
                       fullWidth: true,
@@ -414,7 +423,11 @@ export const EventInformation = ({
                   fullWidth
                   type="number"
                   style={{ backgroundColor: "white" }}
-                  inputProps={{ min: totalAttendeesCount > 0 ? totalAttendeesCount : 1 }}
+                  inputProps={{
+                    min: totalAttendeesCount > 0 ? totalAttendeesCount : 1,
+                    pattern: "[0-9]*",
+                    inputMode: "numeric",
+                  }}
                   size="small"
                 />
               )}
@@ -455,7 +468,11 @@ export const EventInformation = ({
                   fullWidth
                   type="number"
                   style={{ backgroundColor: "white" }}
-                  inputProps={{ min: totalAttendeesCount > 0 ? totalAttendeesCount : 1 }}
+                  inputProps={{
+                    min: totalAttendeesCount > 0 ? totalAttendeesCount : 1,
+                    pattern: "[0-9]*",
+                    inputMode: "numeric",
+                  }}
                   size="small"
                 />
               )}
