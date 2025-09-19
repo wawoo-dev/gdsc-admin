@@ -48,7 +48,7 @@ export const EventsHomePage = () => {
           <Box
             text={
               <Text typo="h3" color="sub">
-                + 템플릿 추가하기
+                + 템플릿 없이 새로운 폼 만들기
               </Text>
             }
             style={boxStyle}
