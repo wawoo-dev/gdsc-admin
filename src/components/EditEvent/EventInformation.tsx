@@ -22,7 +22,9 @@ import DropDownOption from "wowds-ui/DropDownOption";
 import { Flex } from "@/components/@common/Flex";
 import { Space } from "@/components/@common/Space";
 import { Text } from "@/components/@common/Text";
-import { EventType } from "@/types/dtos/event";
+import { useCreateEventMutation } from "@/hooks/mutations/useCreateEventMutation";
+import { useUpdateBasicInfoEventMutation } from "@/hooks/mutations/useUpdateBasicInfoEventMutation";
+import { EventType, CreateEventRequest } from "@/types/dtos/event";
 
 const parseISO = (s?: string): Date | undefined => {
   if (!s) {
@@ -51,6 +53,8 @@ export const EventInformation = ({
   eventId?: number;
   totalAttendeesCount: number;
 }) => {
+  const createEventMutation = useCreateEventMutation();
+  const updateBasicInfoMutation = useUpdateBasicInfoEventMutation();
   //const [formValues, setFormValues] = useState<EventType | null>(formValue);
   const [selectedRange, setSelectedRange] = useState<
     { from: Date | undefined; to: Date | undefined } | undefined
@@ -142,27 +146,68 @@ export const EventInformation = ({
   };
 
   const handleSave = () => {
-    setFormValues(prev =>
-      prev
-        ? {
-            ...prev,
-            name: title,
-            venue: venue,
-            regularRoleOnlyStatus: regularRoleOnlyStatus,
-            applicationPeriod: {
-              startDate: parseDate(selectedRange?.from),
-              endDate: parseDate(selectedRange?.to),
-            },
-            startAt: parseDate(selectedEventDate),
-            mainEventMaxApplicantCount: mainEventLimitEnabled
-              ? parseInt(mainEventMaxCount) || 0
-              : null,
-            afterPartyMaxApplicantCount: afterPartyLimitEnabled
-              ? parseInt(afterPartyMaxCount) || 0
-              : null,
-          }
-        : prev,
-    );
+    const basicInfoData: CreateEventRequest = {
+      name: title,
+      venue: venue,
+      regularRoleOnlyStatus: regularRoleOnlyStatus,
+      applicationPeriod: {
+        startDate: parseDate(selectedRange?.from),
+        endDate: parseDate(selectedRange?.to),
+      },
+      startAt: parseDate(selectedEventDate),
+      afterPartyStatus: formValue?.afterPartyStatus || "DISABLED",
+      mainEventMaxApplicantCount: mainEventLimitEnabled ? parseInt(mainEventMaxCount) || 0 : null,
+    };
+
+    const updateFormValues = () => {
+      setFormValues(prev =>
+        prev
+          ? {
+              ...prev,
+              name: title,
+              venue: venue,
+              regularRoleOnlyStatus: regularRoleOnlyStatus,
+              applicationPeriod: {
+                startDate: parseDate(selectedRange?.from),
+                endDate: parseDate(selectedRange?.to),
+              },
+              startAt: parseDate(selectedEventDate),
+              mainEventMaxApplicantCount: mainEventLimitEnabled
+                ? parseInt(mainEventMaxCount) || 0
+                : null,
+              afterPartyMaxApplicantCount: afterPartyLimitEnabled
+                ? parseInt(afterPartyMaxCount) || 0
+                : null,
+            }
+          : prev,
+      );
+    };
+
+    if (eventId) {
+      // 기존 이벤트 수정
+      updateBasicInfoMutation.mutate(
+        { eventId, eventData: basicInfoData },
+        {
+          onSuccess: () => {
+            updateFormValues();
+          },
+          onError: error => {
+            console.error("기본 정보 저장 중 오류가 발생했습니다:", error);
+          },
+        },
+      );
+    } else {
+      // 새 이벤트 생성
+      createEventMutation.mutate(basicInfoData, {
+        onSuccess: data => {
+          updateFormValues();
+          console.log("이벤트가 성공적으로 생성되었습니다:", data);
+        },
+        onError: error => {
+          console.error("이벤트 생성 중 오류가 발생했습니다:", error);
+        },
+      });
+    }
   };
 
   return (
@@ -413,8 +458,14 @@ export const EventInformation = ({
             </div>
           </Flex>
         </Flex>
-        <Button onClick={handleSave} size="sm">
-          저장
+        <Button
+          onClick={handleSave}
+          size="sm"
+          disabled={createEventMutation.isPending || updateBasicInfoMutation.isPending}
+        >
+          {createEventMutation.isPending || updateBasicInfoMutation.isPending
+            ? "저장 중..."
+            : "저장"}
         </Button>
       </div>
     </>

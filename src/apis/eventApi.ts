@@ -7,16 +7,26 @@ import {
   EventResponse,
   EventType,
   SearchMemberListResponse,
+  UpdateBasicInfoEventRequest,
+  UpdateEventFormRequest,
   UpdateEventRequest,
 } from "@/types/dtos/event";
 
 export const eventApi = {
-  createEvent: async (eventData: CreateEventRequest): Promise<EventType> => {
-    const response = await apiClient.post<EventType>("/admin/events", eventData);
+  createEvent: async (eventData: CreateEventRequest) => {
+    const response = await apiClient.post("/admin/events", eventData);
     return response.data;
   },
   updateEvent: async (eventId: number, eventData: UpdateEventRequest): Promise<EventType> => {
     const response = await apiClient.put<EventType>(`/admin/events/${eventId}`, eventData);
+    return response.data;
+  },
+  updateBasicInfoEvent: async (eventId: number, eventData: UpdateBasicInfoEventRequest) => {
+    const response = await apiClient.put(`/admin/events/${eventId}/basic-info`, eventData);
+    return response.data;
+  },
+  updateEventForm: async (eventId: number, eventData: UpdateEventFormRequest) => {
+    const response = await apiClient.put(`/admin/events/${eventId}/form-info`, eventData);
     return response.data;
   },
   getEventList: async (page: number = 1, size: number = 20): Promise<EventResponse> => {
