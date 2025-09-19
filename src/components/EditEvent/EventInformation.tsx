@@ -421,7 +421,7 @@ export const EventInformation = ({
             </div>
             <div style={{ flex: "0 0 calc(50% - 8px)" }}>
               <Text typo="body1" style={{ marginBottom: "8px" }}>
-                뒷풀이 인원 제한
+                뒤풀이 인원 제한
               </Text>
               <Flex gap="sm" style={{ marginBottom: "8px", justifyContent: "left" }}>
                 <label>
