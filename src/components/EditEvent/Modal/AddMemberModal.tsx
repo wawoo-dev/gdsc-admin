@@ -16,9 +16,11 @@ import { SearchMemberListResponse } from "@/types/dtos/event";
 type Phase = "INPUT" | "MEMBER_SEARCH" | "PICK" | "NONE_MEMBER_SEARCH";
 
 export const AddMemberModal = ({
+  title,
   open,
   setOpen,
 }: {
+  title: string;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
@@ -67,7 +69,7 @@ export const AddMemberModal = ({
         participant: {
           name: selectedMember.name,
           studentId: selectedMember.studentId.trim(),
-          phone: "", //TODO: dto 추가
+          phone: selectedMember.phone.trim(),
         },
       });
       // 상태 초기화
@@ -101,7 +103,7 @@ export const AddMemberModal = ({
         text={
           <>
             <Text typo="body1" color="sub">
-              2025-1 개강 총회
+              {title}
             </Text>
             {phase === "INPUT" && (
               <>

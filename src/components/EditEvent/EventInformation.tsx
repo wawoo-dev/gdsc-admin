@@ -22,7 +22,9 @@ import DropDownOption from "wowds-ui/DropDownOption";
 import { Flex } from "@/components/@common/Flex";
 import { Space } from "@/components/@common/Space";
 import { Text } from "@/components/@common/Text";
-import { EventType } from "@/types/dtos/event";
+import { useCreateEventMutation } from "@/hooks/mutations/useCreateEventMutation";
+import { useUpdateBasicInfoEventMutation } from "@/hooks/mutations/useUpdateBasicInfoEventMutation";
+import { EventType, CreateEventRequest } from "@/types/dtos/event";
 
 const parseISO = (s?: string): Date | undefined => {
   if (!s) {
@@ -51,6 +53,8 @@ export const EventInformation = ({
   eventId?: number;
   totalAttendeesCount: number;
 }) => {
+  const createEventMutation = useCreateEventMutation();
+  const updateBasicInfoMutation = useUpdateBasicInfoEventMutation();
   //const [formValues, setFormValues] = useState<EventType | null>(formValue);
   const [selectedRange, setSelectedRange] = useState<
     { from: Date | undefined; to: Date | undefined } | undefined
@@ -80,10 +84,10 @@ export const EventInformation = ({
     formValue?.regularRoleOnlyStatus || "DISABLED",
   );
   const [mainEventLimitEnabled, setMainEventLimitEnabled] = useState<boolean>(
-    (formValue?.mainEventMaxApplicantCount || 0) > 0,
+    eventId ? (formValue?.mainEventMaxApplicantCount || 0) > 0 : true,
   );
   const [afterPartyLimitEnabled, setAfterPartyLimitEnabled] = useState<boolean>(
-    (formValue?.afterPartyMaxApplicantCount || 0) > 0,
+    eventId ? (formValue?.afterPartyMaxApplicantCount || 0) > 0 : true,
   );
 
   // 신청 기간이 지났는지 확인하는 함수
@@ -99,6 +103,7 @@ export const EventInformation = ({
 
   useEffect(() => {
     if (formValue) {
+      console.log(formValue);
       // setFormValues는 제거 - 부모에서 이미 관리하고 있음
       setSelectedRange({
         from: parseISO(formValue.applicationPeriod?.startDate),
@@ -110,8 +115,8 @@ export const EventInformation = ({
       setMainEventMaxCount(formValue.mainEventMaxApplicantCount?.toString() || "");
       setAfterPartyMaxCount(formValue.afterPartyMaxApplicantCount?.toString() || "");
       setRegularRoleOnlyStatus(formValue.regularRoleOnlyStatus);
-      setMainEventLimitEnabled((formValue.mainEventMaxApplicantCount || 0) > 0);
-      setAfterPartyLimitEnabled((formValue.afterPartyMaxApplicantCount || 0) > 0);
+      setMainEventLimitEnabled(eventId ? (formValue.mainEventMaxApplicantCount || 0) > 0 : true);
+      setAfterPartyLimitEnabled(formValue.afterPartyStatus === "DISABLED" ? false : true);
     } else {
       setSelectedRange(undefined);
       setSelectedEventDate(undefined);
@@ -120,10 +125,10 @@ export const EventInformation = ({
       setMainEventMaxCount("");
       setAfterPartyMaxCount("");
       setRegularRoleOnlyStatus("DISABLED");
-      setMainEventLimitEnabled(false);
-      setAfterPartyLimitEnabled(false);
+      setMainEventLimitEnabled(eventId ? false : true);
+      setAfterPartyLimitEnabled(eventId ? false : true);
     }
-  }, [formValue]);
+  }, [formValue, eventId]);
 
   const handleVenueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setVenue(event.target.value);
@@ -134,35 +139,87 @@ export const EventInformation = ({
   };
 
   const handleMainEventMaxCountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setMainEventMaxCount(event.target.value);
+    const value = event.target.value;
+    // 숫자만 허용 (빈 문자열도 허용)
+    if (value === "" || /^\d+$/.test(value)) {
+      setMainEventMaxCount(value);
+    }
   };
 
   const handleAfterPartyMaxCountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAfterPartyMaxCount(event.target.value);
+    const value = event.target.value;
+    // 숫자만 허용 (빈 문자열도 허용)
+    if (value === "" || /^\d+$/.test(value)) {
+      setAfterPartyMaxCount(value);
+    }
   };
 
   const handleSave = () => {
-    setFormValues(prev =>
-      prev
-        ? {
-            ...prev,
-            name: title,
-            venue: venue,
-            regularRoleOnlyStatus: regularRoleOnlyStatus,
-            applicationPeriod: {
-              startDate: parseDate(selectedRange?.from),
-              endDate: parseDate(selectedRange?.to),
-            },
-            startAt: parseDate(selectedEventDate),
-            mainEventMaxApplicantCount: mainEventLimitEnabled
-              ? parseInt(mainEventMaxCount) || 0
-              : null,
-            afterPartyMaxApplicantCount: afterPartyLimitEnabled
-              ? parseInt(afterPartyMaxCount) || 0
-              : null,
-          }
-        : prev,
-    );
+    const basicInfoData: CreateEventRequest = {
+      name: title,
+      venue: venue,
+      regularRoleOnlyStatus: regularRoleOnlyStatus,
+      applicationPeriod: {
+        startDate: parseDate(selectedRange?.from),
+        endDate: parseDate(selectedRange?.to),
+      },
+      startAt: parseDate(selectedEventDate),
+      afterPartyMaxApplicantCount:
+        formValue?.afterPartyStatus === "DISABLED"
+          ? null
+          : formValue?.afterPartyMaxApplicantCount || null,
+      mainEventMaxApplicantCount: mainEventLimitEnabled ? parseInt(mainEventMaxCount) || 0 : null,
+    };
+
+    const updateFormValues = () => {
+      setFormValues(prev =>
+        prev
+          ? {
+              ...prev,
+              name: title,
+              venue: venue,
+              regularRoleOnlyStatus: regularRoleOnlyStatus,
+              applicationPeriod: {
+                startDate: parseDate(selectedRange?.from),
+                endDate: parseDate(selectedRange?.to),
+              },
+              startAt: parseDate(selectedEventDate),
+              mainEventMaxApplicantCount: mainEventLimitEnabled
+                ? parseInt(mainEventMaxCount) || 0
+                : null,
+              afterPartyMaxApplicantCount: afterPartyLimitEnabled
+                ? parseInt(afterPartyMaxCount) || 0
+                : null,
+            }
+          : prev,
+      );
+    };
+
+    if (eventId) {
+      // 기존 이벤트 수정
+      updateBasicInfoMutation.mutate(
+        { eventId, eventData: basicInfoData },
+        {
+          onSuccess: () => {
+            updateFormValues();
+          },
+          onError: error => {
+            console.error("기본 정보 저장 중 오류가 발생했습니다:", error);
+          },
+        },
+      );
+    } else {
+      // 새 이벤트 생성
+      createEventMutation.mutate(basicInfoData, {
+        onSuccess: data => {
+          updateFormValues();
+          console.log("이벤트가 성공적으로 생성되었습니다:", data);
+        },
+        onError: error => {
+          console.error("이벤트 생성 중 오류가 발생했습니다:", error);
+        },
+      });
+    }
   };
 
   return (
@@ -286,6 +343,7 @@ export const EventInformation = ({
                     const newDate = newValue?.toDate();
                     setSelectedEventDate(newDate);
                   }}
+                  minDate={selectedRange?.from ? dayjs(selectedRange.from) : undefined}
                   slotProps={{
                     textField: {
                       fullWidth: true,
@@ -365,14 +423,18 @@ export const EventInformation = ({
                   fullWidth
                   type="number"
                   style={{ backgroundColor: "white" }}
-                  inputProps={{ min: totalAttendeesCount > 0 ? totalAttendeesCount : 1 }}
+                  inputProps={{
+                    min: totalAttendeesCount > 0 ? totalAttendeesCount : 1,
+                    pattern: "[0-9]*",
+                    inputMode: "numeric",
+                  }}
                   size="small"
                 />
               )}
             </div>
             <div style={{ flex: "0 0 calc(50% - 8px)" }}>
               <Text typo="body1" style={{ marginBottom: "8px" }}>
-                뒷풀이 인원 제한
+                뒤풀이 인원 제한
               </Text>
               <Flex gap="sm" style={{ marginBottom: "8px", justifyContent: "left" }}>
                 <label>
@@ -406,15 +468,25 @@ export const EventInformation = ({
                   fullWidth
                   type="number"
                   style={{ backgroundColor: "white" }}
-                  inputProps={{ min: totalAttendeesCount > 0 ? totalAttendeesCount : 1 }}
+                  inputProps={{
+                    min: totalAttendeesCount > 0 ? totalAttendeesCount : 1,
+                    pattern: "[0-9]*",
+                    inputMode: "numeric",
+                  }}
                   size="small"
                 />
               )}
             </div>
           </Flex>
         </Flex>
-        <Button onClick={handleSave} size="sm">
-          저장
+        <Button
+          onClick={handleSave}
+          size="sm"
+          disabled={createEventMutation.isPending || updateBasicInfoMutation.isPending}
+        >
+          {createEventMutation.isPending || updateBasicInfoMutation.isPending
+            ? "저장 중..."
+            : "저장"}
         </Button>
       </div>
     </>

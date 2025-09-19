@@ -19,9 +19,6 @@ export const EditEventPage = () => {
   const { data: eventData, isLoading, error } = useGetEvent(id ?? null);
   const [formValues, setformValues] = useState<EventType | null>(null);
 
-  // 디버깅용 로그
-  console.log("EditEventPage Debug:", { eventIdParam, isNew, id, eventData, isLoading, error });
-
   useEffect(() => {
     if (isNew || id === null) {
       // 새로운 이벤트 생성 시 초기값 설정
@@ -83,7 +80,7 @@ export const EditEventPage = () => {
           />
         </TabsContent>
         <TabsContent value="tab2">
-          <ApplyMember />
+          <ApplyMember title={formValues?.name || ""}/>
         </TabsContent>
       </Tabs>
     </>

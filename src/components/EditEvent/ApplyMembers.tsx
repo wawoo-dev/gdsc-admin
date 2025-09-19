@@ -49,7 +49,7 @@ export function toAfterPartyStatusLabel(status: AfterPartyApplicationStatus): st
   }
 }
 
-export const ApplyMember = () => {
+export const ApplyMember = ({ title }: { title: string }) => {
   const { eventId } = useParams<{ eventId: string }>();
   const id = Number(eventId);
 
@@ -148,7 +148,7 @@ export const ApplyMember = () => {
         </Flex>
       </Flex>
       <Space height={30} />
-      <AddMemberModal open={addMemberOpen} setOpen={setAddMemberOpen} />
+      <AddMemberModal open={addMemberOpen} setOpen={setAddMemberOpen} title={title} />
       <DeleteMemberModal
         open={deleteMemberOpen}
         setOpen={setDeleteMemberOpen}

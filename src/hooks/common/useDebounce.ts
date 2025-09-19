@@ -1,13 +1,17 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
-/** value가 바뀐 뒤 delay(ms)만큼 지난 후에만 값 갱신 */
 export function useDebounce<T>(value: T, delay = 300): T {
-  const [debounced, setDebounced] = useState<T>(value);
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
   useEffect(() => {
-    const id = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(id);
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
   }, [value, delay]);
 
-  return debounced;
+  return debouncedValue;
 }
