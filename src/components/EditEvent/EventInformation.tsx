@@ -343,7 +343,7 @@ export const EventInformation = ({
                     const newDate = newValue?.toDate();
                     setSelectedEventDate(newDate);
                   }}
-                  minDate={selectedRange?.to ? dayjs(selectedRange.to) : undefined}
+                  minDate={selectedRange?.from ? dayjs(selectedRange.from) : undefined}
                   slotProps={{
                     textField: {
                       fullWidth: true,
