@@ -29,7 +29,7 @@ export type CreateEventRequest = EventBasicInfoType;
 // 이벤트 생성 요청 타입
 export type UpdateEventRequest = Omit<EventType, "eventId">;
 export type UpdateBasicInfoEventRequest = EventBasicInfoType;
-export type UpdateEventFormRequest = Omit<EventType, "eventId">;
+export type UpdateEventFormRequest = EventFormType;
 // 이벤트 타입
 
 export interface EventBasicInfoType {

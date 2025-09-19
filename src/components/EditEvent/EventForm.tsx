@@ -7,9 +7,8 @@ import { FormFieldProps } from "./FormField";
 import { Flex } from "../@common/Flex";
 import { Space } from "../@common/Space";
 import { useCreateEventMutation } from "@/hooks/mutations/useCreateEventMutation";
-import { useUpdateEventMutation } from "@/hooks/mutations/useUpdateEventMutation";
-import { EventType } from "@/types/dtos/event";
-
+import { useUpdateEventFormMutation } from "@/hooks/mutations/useUpdateEventFormMutation";
+import { EventType, UpdateEventFormRequest } from "@/types/dtos/event";
 const getFormFields = (formValue: EventType | null): FormFieldProps[] => {
   return [
     {
@@ -94,7 +93,7 @@ export const EventForm = ({
   );
 
   const createEventMutation = useCreateEventMutation();
-  const updateEventMutation = useUpdateEventMutation();
+  const updateEventFormMutation = useUpdateEventFormMutation();
 
   const handleRequiredToggle = (id: string, next: boolean) => {
     setRequiredById(prev => ({ ...prev, [id]: next }));
@@ -187,20 +186,13 @@ export const EventForm = ({
   const handleDescriptionChange = (value: string) => {
     setDescription(value);
   };
-  const buildEventPayload = (event: EventType): Omit<EventType, "eventId"> => ({
-    name: event.name,
-    venue: event.venue,
-    startAt: event.startAt,
+  const buildEventPayload = (event: EventType): UpdateEventFormRequest => ({
     applicationDescription: event.applicationDescription,
-    applicationPeriod: event.applicationPeriod,
-    regularRoleOnlyStatus: event.regularRoleOnlyStatus,
     afterPartyStatus: event.afterPartyStatus,
     prePaymentStatus: event.prePaymentStatus,
     postPaymentStatus: event.postPaymentStatus,
     rsvpQuestionStatus: event.rsvpQuestionStatus,
     noticeConfirmQuestionStatus: event.noticeConfirmQuestionStatus,
-    mainEventMaxApplicantCount: event.mainEventMaxApplicantCount,
-    afterPartyMaxApplicantCount: event.afterPartyMaxApplicantCount,
   });
 
   const handlePublish = () => {
@@ -213,10 +205,20 @@ export const EventForm = ({
     setFormValues(prev => (prev ? { ...prev, applicationDescription: description } : prev));
     const nextEvent = { ...formValue, applicationDescription: description };
     const eventPayload = buildEventPayload(nextEvent);
+
     if (eventId) {
-      updateEventMutation.mutate({ eventId, eventData: eventPayload });
-    } else {
-      createEventMutation.mutate(eventPayload);
+      // 기존 이벤트 수정 - 폼 정보만 업데이트
+      updateEventFormMutation.mutate(
+        { eventId, eventData: eventPayload },
+        {
+          onSuccess: () => {
+            console.log("이벤트 폼 정보가 성공적으로 수정되었습니다.");
+          },
+          onError: error => {
+            console.error("이벤트 폼 정보 수정 중 오류가 발생했습니다:", error);
+          },
+        },
+      );
     }
   };
   return (
@@ -226,9 +228,9 @@ export const EventForm = ({
         <Button
           size="sm"
           onClick={handlePublish}
-          disabled={createEventMutation.isPending || updateEventMutation.isPending}
+          disabled={createEventMutation.isPending || updateEventFormMutation.isPending}
         >
-          {createEventMutation.isPending || updateEventMutation.isPending
+          {createEventMutation.isPending || updateEventFormMutation.isPending
             ? eventId
               ? "수정 중..."
               : "게시 중..."
