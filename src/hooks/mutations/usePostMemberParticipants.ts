@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { eventApi } from "@/apis/eventApi";
 
 interface PostMemberParticipantsParams {
@@ -11,8 +11,13 @@ interface PostMemberParticipantsParams {
 }
 
 export default function usePostMemberParticipantsMutation() {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ eventId, participant }: PostMemberParticipantsParams) =>
       eventApi.postMemberParticipants(eventId, participant),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["eventParticipants"] });
+    },
   });
 }

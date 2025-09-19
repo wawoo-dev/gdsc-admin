@@ -126,4 +126,5 @@ export interface SearchMemberListResponse {
   name: string;
   studentId: string;
   participable: boolean;
+  phone: string;
 }

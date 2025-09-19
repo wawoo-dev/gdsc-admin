@@ -80,7 +80,7 @@ export const EditEventPage = () => {
           />
         </TabsContent>
         <TabsContent value="tab2">
-          <ApplyMember />
+          <ApplyMember title={formValues?.name || ""}/>
         </TabsContent>
       </Tabs>
     </>
