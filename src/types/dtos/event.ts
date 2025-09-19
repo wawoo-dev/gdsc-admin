@@ -38,7 +38,7 @@ export interface EventBasicInfoType {
   startAt: string; // ISO 8601 날짜 문자열
   applicationPeriod: ApplicationPeriod;
   regularRoleOnlyStatus: "ENABLED" | "DISABLED";
-  afterPartyStatus: "ENABLED" | "DISABLED";
+  afterPartyMaxApplicantCount: number | null;
   mainEventMaxApplicantCount: number | null;
 }
 

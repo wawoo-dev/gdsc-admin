@@ -84,10 +84,10 @@ export const EventInformation = ({
     formValue?.regularRoleOnlyStatus || "DISABLED",
   );
   const [mainEventLimitEnabled, setMainEventLimitEnabled] = useState<boolean>(
-    (formValue?.mainEventMaxApplicantCount || 0) > 0,
+    eventId ? (formValue?.mainEventMaxApplicantCount || 0) > 0 : true,
   );
   const [afterPartyLimitEnabled, setAfterPartyLimitEnabled] = useState<boolean>(
-    (formValue?.afterPartyMaxApplicantCount || 0) > 0,
+    eventId ? (formValue?.afterPartyMaxApplicantCount || 0) > 0 : true,
   );
 
   // 신청 기간이 지났는지 확인하는 함수
@@ -103,6 +103,7 @@ export const EventInformation = ({
 
   useEffect(() => {
     if (formValue) {
+      console.log(formValue);
       // setFormValues는 제거 - 부모에서 이미 관리하고 있음
       setSelectedRange({
         from: parseISO(formValue.applicationPeriod?.startDate),
@@ -114,8 +115,8 @@ export const EventInformation = ({
       setMainEventMaxCount(formValue.mainEventMaxApplicantCount?.toString() || "");
       setAfterPartyMaxCount(formValue.afterPartyMaxApplicantCount?.toString() || "");
       setRegularRoleOnlyStatus(formValue.regularRoleOnlyStatus);
-      setMainEventLimitEnabled((formValue.mainEventMaxApplicantCount || 0) > 0);
-      setAfterPartyLimitEnabled((formValue.afterPartyMaxApplicantCount || 0) > 0);
+      setMainEventLimitEnabled(eventId ? (formValue.mainEventMaxApplicantCount || 0) > 0 : true);
+      setAfterPartyLimitEnabled(formValue.afterPartyStatus === "DISABLED" ? false : true);
     } else {
       setSelectedRange(undefined);
       setSelectedEventDate(undefined);
@@ -124,10 +125,10 @@ export const EventInformation = ({
       setMainEventMaxCount("");
       setAfterPartyMaxCount("");
       setRegularRoleOnlyStatus("DISABLED");
-      setMainEventLimitEnabled(false);
-      setAfterPartyLimitEnabled(false);
+      setMainEventLimitEnabled(eventId ? false : true);
+      setAfterPartyLimitEnabled(eventId ? false : true);
     }
-  }, [formValue]);
+  }, [formValue, eventId]);
 
   const handleVenueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setVenue(event.target.value);
@@ -155,7 +156,10 @@ export const EventInformation = ({
         endDate: parseDate(selectedRange?.to),
       },
       startAt: parseDate(selectedEventDate),
-      afterPartyStatus: formValue?.afterPartyStatus || "DISABLED",
+      afterPartyMaxApplicantCount:
+        formValue?.afterPartyStatus === "DISABLED"
+          ? null
+          : formValue?.afterPartyMaxApplicantCount || null,
       mainEventMaxApplicantCount: mainEventLimitEnabled ? parseInt(mainEventMaxCount) || 0 : null,
     };
 

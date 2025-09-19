@@ -119,6 +119,8 @@ export const EventForm = ({
               // 뒷풀이가 DISABLED면 선입금도 DISABLED로 설정
               prePaymentStatus: next ? prev.prePaymentStatus : "DISABLED",
               postPaymentStatus: next ? prev.postPaymentStatus : "DISABLED",
+              // 뒷풀이가 DISABLED면 뒷풀이 제한 인원도 null로 설정
+              afterPartyMaxApplicantCount: next ? prev.afterPartyMaxApplicantCount : null,
             }
           : prev,
       );
