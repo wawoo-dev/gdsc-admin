@@ -5,6 +5,7 @@ import TabsContent from "wowds-ui/TabsContent";
 import TabsItem from "wowds-ui/TabsItem";
 import TabsList from "wowds-ui/TabsList";
 import { Space } from "@/components/@common/Space";
+import { AfterPartyManagement } from "@/components/EditEvent/AfterPartyManagement";
 import { ApplyMember } from "@/components/EditEvent/ApplyMembers";
 import { EventForm } from "@/components/EditEvent/EventForm";
 import { EventInformation } from "@/components/EditEvent/EventInformation";
@@ -70,6 +71,7 @@ export const EditEventPage = () => {
         <TabsList>
           <TabsItem value="tab1">행사 신청 폼</TabsItem>
           <TabsItem value="tab2">신청 인원</TabsItem>
+          <TabsItem value="tab3">뒤풀이 인원</TabsItem>
         </TabsList>
         <TabsContent value="tab1">
           <EventForm
@@ -80,7 +82,10 @@ export const EditEventPage = () => {
           />
         </TabsContent>
         <TabsContent value="tab2">
-          <ApplyMember title={formValues?.name || ""}/>
+          <ApplyMember title={formValues?.name || ""} />
+        </TabsContent>
+        <TabsContent value="tab3">
+          <AfterPartyManagement />
         </TabsContent>
       </Tabs>
     </>
