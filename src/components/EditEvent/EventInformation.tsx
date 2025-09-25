@@ -222,6 +222,7 @@ export const EventInformation = ({
     }
   };
 
+  console.log(formValue);
   return (
     <>
       <div
@@ -433,48 +434,53 @@ export const EventInformation = ({
               )}
             </div>
             <div style={{ flex: "0 0 calc(50% - 8px)" }}>
-              <Text typo="body1" style={{ marginBottom: "8px" }}>
-                뒤풀이 인원 제한
-              </Text>
-              <Flex gap="sm" style={{ marginBottom: "8px", justifyContent: "left" }}>
-                <label>
-                  <input
-                    type="radio"
-                    name="afterPartyLimit"
-                    checked={!afterPartyLimitEnabled}
-                    onChange={() => setAfterPartyLimitEnabled(false)}
-                    style={{ marginRight: "4px" }}
-                  />
-                  없음
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="afterPartyLimit"
-                    checked={afterPartyLimitEnabled}
-                    onChange={() => setAfterPartyLimitEnabled(true)}
-                    style={{ marginRight: "4px" }}
-                  />
-                  있음
-                </label>
-              </Flex>
-              {afterPartyLimitEnabled && (
-                <TextField
-                  label="제한 인원"
-                  placeholder="제한 인원(20)"
-                  value={afterPartyMaxCount}
-                  onChange={handleAfterPartyMaxCountChange}
-                  variant="outlined"
-                  fullWidth
-                  type="number"
-                  style={{ backgroundColor: "white" }}
-                  inputProps={{
-                    min: totalAttendeesCount > 0 ? totalAttendeesCount : 1,
-                    pattern: "[0-9]*",
-                    inputMode: "numeric",
-                  }}
-                  size="small"
-                />
+              {eventId && formValue?.afterPartyStatus === "ENABLED" && (
+                <>
+                  <Text typo="body1" style={{ marginBottom: "8px" }}>
+                    뒤풀이 인원 제한
+                  </Text>
+                  <Flex gap="sm" style={{ marginBottom: "8px", justifyContent: "left" }}>
+                    <label>
+                      <input
+                        type="radio"
+                        name="afterPartyLimit"
+                        checked={!afterPartyLimitEnabled}
+                        onChange={() => setAfterPartyLimitEnabled(false)}
+                        style={{ marginRight: "4px" }}
+                      />
+                      없음
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="afterPartyLimit"
+                        checked={afterPartyLimitEnabled}
+                        onChange={() => setAfterPartyLimitEnabled(true)}
+                        style={{ marginRight: "4px" }}
+                      />
+                      있음
+                    </label>
+                  </Flex>
+
+                  {afterPartyLimitEnabled && (
+                    <TextField
+                      label="제한 인원"
+                      placeholder="제한 인원(20)"
+                      value={afterPartyMaxCount}
+                      onChange={handleAfterPartyMaxCountChange}
+                      variant="outlined"
+                      fullWidth
+                      type="number"
+                      style={{ backgroundColor: "white" }}
+                      inputProps={{
+                        min: totalAttendeesCount > 0 ? totalAttendeesCount : 1,
+                        pattern: "[0-9]*",
+                        inputMode: "numeric",
+                      }}
+                      size="small"
+                    />
+                  )}
+                </>
               )}
             </div>
           </Flex>
@@ -484,9 +490,7 @@ export const EventInformation = ({
           size="sm"
           disabled={createEventMutation.isPending || updateBasicInfoMutation.isPending}
         >
-          {createEventMutation.isPending || updateBasicInfoMutation.isPending
-            ? "저장 중..."
-            : "저장"}
+          {eventId ? "저장하기" : "게시하기"}
         </Button>
       </div>
     </>

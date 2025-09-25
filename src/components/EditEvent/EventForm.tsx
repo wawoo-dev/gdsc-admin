@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { css } from "@emotion/react";
+import { Link as LinkIcon } from "wowds-icons";
 import { typography } from "wowds-tokens";
 import Button from "wowds-ui/Button";
 import { FormField } from "./FormField";
@@ -226,7 +227,10 @@ export const EventForm = ({
   return (
     <div>
       <Space height={16} />
-      <Flex justify="end">
+      <Flex justify="end" gap="sm">
+        <Button size="sm" variant="sub" icon={<LinkIcon />}>
+          URL 복사하기
+        </Button>
         <Button
           size="sm"
           onClick={handlePublish}
@@ -236,9 +240,7 @@ export const EventForm = ({
             ? eventId
               ? "수정 중..."
               : "게시 중..."
-            : eventId
-              ? "수정하기"
-              : "게시하기"}
+            : "저장하기"}
         </Button>
       </Flex>
       <Space height={30} />
