@@ -1,10 +1,9 @@
-import React, { useState } from "react";
-import { Modal } from "@mui/material";
+import { useState } from "react";
 import { css } from "@emotion/react";
+import { Modal } from "@mui/material";
 import { color, space } from "wowds-tokens";
 import Button from "wowds-ui/Button";
 import TextField from "wowds-ui/TextField";
-import { Flex } from "@/components/@common/Flex";
 import { Space } from "@/components/@common/Space";
 import { Text } from "@/components/@common/Text";
 
@@ -60,17 +59,14 @@ export const CopyUrlModal = ({ open, onClose, url }: CopyUrlModalProps) => {
         <button
           onClick={onClose}
           css={css({
-            "position": "absolute",
-            "top": "16px",
-            "right": "16px",
-            "background": "none",
-            "border": "none",
-            "fontSize": "20px",
-            "cursor": "pointer",
-            "color": color.sub,
-            "&:hover": {
-              color: color.text,
-            },
+            position: "absolute",
+            top: "16px",
+            right: "16px",
+            background: "none",
+            border: "none",
+            fontSize: "20px",
+            cursor: "pointer",
+            color: color.sub,
           })}
         >
           ×
@@ -88,10 +84,8 @@ export const CopyUrlModal = ({ open, onClose, url }: CopyUrlModalProps) => {
 
         {/* URL 입력 필드 */}
         <TextField
-          id="url-input"
+          label={""}
           value={url}
-          readOnly
-          fullWidth
           css={css({
             "& .MuiInputBase-root": {
               "backgroundColor": color.backgroundAlternative,
@@ -100,19 +94,6 @@ export const CopyUrlModal = ({ open, onClose, url }: CopyUrlModalProps) => {
               },
             },
           })}
-          InputProps={{
-            startAdornment: (
-              <span
-                css={css({
-                  marginRight: "8px",
-                  color: color.sub,
-                  fontSize: "16px",
-                })}
-              >
-                🔗
-              </span>
-            ),
-          }}
         />
 
         <Space height="lg" />
@@ -120,7 +101,6 @@ export const CopyUrlModal = ({ open, onClose, url }: CopyUrlModalProps) => {
         {/* 복사 버튼 */}
         <Button
           onClick={handleCopyUrl}
-          fullWidth
           size="lg"
           css={css({
             "backgroundColor": copied ? color.success : color.primary,
