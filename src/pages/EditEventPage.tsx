@@ -5,6 +5,7 @@ import TabsContent from "wowds-ui/TabsContent";
 import TabsItem from "wowds-ui/TabsItem";
 import TabsList from "wowds-ui/TabsList";
 import { Space } from "@/components/@common/Space";
+import { AfterPartyManagement } from "@/components/EditEvent/AfterPartyManagement";
 import { ApplyMember } from "@/components/EditEvent/ApplyMembers";
 import { EventForm } from "@/components/EditEvent/EventForm";
 import { EventInformation } from "@/components/EditEvent/EventInformation";
@@ -65,24 +66,32 @@ export const EditEventPage = () => {
         totalAttendeesCount={eventData?.totalAttendeesCount || 0}
       />
 
-      <Space height={54} />
-      <Tabs defaultValue="tab1">
-        <TabsList>
-          <TabsItem value="tab1">행사 신청 폼</TabsItem>
-          <TabsItem value="tab2">신청 인원</TabsItem>
-        </TabsList>
-        <TabsContent value="tab1">
-          <EventForm
-            formValue={formValues}
-            setFormValues={setformValues}
-            eventId={id || undefined}
-            totalAttendeesCount={eventData?.totalAttendeesCount || 0}
-          />
-        </TabsContent>
-        <TabsContent value="tab2">
-          <ApplyMember title={formValues?.name || ""}/>
-        </TabsContent>
-      </Tabs>
+      {eventIdParam !== "new" && (
+        <>
+          <Space height={54} />
+          <Tabs defaultValue="tab1">
+            <TabsList>
+              <TabsItem value="tab1">행사 신청 폼</TabsItem>
+              <TabsItem value="tab2">신청 인원</TabsItem>
+              <TabsItem value="tab3">뒤풀이 인원</TabsItem>
+            </TabsList>
+            <TabsContent value="tab1">
+              <EventForm
+                formValue={formValues}
+                setFormValues={setformValues}
+                eventId={id || undefined}
+                totalAttendeesCount={eventData?.totalAttendeesCount || 0}
+              />
+            </TabsContent>
+            <TabsContent value="tab2">
+              <ApplyMember title={formValues?.name || ""} />
+            </TabsContent>
+            <TabsContent value="tab3">
+              <AfterPartyManagement />
+            </TabsContent>
+          </Tabs>
+        </>
+      )}
     </>
   );
 };

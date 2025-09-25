@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { css } from "@emotion/react";
+import { Link as LinkIcon } from "wowds-icons";
 import { typography } from "wowds-tokens";
 import Button from "wowds-ui/Button";
 import { FormField } from "./FormField";
 import { FormFieldProps } from "./FormField";
 import { Flex } from "../@common/Flex";
 import { Space } from "../@common/Space";
-import { useCreateEventMutation } from "@/hooks/mutations/useCreateEventMutation";
 import { useUpdateEventFormMutation } from "@/hooks/mutations/useUpdateEventFormMutation";
 import { EventType, UpdateEventFormRequest } from "@/types/dtos/event";
 const getFormFields = (formValue: EventType | null): FormFieldProps[] => {
@@ -92,7 +92,6 @@ export const EventForm = ({
     Object.fromEntries(formFields.map(field => [field.id, true])),
   );
 
-  const createEventMutation = useCreateEventMutation();
   const updateEventFormMutation = useUpdateEventFormMutation();
 
   const handleRequiredToggle = (id: string, next: boolean) => {
@@ -221,24 +220,20 @@ export const EventForm = ({
           },
         },
       );
+    } else {
+      // 새 이벤트 생성은 EventInformation에서 처리되므로 여기서는 폼 정보만 업데이트
+      console.log("새 이벤트 생성은 기본 정보 입력 후 처리됩니다.");
     }
   };
   return (
     <div>
       <Space height={16} />
-      <Flex justify="end">
-        <Button
-          size="sm"
-          onClick={handlePublish}
-          disabled={createEventMutation.isPending || updateEventFormMutation.isPending}
-        >
-          {createEventMutation.isPending || updateEventFormMutation.isPending
-            ? eventId
-              ? "수정 중..."
-              : "게시 중..."
-            : eventId
-              ? "수정하기"
-              : "게시하기"}
+      <Flex justify="end" gap="sm">
+        <Button size="sm" variant="sub" icon={<LinkIcon />}>
+          URL 복사하기
+        </Button>
+        <Button size="sm" onClick={handlePublish} disabled={updateEventFormMutation.isPending}>
+          {updateEventFormMutation.isPending ? "수정 중..." : "저장하기"}
         </Button>
       </Flex>
       <Space height={30} />

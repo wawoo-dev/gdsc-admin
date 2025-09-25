@@ -19,6 +19,7 @@ import { color, space } from "wowds-tokens";
 import Button from "wowds-ui/Button";
 import DropDown from "wowds-ui/DropDown";
 import DropDownOption from "wowds-ui/DropDownOption";
+import { CopyUrlModal } from "./Modal/CopyUrlModal";
 import { Flex } from "@/components/@common/Flex";
 import { Space } from "@/components/@common/Space";
 import { Text } from "@/components/@common/Text";
@@ -89,6 +90,7 @@ export const EventInformation = ({
   const [afterPartyLimitEnabled, setAfterPartyLimitEnabled] = useState<boolean>(
     eventId ? (formValue?.afterPartyMaxApplicantCount || 0) > 0 : true,
   );
+  const [copyUrlModalOpen, setCopyUrlModalOpen] = useState(false);
 
   // 신청 기간이 지났는지 확인하는 함수
   const isApplicationInPeriod = () => {
@@ -213,6 +215,8 @@ export const EventInformation = ({
       createEventMutation.mutate(basicInfoData, {
         onSuccess: data => {
           updateFormValues();
+          setCopyUrlModalOpen(true);
+          eventUrl = `https://event.wawoo.dev/1`;
           console.log("이벤트가 성공적으로 생성되었습니다:", data);
         },
         onError: error => {
@@ -221,6 +225,9 @@ export const EventInformation = ({
       });
     }
   };
+
+  // 이벤트 URL 생성
+  let eventUrl = `https://event.wawoo.dev/${eventId}`;
 
   return (
     <>
@@ -433,48 +440,53 @@ export const EventInformation = ({
               )}
             </div>
             <div style={{ flex: "0 0 calc(50% - 8px)" }}>
-              <Text typo="body1" style={{ marginBottom: "8px" }}>
-                뒤풀이 인원 제한
-              </Text>
-              <Flex gap="sm" style={{ marginBottom: "8px", justifyContent: "left" }}>
-                <label>
-                  <input
-                    type="radio"
-                    name="afterPartyLimit"
-                    checked={!afterPartyLimitEnabled}
-                    onChange={() => setAfterPartyLimitEnabled(false)}
-                    style={{ marginRight: "4px" }}
-                  />
-                  없음
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="afterPartyLimit"
-                    checked={afterPartyLimitEnabled}
-                    onChange={() => setAfterPartyLimitEnabled(true)}
-                    style={{ marginRight: "4px" }}
-                  />
-                  있음
-                </label>
-              </Flex>
-              {afterPartyLimitEnabled && (
-                <TextField
-                  label="제한 인원"
-                  placeholder="제한 인원(20)"
-                  value={afterPartyMaxCount}
-                  onChange={handleAfterPartyMaxCountChange}
-                  variant="outlined"
-                  fullWidth
-                  type="number"
-                  style={{ backgroundColor: "white" }}
-                  inputProps={{
-                    min: totalAttendeesCount > 0 ? totalAttendeesCount : 1,
-                    pattern: "[0-9]*",
-                    inputMode: "numeric",
-                  }}
-                  size="small"
-                />
+              {eventId && formValue?.afterPartyStatus === "ENABLED" && (
+                <>
+                  <Text typo="body1" style={{ marginBottom: "8px" }}>
+                    뒤풀이 인원 제한
+                  </Text>
+                  <Flex gap="sm" style={{ marginBottom: "8px", justifyContent: "left" }}>
+                    <label>
+                      <input
+                        type="radio"
+                        name="afterPartyLimit"
+                        checked={!afterPartyLimitEnabled}
+                        onChange={() => setAfterPartyLimitEnabled(false)}
+                        style={{ marginRight: "4px" }}
+                      />
+                      없음
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="afterPartyLimit"
+                        checked={afterPartyLimitEnabled}
+                        onChange={() => setAfterPartyLimitEnabled(true)}
+                        style={{ marginRight: "4px" }}
+                      />
+                      있음
+                    </label>
+                  </Flex>
+
+                  {afterPartyLimitEnabled && (
+                    <TextField
+                      label="제한 인원"
+                      placeholder="제한 인원(20)"
+                      value={afterPartyMaxCount}
+                      onChange={handleAfterPartyMaxCountChange}
+                      variant="outlined"
+                      fullWidth
+                      type="number"
+                      style={{ backgroundColor: "white" }}
+                      inputProps={{
+                        min: totalAttendeesCount > 0 ? totalAttendeesCount : 1,
+                        pattern: "[0-9]*",
+                        inputMode: "numeric",
+                      }}
+                      size="small"
+                    />
+                  )}
+                </>
               )}
             </div>
           </Flex>
@@ -484,11 +496,16 @@ export const EventInformation = ({
           size="sm"
           disabled={createEventMutation.isPending || updateBasicInfoMutation.isPending}
         >
-          {createEventMutation.isPending || updateBasicInfoMutation.isPending
-            ? "저장 중..."
-            : "저장"}
+          {eventId ? "저장하기" : "게시하기"}
         </Button>
       </div>
+
+      {/* URL 복사 모달 */}
+      <CopyUrlModal
+        open={copyUrlModalOpen}
+        onClose={() => setCopyUrlModalOpen(false)}
+        url={eventUrl}
+      />
     </>
   );
 };
