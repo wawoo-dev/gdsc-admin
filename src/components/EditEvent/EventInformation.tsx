@@ -19,6 +19,7 @@ import { color, space } from "wowds-tokens";
 import Button from "wowds-ui/Button";
 import DropDown from "wowds-ui/DropDown";
 import DropDownOption from "wowds-ui/DropDownOption";
+import { CopyUrlModal } from "./Modal/CopyUrlModal";
 import { Flex } from "@/components/@common/Flex";
 import { Space } from "@/components/@common/Space";
 import { Text } from "@/components/@common/Text";
@@ -89,6 +90,7 @@ export const EventInformation = ({
   const [afterPartyLimitEnabled, setAfterPartyLimitEnabled] = useState<boolean>(
     eventId ? (formValue?.afterPartyMaxApplicantCount || 0) > 0 : true,
   );
+  const [copyUrlModalOpen, setCopyUrlModalOpen] = useState(false);
 
   // 신청 기간이 지났는지 확인하는 함수
   const isApplicationInPeriod = () => {
@@ -213,6 +215,8 @@ export const EventInformation = ({
       createEventMutation.mutate(basicInfoData, {
         onSuccess: data => {
           updateFormValues();
+          setCopyUrlModalOpen(true);
+          eventUrl = `https://event.wawoo.dev/1`;
           console.log("이벤트가 성공적으로 생성되었습니다:", data);
         },
         onError: error => {
@@ -222,7 +226,9 @@ export const EventInformation = ({
     }
   };
 
-  console.log(formValue);
+  // 이벤트 URL 생성
+  let eventUrl = `https://event.wawoo.dev/${eventId}`;
+
   return (
     <>
       <div
@@ -493,6 +499,13 @@ export const EventInformation = ({
           {eventId ? "저장하기" : "게시하기"}
         </Button>
       </div>
+
+      {/* URL 복사 모달 */}
+      <CopyUrlModal
+        open={copyUrlModalOpen}
+        onClose={() => setCopyUrlModalOpen(false)}
+        url={eventUrl}
+      />
     </>
   );
 };

@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { css } from "@emotion/react";
 import { color, space } from "wowds-tokens";
-import Button from "wowds-ui/Button";
 import Checkbox from "wowds-ui/Checkbox";
 import Table from "wowds-ui/Table";
 import { Flex } from "../@common/Flex";
