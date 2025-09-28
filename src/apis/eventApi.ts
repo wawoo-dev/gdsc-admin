@@ -13,8 +13,8 @@ import {
 } from "@/types/dtos/event";
 
 export const eventApi = {
-  createEvent: async (eventData: CreateEventRequest) => {
-    const response = await apiClient.post("/admin/events", eventData);
+  createEvent: async (eventData: CreateEventRequest): Promise<{ eventId: string }> => {
+    const response = await apiClient.post<{ eventId: string }>("/admin/events", eventData);
     return response.data;
   },
   updateEvent: async (eventId: number, eventData: UpdateEventRequest): Promise<EventType> => {
