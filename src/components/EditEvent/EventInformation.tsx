@@ -54,6 +54,7 @@ export const EventInformation = ({
   eventId?: number;
   totalAttendeesCount: number;
 }) => {
+  let eventUrl = "";
   const createEventMutation = useCreateEventMutation();
   const updateBasicInfoMutation = useUpdateBasicInfoEventMutation();
   //const [formValues, setFormValues] = useState<EventType | null>(formValue);
@@ -216,7 +217,7 @@ export const EventInformation = ({
         onSuccess: data => {
           updateFormValues();
           setCopyUrlModalOpen(true);
-          eventUrl = `https://event.wawoo.dev/1`;
+          eventUrl = `${import.meta.env.VITE_EVENT_URL}/${data.eventId}`;
           console.log("이벤트가 성공적으로 생성되었습니다:", data);
         },
         onError: error => {
@@ -225,9 +226,6 @@ export const EventInformation = ({
       });
     }
   };
-
-  // 이벤트 URL 생성
-  let eventUrl = `https://event.wawoo.dev/${eventId}`;
 
   return (
     <>
