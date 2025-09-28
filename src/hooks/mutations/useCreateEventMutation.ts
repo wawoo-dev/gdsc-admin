@@ -8,7 +8,7 @@ export const useCreateEventMutation = () => {
 
   return useMutation<{ eventId: string }, Error, CreateEventRequest>({
     mutationFn: (eventData: CreateEventRequest) => eventApi.createEvent(eventData),
-    onSuccess: data => {
+    onSuccess: () => {
       // 이벤트 목록 쿼리 무효화하여 새로고침
       queryClient.invalidateQueries({ queryKey: [QueryKey.eventList] });
     },
