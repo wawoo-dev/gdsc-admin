@@ -54,7 +54,7 @@ export const EventInformation = ({
   eventId?: number;
   totalAttendeesCount: number;
 }) => {
-  let eventUrl = "";
+  const [eventUrl, setEventUrl] = useState("");
   const createEventMutation = useCreateEventMutation();
   const updateBasicInfoMutation = useUpdateBasicInfoEventMutation();
   //const [formValues, setFormValues] = useState<EventType | null>(formValue);
@@ -217,7 +217,7 @@ export const EventInformation = ({
         onSuccess: data => {
           updateFormValues();
           setCopyUrlModalOpen(true);
-          eventUrl = `${import.meta.env.VITE_EVENT_URL}/event/${data.eventId}`;
+          setEventUrl(`${import.meta.env.VITE_EVENT_URL}/event/${data.eventId}`);
           console.log("이벤트가 성공적으로 생성되었습니다:", data);
         },
         onError: error => {
