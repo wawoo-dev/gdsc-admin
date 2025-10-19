@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { css } from "@emotion/react";
 import { useParams } from "react-router-dom";
+import { color } from "wowds-tokens";
 import Checkbox from "wowds-ui/Checkbox";
 import DropDown from "wowds-ui/DropDown";
 import DropDownOption from "wowds-ui/DropDownOption";
@@ -15,7 +16,6 @@ import { useUpdateAfterPartyStatusMutation } from "@/hooks/mutations/useUpdateAf
 import { useUpdateAllAfterPartyStatusMutation } from "@/hooks/mutations/useUpdateAllAfterPartyStatusMutation";
 import { useGetAfterPartyApplicants } from "@/hooks/queries/useGetAfterPartyApplicants";
 import { isDigitStart, onlyDigits, isEnglishStart, isKoreanStart } from "@/utils/searchQuery";
-
 export const AfterPartyManagement = () => {
   const { eventId } = useParams<{ eventId: string }>();
   const id = Number(eventId);
@@ -315,13 +315,15 @@ export const AfterPartyManagement = () => {
       <Space height={30} />
 
       <Table fullWidth>
-        <Table.Thead>
+        <Table.Thead style={{ borderBottom: `1px solid rgba(0, 0, 0, 0.12)` }}>
           <Table.Th>이름</Table.Th>
           <Table.Th>학번</Table.Th>
-          <Table.Th>전화번호</Table.Th>
-          <Table.Th>
+          <Table.Th style={{ borderRight: `1px solid rgba(0, 0, 0, 0.12)` }}>전화번호</Table.Th>
+          <Table.Th style={{ backgroundColor: "white" }}>
             <Flex align="center" gap="sm">
-              <Text typo="body1">선입금 납부</Text>
+              <Text typo="body2" style={{ whiteSpace: "nowrap" }}>
+                선입금 납부
+              </Text>
               <Text typo="body2" color="primary">
                 {stats.prePayment.count}/{stats.prePayment.total}
               </Text>
@@ -333,9 +335,11 @@ export const AfterPartyManagement = () => {
               />
             </Flex>
           </Table.Th>
-          <Table.Th>
+          <Table.Th style={{ backgroundColor: "white" }}>
             <Flex align="center" gap="sm">
-              <Text typo="body1">뒤풀이 참여</Text>
+              <Text typo="body2" style={{ whiteSpace: "nowrap" }}>
+                뒤풀이 참여
+              </Text>
               <Text typo="body2" color="primary">
                 {stats.afterParty.count}/{stats.afterParty.total}
               </Text>
@@ -347,9 +351,11 @@ export const AfterPartyManagement = () => {
               />
             </Flex>
           </Table.Th>
-          <Table.Th>
+          <Table.Th style={{ backgroundColor: "white" }}>
             <Flex align="center" gap="sm">
-              <Text typo="body1">정산 확인</Text>
+              <Text typo="body2" style={{ whiteSpace: "nowrap" }}>
+                정산 확인
+              </Text>
               <Text typo="body2" color="primary">
                 {stats.settlement.count}/{stats.settlement.total}
               </Text>
@@ -368,33 +374,45 @@ export const AfterPartyManagement = () => {
             <Table.Tr
               key={participant.eventParticipationId}
               value={participant.eventParticipationId}
+              style={{ borderBottom: `1px solid rgba(0, 0, 0, 0.12)` }}
             >
               <Table.Td>{participant?.participant?.name || "-"}</Table.Td>
               <Table.Td>{participant?.participant?.studentId || "-"}</Table.Td>
-              <Table.Td>{participant?.participant?.phone || "-"}</Table.Td>
-              <Table.Td>
-                <Checkbox
-                  checked={participant?.prePaymentStatus === "PAID"}
-                  onChange={() =>
-                    handleCheckboxChange(participant?.eventParticipationId, "prePayment")
-                  }
-                />
+              <Table.Td style={{ borderRight: `1px solid rgba(0, 0, 0, 0.12)` }}>
+                {participant?.participant?.phone || "-"}
               </Table.Td>
               <Table.Td>
-                <Checkbox
-                  checked={participant?.afterPartyAttendanceStatus === "ATTENDED"}
-                  onChange={() =>
-                    handleCheckboxChange(participant?.eventParticipationId, "afterPartyAttendance")
-                  }
-                />
+                <Flex align="center" justify="center">
+                  <Checkbox
+                    checked={participant?.prePaymentStatus === "PAID"}
+                    onChange={() =>
+                      handleCheckboxChange(participant?.eventParticipationId, "prePayment")
+                    }
+                  />
+                </Flex>
               </Table.Td>
               <Table.Td>
-                <Checkbox
-                  checked={participant?.postPaymentStatus === "PAID"}
-                  onChange={() =>
-                    handleCheckboxChange(participant?.eventParticipationId, "postPayment")
-                  }
-                />
+                <Flex align="center" justify="center">
+                  <Checkbox
+                    checked={participant?.afterPartyAttendanceStatus === "ATTENDED"}
+                    onChange={() =>
+                      handleCheckboxChange(
+                        participant?.eventParticipationId,
+                        "afterPartyAttendance",
+                      )
+                    }
+                  />
+                </Flex>
+              </Table.Td>
+              <Table.Td>
+                <Flex align="center" justify="center">
+                  <Checkbox
+                    checked={participant?.postPaymentStatus === "PAID"}
+                    onChange={() =>
+                      handleCheckboxChange(participant?.eventParticipationId, "postPayment")
+                    }
+                  />
+                </Flex>
               </Table.Td>
             </Table.Tr>
           ))}
