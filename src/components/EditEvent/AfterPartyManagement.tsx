@@ -137,14 +137,12 @@ export const AfterPartyManagement = () => {
 
   // 통계 계산 (현재 페이지 데이터 기준)
   const stats = useMemo(() => {
-    const total = paginatedParticipants.length;
-    const prePaymentCount = paginatedParticipants.filter(p => p.prePaymentStatus === "PAID").length;
-    const afterPartyCount = paginatedParticipants.filter(
+    const total = participants.length;
+    const prePaymentCount = participants.filter(p => p.prePaymentStatus === "PAID").length;
+    const afterPartyCount = participants.filter(
       p => p.afterPartyAttendanceStatus === "ATTENDED",
     ).length;
-    const settlementCount = paginatedParticipants.filter(
-      p => p.postPaymentStatus === "PAID",
-    ).length;
+    const settlementCount = participants.filter(p => p.postPaymentStatus === "PAID").length;
 
     return {
       total,
@@ -152,7 +150,7 @@ export const AfterPartyManagement = () => {
       afterParty: { count: afterPartyCount, total },
       settlement: { count: settlementCount, total },
     };
-  }, [paginatedParticipants]);
+  }, [participants]);
 
   // 체크박스 변경 핸들러
   const handleCheckboxChange = (
