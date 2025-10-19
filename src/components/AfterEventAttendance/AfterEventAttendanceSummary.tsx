@@ -83,7 +83,8 @@ const StyledContentSection = styled("div")({
   alignItems: "stretch",
   marginTop: "28px",
   marginBottom: "12px",
-  margin: "11.5px 0",
+  marginLeft: "11.5px",
+  marginRight: "11.5px",
   overflowX: "auto",
 });
 
