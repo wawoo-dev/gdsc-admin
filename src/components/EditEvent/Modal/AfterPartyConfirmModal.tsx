@@ -45,7 +45,7 @@ export const AfterPartyConfirmModal = ({ open, onClose }: AfterPartyConfirmModal
           QR 스캔하기
         </Text>
 
-        <Text typo="h5" color="sub" style={{ marginBottom: "32px" }}>
+        <Text typo="h2" color="sub" style={{ marginBottom: "32px" }}>
           뒤풀이 현장에서 모바일로 출석체크를 진행할 수 있어요.
         </Text>
 
