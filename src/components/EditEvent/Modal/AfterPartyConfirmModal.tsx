@@ -1,6 +1,7 @@
-import { useState } from "react";
 import { css } from "@emotion/react";
 import { Modal } from "@mui/material";
+import { QRCodeCanvas } from "qrcode.react";
+import { toast } from "react-toastify";
 import { space } from "wowds-tokens";
 import Button from "wowds-ui/Button";
 import { Flex } from "../../@common/Flex";
@@ -12,11 +13,11 @@ interface AfterPartyConfirmModalProps {
 }
 
 export const AfterPartyConfirmModal = ({ open, onClose }: AfterPartyConfirmModalProps) => {
-  const [qrCodeUrl] = useState("https://example.com/qr-code"); // 실제 QR 코드 URL로 교체
+  const qrCodeUrl = "https://example.com/qr-code";
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(qrCodeUrl);
-    // TODO: 토스트 메시지 표시
+    toast.success("링크가 복사되었어요!");
   };
 
   return (
@@ -69,35 +70,7 @@ export const AfterPartyConfirmModal = ({ open, onClose }: AfterPartyConfirmModal
               position: "relative",
             })}
           >
-            {/* QR 코드 패턴 시뮬레이션 */}
-            <div
-              css={css({
-                "width": "180px",
-                "height": "180px",
-                "backgroundColor": "black",
-                "position": "relative",
-                "&::before": {
-                  content: '""',
-                  position: "absolute",
-                  top: "20px",
-                  left: "20px",
-                  width: "40px",
-                  height: "40px",
-                  backgroundColor: "white",
-                  borderRadius: "4px",
-                },
-                "&::after": {
-                  content: '""',
-                  position: "absolute",
-                  bottom: "20px",
-                  right: "20px",
-                  width: "40px",
-                  height: "40px",
-                  backgroundColor: "white",
-                  borderRadius: "4px",
-                },
-              })}
-            />
+            <QRCodeCanvas value={qrCodeUrl} />
           </div>
         </div>
 
