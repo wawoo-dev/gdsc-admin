@@ -79,11 +79,16 @@ export const eventApi = {
     });
     return response.data;
   },
-  getAfterPartyApplicants: async (eventId: number): Promise<AfterPartyData> => {
+  getAfterPartyApplicants: async (
+    eventId: number,
+    page: number = 0,
+    size: number = 20,
+    sort: string = "",
+  ): Promise<AfterPartyData> => {
     const response = await apiClient.get<AfterPartyData>(
       `/admin/event-participations/after-party/applicants`,
       {
-        params: { event: eventId },
+        params: { event: eventId, page, size, sort },
       },
     );
     return response.data;

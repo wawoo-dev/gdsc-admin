@@ -1,10 +1,11 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { css } from "@emotion/react";
 import { useParams } from "react-router-dom";
 import Button from "wowds-ui/Button";
 import Checkbox from "wowds-ui/Checkbox";
 import DropDown from "wowds-ui/DropDown";
 import DropDownOption from "wowds-ui/DropDownOption";
+import Pagination from "wowds-ui/Pagination";
 import SearchBar from "wowds-ui/SearchBar";
 import Table from "wowds-ui/Table";
 import { Flex } from "../@common/Flex";
@@ -25,8 +26,14 @@ export const AfterPartyManagement = () => {
   const [sortKey, setSortKey] = useState("");
   const [data, setData] = useState<AfterPartyParticipant[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+  const pageSize = 20;
 
-  const { data: apiData, isLoading, error } = useGetAfterPartyApplicants(id);
+  const {
+    data: apiData,
+    isLoading,
+    error,
+  } = useGetAfterPartyApplicants(id, currentPage, pageSize, sortKey);
 
   // 로컬 상태 업데이트를 위한 onSuccess 콜백
   const handleLocalStateUpdate = (
@@ -122,37 +129,22 @@ export const AfterPartyManagement = () => {
     return participants;
   }, [participants, debouncedQuery]);
 
-  // 정렬된 참가자 목록
-  const sortedParticipants = useMemo(() => {
-    if (!sortKey) {
-      return filteredParticipants;
-    }
+  // 서버에서 정렬된 데이터를 직접 사용
+  const paginatedParticipants = filteredParticipants;
 
-    return [...filteredParticipants].sort((a, b) => {
-      switch (sortKey) {
-        case "name": {
-          const nameA = a.participant.name || "";
-          const nameB = b.participant.name || "";
-          return nameA.localeCompare(nameB);
-        }
-        case "createdAt": {
-          // eventParticipationId를 기준으로 정렬 (높은 ID가 최신)
-          return b.eventParticipationId - a.eventParticipationId;
-        }
-        default:
-          return 0;
-      }
-    });
-  }, [filteredParticipants, sortKey]);
+  // 총 페이지 수는 API에서 받은 totalPages 사용
+  const totalPages = apiData?.applicants?.totalPages || 1;
 
-  // 통계 계산
+  // 통계 계산 (현재 페이지 데이터 기준)
   const stats = useMemo(() => {
-    const total = sortedParticipants.length;
-    const prePaymentCount = sortedParticipants.filter(p => p.prePaymentStatus === "PAID").length;
-    const afterPartyCount = sortedParticipants.filter(
+    const total = paginatedParticipants.length;
+    const prePaymentCount = paginatedParticipants.filter(p => p.prePaymentStatus === "PAID").length;
+    const afterPartyCount = paginatedParticipants.filter(
       p => p.afterPartyAttendanceStatus === "ATTENDED",
     ).length;
-    const settlementCount = sortedParticipants.filter(p => p.postPaymentStatus === "PAID").length;
+    const settlementCount = paginatedParticipants.filter(
+      p => p.postPaymentStatus === "PAID",
+    ).length;
 
     return {
       total,
@@ -160,7 +152,7 @@ export const AfterPartyManagement = () => {
       afterParty: { count: afterPartyCount, total },
       settlement: { count: settlementCount, total },
     };
-  }, [sortedParticipants]);
+  }, [paginatedParticipants]);
 
   // 체크박스 변경 핸들러
   const handleCheckboxChange = (
@@ -207,9 +199,19 @@ export const AfterPartyManagement = () => {
     });
   };
 
-  // 전체 선택/해제 핸들러
+  // 페이지 변경 핸들러
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page - 1); // Pagination은 1부터 시작하지만 내부는 0부터 시작
+  }, []);
+
+  // 정렬 변경 시 첫 페이지로 이동
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [sortKey]);
+
+  // 전체 선택/해제 핸들러 (현재 페이지 기준)
   const handleSelectAll = (field: "prePayment" | "afterPartyAttendance" | "postPayment") => {
-    const allChecked = sortedParticipants.every(p => {
+    const allChecked = paginatedParticipants.every(p => {
       switch (field) {
         case "prePayment":
           return p?.prePaymentStatus === "PAID";
@@ -288,7 +290,7 @@ export const AfterPartyManagement = () => {
         <Text typo="h2">
           뒤풀이 신청 인원{" "}
           <Text as="span" color="primary" typo="h2">
-            {sortedParticipants.length}명
+            {apiData?.applicants?.totalElements || 0}명
           </Text>
         </Text>
         <Button variant="solid" size="sm" onClick={() => setModalOpen(true)}>
@@ -375,7 +377,7 @@ export const AfterPartyManagement = () => {
         </Table.Thead>
 
         <Table.Tbody>
-          {sortedParticipants.map(participant => (
+          {paginatedParticipants.map(participant => (
             <Table.Tr
               key={participant.eventParticipationId}
               value={participant.eventParticipationId}
@@ -423,6 +425,17 @@ export const AfterPartyManagement = () => {
           ))}
         </Table.Tbody>
       </Table>
+
+      <Space height={30} />
+
+      {/* Pagination */}
+      <Flex justify="center">
+        <Pagination
+          onChange={handlePageChange}
+          totalPages={totalPages}
+          currentPage={currentPage + 1} // Pagination은 1부터 시작
+        />
+      </Flex>
 
       {/* 뒤풀이 인원 확인 모달 */}
       <AfterPartyConfirmModal open={modalOpen} onClose={() => setModalOpen(false)} />
