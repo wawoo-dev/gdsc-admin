@@ -9,7 +9,11 @@ import Table from "wowds-ui/Table";
 import { Flex } from "../@common/Flex";
 import { Space } from "../@common/Space";
 import { Text } from "../@common/Text";
-import { mockAfterPartyData, type AfterPartyData } from "./mockData/afterPartyMockData";
+import {
+  AfterPartyParticipant,
+  mockAfterPartyData,
+  type AfterPartyData,
+} from "./mockData/afterPartyMockData";
 import { useDebounce } from "@/hooks/common/useDebounce";
 import { useUpdateAfterPartyStatusMutation } from "@/hooks/mutations/useUpdateAfterPartyStatusMutation";
 import { useGetAfterPartyApplicants } from "@/hooks/queries/useGetAfterPartyApplicants";
@@ -21,7 +25,7 @@ export const AfterPartyManagement = () => {
 
   const [searchedValue, setSearchedValue] = useState("");
   const [sortKey, setSortKey] = useState("");
-  const [data, setData] = useState<AfterPartyData>(mockAfterPartyData);
+  const [data, setData] = useState<AfterPartyParticipant[]>([]);
 
   const { data: apiData, isLoading, error } = useGetAfterPartyApplicants(id);
 
@@ -30,49 +34,45 @@ export const AfterPartyManagement = () => {
     participantId: number,
     field: "prePayment" | "afterPartyAttendance" | "postPayment",
   ) => {
-    setData(prev => ({
-      ...prev,
-      applicants: {
-        ...prev.applicants,
-        content: prev.applicants.content.map(p => {
-          if (p.eventParticipationId === participantId) {
-            switch (field) {
-              case "prePayment":
-                return {
-                  ...p,
-                  prePaymentStatus: p.prePaymentStatus === "PAID" ? "NOT_PAID" : "PAID",
-                };
-              case "afterPartyAttendance":
-                return {
-                  ...p,
-                  afterPartyAttendanceStatus:
-                    p.afterPartyAttendanceStatus === "ATTENDED" ? "NOT_ATTENDED" : "ATTENDED",
-                };
-              case "postPayment":
-                return {
-                  ...p,
-                  postPaymentStatus: p.postPaymentStatus === "PAID" ? "NOT_PAID" : "PAID",
-                };
-              default:
-                return p;
-            }
+    setData(prev =>
+      prev.map(p => {
+        if (p.eventParticipationId === participantId) {
+          switch (field) {
+            case "prePayment":
+              return {
+                ...p,
+                prePaymentStatus: p.prePaymentStatus === "PAID" ? "NOT_PAID" : "PAID",
+              };
+            case "afterPartyAttendance":
+              return {
+                ...p,
+                afterPartyAttendanceStatus:
+                  p.afterPartyAttendanceStatus === "ATTENDED" ? "NOT_ATTENDED" : "ATTENDED",
+              };
+            case "postPayment":
+              return {
+                ...p,
+                postPaymentStatus: p.postPaymentStatus === "PAID" ? "NOT_PAID" : "PAID",
+              };
+            default:
+              return p;
           }
-          return p;
-        }),
-      },
-    }));
+        }
+        return p;
+      }),
+    );
   };
 
   const updateAfterPartyStatusMutation = useUpdateAfterPartyStatusMutation();
 
   // API 데이터가 로드되면 로컬 상태 업데이트
   useEffect(() => {
-    // if (apiData) {
-    //   setData(apiData);
-    // }
+    if (apiData) {
+      setData(apiData.applicants.content || []);
+    }
   }, [apiData]);
 
-  const participants = data.applicants.content;
+  const participants = data;
 
   const debouncedQuery = useDebounce(searchedValue, 300); // 300ms 디바운스
 
@@ -86,22 +86,36 @@ export const AfterPartyManagement = () => {
     if (isDigitStart(q)) {
       // 전화번호: 숫자만 비교
       const qDigits = onlyDigits(q);
-      return participants.filter(participant =>
-        onlyDigits(participant.participant.phone)?.includes(qDigits),
+      return participants.filter(
+        participant =>
+          participant &&
+          participant.participant &&
+          participant.participant.phone &&
+          onlyDigits(participant.participant.phone)?.includes(qDigits),
       );
     }
 
     if (isEnglishStart(q)) {
       // 학번(studentId): 대소문자 무시 포함 검색
       const qLower = q.toLowerCase();
-      return participants.filter(participant =>
-        participant.participant.studentId?.toLowerCase()?.includes(qLower),
+      return participants.filter(
+        participant =>
+          participant &&
+          participant.participant &&
+          participant.participant.studentId &&
+          participant.participant.studentId.toLowerCase()?.includes(qLower),
       );
     }
 
     if (isKoreanStart(q)) {
       // 이름: 포함 검색
-      return participants.filter(participant => participant.participant.name?.includes(q));
+      return participants.filter(
+        participant =>
+          participant &&
+          participant.participant &&
+          participant.participant.name &&
+          participant.participant.name.includes(q),
+      );
     }
 
     // 기타 문자는 전체 반환
@@ -117,7 +131,9 @@ export const AfterPartyManagement = () => {
     return [...filteredParticipants].sort((a, b) => {
       switch (sortKey) {
         case "name":
-          return a.participant.name.localeCompare(b.participant.name);
+          const nameA = a.participant.name || "";
+          const nameB = b.participant.name || "";
+          return nameA.localeCompare(nameB);
         case "createdAt":
           // eventParticipationId를 기준으로 정렬 (높은 ID가 최신)
           return b.eventParticipationId - a.eventParticipationId;
@@ -146,9 +162,13 @@ export const AfterPartyManagement = () => {
 
   // 체크박스 변경 핸들러
   const handleCheckboxChange = (
-    participantId: number,
+    participantId: number | undefined,
     field: "prePayment" | "afterPartyAttendance" | "postPayment",
   ) => {
+    if (!participantId) {
+      return;
+    }
+
     // API 호출을 위한 타겟 매핑
     const targetMap = {
       prePayment: "PRE_PAYMENT" as const,
@@ -157,7 +177,7 @@ export const AfterPartyManagement = () => {
     };
 
     // 현재 상태 확인
-    const participant = participants.find(p => p.eventParticipationId === participantId);
+    const participant = participants.find(p => p?.eventParticipationId === participantId);
     if (!participant) {
       return;
     }
@@ -334,30 +354,30 @@ export const AfterPartyManagement = () => {
               key={participant.eventParticipationId}
               value={participant.eventParticipationId}
             >
-              <Table.Td>{participant.participant.name}</Table.Td>
-              <Table.Td>{participant.participant.studentId}</Table.Td>
-              <Table.Td>{participant.participant.phone}</Table.Td>
+              <Table.Td>{participant?.participant?.name || "-"}</Table.Td>
+              <Table.Td>{participant?.participant?.studentId || "-"}</Table.Td>
+              <Table.Td>{participant?.participant?.phone || "-"}</Table.Td>
               <Table.Td>
                 <Checkbox
-                  checked={participant.prePaymentStatus === "PAID"}
+                  checked={participant?.prePaymentStatus === "PAID"}
                   onChange={() =>
-                    handleCheckboxChange(participant.eventParticipationId, "prePayment")
+                    handleCheckboxChange(participant?.eventParticipationId, "prePayment")
                   }
                 />
               </Table.Td>
               <Table.Td>
                 <Checkbox
-                  checked={participant.afterPartyAttendanceStatus === "ATTENDED"}
+                  checked={participant?.afterPartyAttendanceStatus === "ATTENDED"}
                   onChange={() =>
-                    handleCheckboxChange(participant.eventParticipationId, "afterPartyAttendance")
+                    handleCheckboxChange(participant?.eventParticipationId, "afterPartyAttendance")
                   }
                 />
               </Table.Td>
               <Table.Td>
                 <Checkbox
-                  checked={participant.postPaymentStatus === "PAID"}
+                  checked={participant?.postPaymentStatus === "PAID"}
                   onChange={() =>
-                    handleCheckboxChange(participant.eventParticipationId, "postPayment")
+                    handleCheckboxChange(participant?.eventParticipationId, "postPayment")
                   }
                 />
               </Table.Td>
