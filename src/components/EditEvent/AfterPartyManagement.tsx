@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { css } from "@emotion/react";
 import { useParams } from "react-router-dom";
-import { color } from "wowds-tokens";
+import Button from "wowds-ui/Button";
 import Checkbox from "wowds-ui/Checkbox";
 import DropDown from "wowds-ui/DropDown";
 import DropDownOption from "wowds-ui/DropDownOption";
@@ -11,6 +11,7 @@ import { Flex } from "../@common/Flex";
 import { Space } from "../@common/Space";
 import { Text } from "../@common/Text";
 import { AfterPartyParticipant } from "./mockData/afterPartyMockData";
+import { AfterPartyConfirmModal } from "./Modal/AfterPartyConfirmModal";
 import { useDebounce } from "@/hooks/common/useDebounce";
 import { useUpdateAfterPartyStatusMutation } from "@/hooks/mutations/useUpdateAfterPartyStatusMutation";
 import { useUpdateAllAfterPartyStatusMutation } from "@/hooks/mutations/useUpdateAllAfterPartyStatusMutation";
@@ -23,6 +24,7 @@ export const AfterPartyManagement = () => {
   const [searchedValue, setSearchedValue] = useState("");
   const [sortKey, setSortKey] = useState("");
   const [data, setData] = useState<AfterPartyParticipant[]>([]);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const { data: apiData, isLoading, error } = useGetAfterPartyApplicants(id);
 
@@ -289,6 +291,9 @@ export const AfterPartyManagement = () => {
             {sortedParticipants.length}명
           </Text>
         </Text>
+        <Button variant="solid" size="sm" onClick={() => setModalOpen(true)}>
+          뒤풀이 인원 확인
+        </Button>
       </Flex>
 
       <Space height={30} />
@@ -418,6 +423,9 @@ export const AfterPartyManagement = () => {
           ))}
         </Table.Tbody>
       </Table>
+
+      {/* 뒤풀이 인원 확인 모달 */}
+      <AfterPartyConfirmModal open={modalOpen} onClose={() => setModalOpen(false)} />
     </div>
   );
 };
