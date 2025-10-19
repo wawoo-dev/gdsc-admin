@@ -88,4 +88,28 @@ export const eventApi = {
     );
     return response.data;
   },
+  updateAfterPartyStatus: async (
+    eventParticipationId: number,
+    afterPartyUpdateTarget: "ATTENDANCE" | "PRE_PAYMENT" | "POST_PAYMENT",
+  ) => {
+    const response = await apiClient.put(
+      `/admin/event-participations/${eventParticipationId}/after-party/confirm`,
+      {
+        afterPartyUpdateTarget,
+      },
+    );
+    return response.data;
+  },
+  revokeAfterPartyStatus: async (
+    eventParticipationId: number,
+    afterPartyUpdateTarget: "ATTENDANCE" | "PRE_PAYMENT" | "POST_PAYMENT",
+  ) => {
+    const response = await apiClient.put(
+      `/admin/event-participations/${eventParticipationId}/after-party/revoke`,
+      {
+        afterPartyUpdateTarget,
+      },
+    );
+    return response.data;
+  },
 };

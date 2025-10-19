@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { css } from "@emotion/react";
 import { useParams } from "react-router-dom";
 import Checkbox from "wowds-ui/Checkbox";
@@ -9,8 +9,9 @@ import Table from "wowds-ui/Table";
 import { Flex } from "../@common/Flex";
 import { Space } from "../@common/Space";
 import { Text } from "../@common/Text";
-import { mockAfterPartyData } from "./mockData/afterPartyMockData";
+import { mockAfterPartyData, type AfterPartyData } from "./mockData/afterPartyMockData";
 import { useDebounce } from "@/hooks/common/useDebounce";
+import { useUpdateAfterPartyStatusMutation } from "@/hooks/mutations/useUpdateAfterPartyStatusMutation";
 import { useGetAfterPartyApplicants } from "@/hooks/queries/useGetAfterPartyApplicants";
 import { isDigitStart, onlyDigits, isEnglishStart, isKoreanStart } from "@/utils/searchQuery";
 
@@ -20,10 +21,58 @@ export const AfterPartyManagement = () => {
 
   const [searchedValue, setSearchedValue] = useState("");
   const [sortKey, setSortKey] = useState("");
+  const [data, setData] = useState<AfterPartyData>(mockAfterPartyData);
 
-  const { data, isLoading, error } = useGetAfterPartyApplicants(id);
+  const { data: apiData, isLoading, error } = useGetAfterPartyApplicants(id);
 
-  const participants = mockAfterPartyData.applicants.content;
+  // 로컬 상태 업데이트를 위한 onSuccess 콜백
+  const handleLocalStateUpdate = (
+    participantId: number,
+    field: "prePayment" | "afterPartyAttendance" | "postPayment",
+  ) => {
+    setData(prev => ({
+      ...prev,
+      applicants: {
+        ...prev.applicants,
+        content: prev.applicants.content.map(p => {
+          if (p.eventParticipationId === participantId) {
+            switch (field) {
+              case "prePayment":
+                return {
+                  ...p,
+                  prePaymentStatus: p.prePaymentStatus === "PAID" ? "NOT_PAID" : "PAID",
+                };
+              case "afterPartyAttendance":
+                return {
+                  ...p,
+                  afterPartyAttendanceStatus:
+                    p.afterPartyAttendanceStatus === "ATTENDED" ? "NOT_ATTENDED" : "ATTENDED",
+                };
+              case "postPayment":
+                return {
+                  ...p,
+                  postPaymentStatus: p.postPaymentStatus === "PAID" ? "NOT_PAID" : "PAID",
+                };
+              default:
+                return p;
+            }
+          }
+          return p;
+        }),
+      },
+    }));
+  };
+
+  const updateAfterPartyStatusMutation = useUpdateAfterPartyStatusMutation();
+
+  // API 데이터가 로드되면 로컬 상태 업데이트
+  useEffect(() => {
+    // if (apiData) {
+    //   setData(apiData);
+    // }
+  }, [apiData]);
+
+  const participants = data.applicants.content;
 
   const debouncedQuery = useDebounce(searchedValue, 300); // 300ms 디바운스
 
@@ -69,8 +118,9 @@ export const AfterPartyManagement = () => {
       switch (sortKey) {
         case "name":
           return a.participant.name.localeCompare(b.participant.name);
-        case "studentId":
-          return a.participant.studentId.localeCompare(b.participant.studentId);
+        case "createdAt":
+          // eventParticipationId를 기준으로 정렬 (높은 ID가 최신)
+          return b.eventParticipationId - a.eventParticipationId;
         default:
           return 0;
       }
@@ -99,12 +149,75 @@ export const AfterPartyManagement = () => {
     participantId: number,
     field: "prePayment" | "afterPartyAttendance" | "postPayment",
   ) => {
-    console.log("체크박스 변경:", participantId, field);
+    // API 호출을 위한 타겟 매핑
+    const targetMap = {
+      prePayment: "PRE_PAYMENT" as const,
+      afterPartyAttendance: "ATTENDANCE" as const,
+      postPayment: "POST_PAYMENT" as const,
+    };
+
+    // 현재 상태 확인
+    const participant = participants.find(p => p.eventParticipationId === participantId);
+    if (!participant) {
+      return;
+    }
+
+    let isChecked = false;
+    switch (field) {
+      case "prePayment":
+        isChecked = participant.prePaymentStatus === "PAID";
+        break;
+      case "afterPartyAttendance":
+        isChecked = participant.afterPartyAttendanceStatus === "ATTENDED";
+        break;
+      case "postPayment":
+        isChecked = participant.postPaymentStatus === "PAID";
+        break;
+    }
+
+    updateAfterPartyStatusMutation.mutate({
+      eventParticipationId: participantId,
+      afterPartyUpdateTarget: targetMap[field],
+      isChecked: !isChecked, // 현재 상태의 반대로 설정
+      onSuccess: () => {
+        handleLocalStateUpdate(participantId, field);
+      },
+    });
   };
 
   // 전체 선택/해제 핸들러
   const handleSelectAll = (field: "prePayment" | "afterPartyAttendance" | "postPayment") => {
-    console.log("전체 선택/해제:", field);
+    const allChecked = sortedParticipants.every(p => {
+      switch (field) {
+        case "prePayment":
+          return p.prePaymentStatus === "PAID";
+        case "afterPartyAttendance":
+          return p.afterPartyAttendanceStatus === "ATTENDED";
+        case "postPayment":
+          return p.postPaymentStatus === "PAID";
+        default:
+          return false;
+      }
+    });
+
+    // API 호출을 위한 타겟 매핑
+    const targetMap = {
+      prePayment: "PRE_PAYMENT" as const,
+      afterPartyAttendance: "ATTENDANCE" as const,
+      postPayment: "POST_PAYMENT" as const,
+    };
+
+    // 각 참가자에 대해 API 호출 (성공 시 onSuccess에서 로컬 상태 업데이트)
+    sortedParticipants.forEach(participant => {
+      updateAfterPartyStatusMutation.mutate({
+        eventParticipationId: participant.eventParticipationId,
+        afterPartyUpdateTarget: targetMap[field],
+        isChecked: !allChecked, // 전체 선택/해제 상태에 따라 설정
+        onSuccess: () => {
+          handleLocalStateUpdate(participant.eventParticipationId, field);
+        },
+      });
+    });
   };
 
   if (isLoading) {
