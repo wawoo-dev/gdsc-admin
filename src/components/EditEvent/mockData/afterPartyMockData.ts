@@ -12,8 +12,8 @@ export interface AfterPartyParticipant {
   mainEventApplicationStatus: "NOT_APPLIED" | "APPLIED";
   afterPartyApplicationStatus: "NONE" | "NOT_APPLIED" | "APPLIED";
   afterPartyAttendanceStatus: "NONE" | "NOT_ATTENDED" | "ATTENDED";
-  prePaymentStatus: "NONE" | "NOT_PAID" | "PAID";
-  postPaymentStatus: "NONE" | "NOT_PAID" | "PAID";
+  prePaymentStatus: "NONE" | "UNPAID" | "PAID";
+  postPaymentStatus: "NONE" | "UNPAID" | "PAID";
 }
 
 export interface AfterPartyData {
@@ -45,16 +45,16 @@ export const mockAfterPartyData: AfterPartyData = {
     content: Array.from({ length: 12 }, (_, index) => ({
       eventParticipationId: index + 1,
       participant: {
-        name: "장린",
-        studentId: "(20)C046135",
+        name: `장린${index + 1}`,
+        studentId: `(20)C046135${index + 1}`,
         phone: "010-1234-5678",
       },
       memberId: index + 1,
       mainEventApplicationStatus: "APPLIED" as const,
       afterPartyApplicationStatus: "APPLIED" as const,
       afterPartyAttendanceStatus: "NOT_ATTENDED" as const,
-      prePaymentStatus: index < 3 ? "PAID" : "NOT_PAID",
-      postPaymentStatus: "NOT_PAID" as const,
+      prePaymentStatus: index < 3 ? "PAID" : "UNPAID",
+      postPaymentStatus: "UNPAID" as const,
     })),
     number: 0,
     numberOfElements: 12,
@@ -69,5 +69,3 @@ export const mockAfterPartyData: AfterPartyData = {
     postPaymentPaidCount: 0,
   },
 };
-
-
