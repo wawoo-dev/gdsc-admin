@@ -47,7 +47,7 @@ export const AfterPartyManagement = () => {
             case "prePayment":
               return {
                 ...p,
-                prePaymentStatus: p.prePaymentStatus === "PAID" ? "NOT_PAID" : "PAID",
+                prePaymentStatus: p.prePaymentStatus === "PAID" ? "UNPAID" : "PAID",
               };
             case "afterPartyAttendance":
               return {
@@ -58,7 +58,7 @@ export const AfterPartyManagement = () => {
             case "postPayment":
               return {
                 ...p,
-                postPaymentStatus: p.postPaymentStatus === "PAID" ? "NOT_PAID" : "PAID",
+                postPaymentStatus: p.postPaymentStatus === "PAID" ? "UNPAID" : "PAID",
               };
             default:
               return p;
@@ -242,14 +242,14 @@ export const AfterPartyManagement = () => {
           prev.map(p => {
             switch (field) {
               case "prePayment":
-                return { ...p, prePaymentStatus: allChecked ? "NOT_PAID" : "PAID" };
+                return { ...p, prePaymentStatus: allChecked ? "UNPAID" : "PAID" };
               case "afterPartyAttendance":
                 return {
                   ...p,
                   afterPartyAttendanceStatus: allChecked ? "NOT_ATTENDED" : "ATTENDED",
                 };
               case "postPayment":
-                return { ...p, postPaymentStatus: allChecked ? "NOT_PAID" : "PAID" };
+                return { ...p, postPaymentStatus: allChecked ? "UNPAID" : "PAID" };
               default:
                 return p;
             }
