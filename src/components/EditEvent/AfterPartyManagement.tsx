@@ -9,13 +9,10 @@ import Table from "wowds-ui/Table";
 import { Flex } from "../@common/Flex";
 import { Space } from "../@common/Space";
 import { Text } from "../@common/Text";
-import {
-  AfterPartyParticipant,
-  mockAfterPartyData,
-  type AfterPartyData,
-} from "./mockData/afterPartyMockData";
+import { AfterPartyParticipant } from "./mockData/afterPartyMockData";
 import { useDebounce } from "@/hooks/common/useDebounce";
 import { useUpdateAfterPartyStatusMutation } from "@/hooks/mutations/useUpdateAfterPartyStatusMutation";
+import { useUpdateAllAfterPartyStatusMutation } from "@/hooks/mutations/useUpdateAllAfterPartyStatusMutation";
 import { useGetAfterPartyApplicants } from "@/hooks/queries/useGetAfterPartyApplicants";
 import { isDigitStart, onlyDigits, isEnglishStart, isKoreanStart } from "@/utils/searchQuery";
 
@@ -64,6 +61,7 @@ export const AfterPartyManagement = () => {
   };
 
   const updateAfterPartyStatusMutation = useUpdateAfterPartyStatusMutation();
+  const updateAllAfterPartyStatusMutation = useUpdateAllAfterPartyStatusMutation();
 
   // API 데이터가 로드되면 로컬 상태 업데이트
   useEffect(() => {
@@ -130,13 +128,15 @@ export const AfterPartyManagement = () => {
 
     return [...filteredParticipants].sort((a, b) => {
       switch (sortKey) {
-        case "name":
+        case "name": {
           const nameA = a.participant.name || "";
           const nameB = b.participant.name || "";
           return nameA.localeCompare(nameB);
-        case "createdAt":
+        }
+        case "createdAt": {
           // eventParticipationId를 기준으로 정렬 (높은 ID가 최신)
           return b.eventParticipationId - a.eventParticipationId;
+        }
         default:
           return 0;
       }
@@ -210,11 +210,11 @@ export const AfterPartyManagement = () => {
     const allChecked = sortedParticipants.every(p => {
       switch (field) {
         case "prePayment":
-          return p.prePaymentStatus === "PAID";
+          return p?.prePaymentStatus === "PAID";
         case "afterPartyAttendance":
-          return p.afterPartyAttendanceStatus === "ATTENDED";
+          return p?.afterPartyAttendanceStatus === "ATTENDED";
         case "postPayment":
-          return p.postPaymentStatus === "PAID";
+          return p?.postPaymentStatus === "PAID";
         default:
           return false;
       }
@@ -227,16 +227,31 @@ export const AfterPartyManagement = () => {
       postPayment: "POST_PAYMENT" as const,
     };
 
-    // 각 참가자에 대해 API 호출 (성공 시 onSuccess에서 로컬 상태 업데이트)
-    sortedParticipants.forEach(participant => {
-      updateAfterPartyStatusMutation.mutate({
-        eventParticipationId: participant.eventParticipationId,
-        afterPartyUpdateTarget: targetMap[field],
-        isChecked: !allChecked, // 전체 선택/해제 상태에 따라 설정
-        onSuccess: () => {
-          handleLocalStateUpdate(participant.eventParticipationId, field);
-        },
-      });
+    // 전체 선택/해제 API 호출 (성공 시 onSuccess에서 로컬 상태 업데이트)
+    updateAllAfterPartyStatusMutation.mutate({
+      eventId: id,
+      afterPartyUpdateTarget: targetMap[field],
+      isChecked: !allChecked, // 현재 상태의 반대로 설정
+      onSuccess: () => {
+        // 성공 시 모든 참가자의 로컬 상태 업데이트
+        setData(prev =>
+          prev.map(p => {
+            switch (field) {
+              case "prePayment":
+                return { ...p, prePaymentStatus: allChecked ? "NOT_PAID" : "PAID" };
+              case "afterPartyAttendance":
+                return {
+                  ...p,
+                  afterPartyAttendanceStatus: allChecked ? "NOT_ATTENDED" : "ATTENDED",
+                };
+              case "postPayment":
+                return { ...p, postPaymentStatus: allChecked ? "NOT_PAID" : "PAID" };
+              default:
+                return p;
+            }
+          }),
+        );
+      },
     });
   };
 
