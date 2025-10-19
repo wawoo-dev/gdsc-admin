@@ -105,7 +105,9 @@ export const AfterPartyConfirmModal = ({ open, onClose }: AfterPartyConfirmModal
         <Button variant="outline" size="lg" onClick={handleCopyLink} style={{ width: "100%" }}>
           <Flex align="center" gap="sm">
             <span>🔗</span>
-            <Text typo="body2" color='primary'>또는 링크 복사하기</Text>
+            <Text typo="body2" color="primary">
+              또는 링크 복사하기
+            </Text>
           </Flex>
         </Button>
       </div>
