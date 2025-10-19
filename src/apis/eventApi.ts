@@ -1,6 +1,7 @@
 // api/events.ts
 
 import { apiClient } from ".";
+import { AfterPartyData } from "@/components/EditEvent/mockData/afterPartyMockData";
 import {
   CreateEventRequest,
   EventParticipantsResponse,
@@ -76,6 +77,15 @@ export const eventApi = {
     const response = await apiClient.delete(`/admin/event-participations`, {
       data: { eventParticipationIds },
     });
+    return response.data;
+  },
+  getAfterPartyApplicants: async (eventId: number): Promise<AfterPartyData> => {
+    const response = await apiClient.get<AfterPartyData>(
+      `/admin/event-participations/after-party/applicants`,
+      {
+        params: { event: eventId },
+      },
+    );
     return response.data;
   },
 };

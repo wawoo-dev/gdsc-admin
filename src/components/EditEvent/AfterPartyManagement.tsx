@@ -1,25 +1,90 @@
 import { useState, useMemo } from "react";
 import { css } from "@emotion/react";
-import { color, space } from "wowds-tokens";
+import { useParams } from "react-router-dom";
 import Checkbox from "wowds-ui/Checkbox";
+import DropDown from "wowds-ui/DropDown";
+import DropDownOption from "wowds-ui/DropDownOption";
+import SearchBar from "wowds-ui/SearchBar";
 import Table from "wowds-ui/Table";
 import { Flex } from "../@common/Flex";
 import { Space } from "../@common/Space";
 import { Text } from "../@common/Text";
-import { mockAfterPartyData, type AfterPartyData } from "./mockData/afterPartyMockData";
+import { mockAfterPartyData } from "./mockData/afterPartyMockData";
+import { useDebounce } from "@/hooks/common/useDebounce";
+import { useGetAfterPartyApplicants } from "@/hooks/queries/useGetAfterPartyApplicants";
+import { isDigitStart, onlyDigits, isEnglishStart, isKoreanStart } from "@/utils/searchQuery";
 
 export const AfterPartyManagement = () => {
-  const [data, setData] = useState<AfterPartyData>(mockAfterPartyData);
+  const { eventId } = useParams<{ eventId: string }>();
+  const id = Number(eventId);
 
-  const participants = data.applicants.content;
-  const counts = data.counts;
+  const [searchedValue, setSearchedValue] = useState("");
+  const [sortKey, setSortKey] = useState("");
+
+  const { data, isLoading, error } = useGetAfterPartyApplicants(id);
+
+  const participants = mockAfterPartyData.applicants.content;
+
+  const debouncedQuery = useDebounce(searchedValue, 300); // 300ms 디바운스
+
+  // 필터링된 참가자 목록
+  const filteredParticipants = useMemo(() => {
+    const q = debouncedQuery.trim();
+    if (!q) {
+      return participants;
+    }
+
+    if (isDigitStart(q)) {
+      // 전화번호: 숫자만 비교
+      const qDigits = onlyDigits(q);
+      return participants.filter(participant =>
+        onlyDigits(participant.participant.phone)?.includes(qDigits),
+      );
+    }
+
+    if (isEnglishStart(q)) {
+      // 학번(studentId): 대소문자 무시 포함 검색
+      const qLower = q.toLowerCase();
+      return participants.filter(participant =>
+        participant.participant.studentId?.toLowerCase()?.includes(qLower),
+      );
+    }
+
+    if (isKoreanStart(q)) {
+      // 이름: 포함 검색
+      return participants.filter(participant => participant.participant.name?.includes(q));
+    }
+
+    // 기타 문자는 전체 반환
+    return participants;
+  }, [participants, debouncedQuery]);
+
+  // 정렬된 참가자 목록
+  const sortedParticipants = useMemo(() => {
+    if (!sortKey) {
+      return filteredParticipants;
+    }
+
+    return [...filteredParticipants].sort((a, b) => {
+      switch (sortKey) {
+        case "name":
+          return a.participant.name.localeCompare(b.participant.name);
+        case "studentId":
+          return a.participant.studentId.localeCompare(b.participant.studentId);
+        default:
+          return 0;
+      }
+    });
+  }, [filteredParticipants, sortKey]);
 
   // 통계 계산
   const stats = useMemo(() => {
-    const total = participants.length;
-    const prePaymentCount = counts.prePaymentPaidCount;
-    const afterPartyCount = counts.afterPartyAttendedCount;
-    const settlementCount = counts.postPaymentPaidCount;
+    const total = sortedParticipants.length;
+    const prePaymentCount = sortedParticipants.filter(p => p.prePaymentStatus === "PAID").length;
+    const afterPartyCount = sortedParticipants.filter(
+      p => p.afterPartyAttendanceStatus === "ATTENDED",
+    ).length;
+    const settlementCount = sortedParticipants.filter(p => p.postPaymentStatus === "PAID").length;
 
     return {
       total,
@@ -27,92 +92,79 @@ export const AfterPartyManagement = () => {
       afterParty: { count: afterPartyCount, total },
       settlement: { count: settlementCount, total },
     };
-  }, [participants, counts]);
+  }, [sortedParticipants]);
 
   // 체크박스 변경 핸들러
   const handleCheckboxChange = (
     participantId: number,
     field: "prePayment" | "afterPartyAttendance" | "postPayment",
   ) => {
-    setData(prev => ({
-      ...prev,
-      applicants: {
-        ...prev.applicants,
-        content: prev.applicants.content.map(p => {
-          if (p.eventParticipationId === participantId) {
-            switch (field) {
-              case "prePayment":
-                return {
-                  ...p,
-                  prePaymentStatus: p.prePaymentStatus === "PAID" ? "NOT_PAID" : "PAID",
-                };
-              case "afterPartyAttendance":
-                return {
-                  ...p,
-                  afterPartyAttendanceStatus:
-                    p.afterPartyAttendanceStatus === "ATTENDED" ? "NOT_ATTENDED" : "ATTENDED",
-                };
-              case "postPayment":
-                return {
-                  ...p,
-                  postPaymentStatus: p.postPaymentStatus === "PAID" ? "NOT_PAID" : "PAID",
-                };
-              default:
-                return p;
-            }
-          }
-          return p;
-        }),
-      },
-    }));
+    console.log("체크박스 변경:", participantId, field);
   };
 
   // 전체 선택/해제 핸들러
   const handleSelectAll = (field: "prePayment" | "afterPartyAttendance" | "postPayment") => {
-    const allChecked = participants.every(p => {
-      switch (field) {
-        case "prePayment":
-          return p.prePaymentStatus === "PAID";
-        case "afterPartyAttendance":
-          return p.afterPartyAttendanceStatus === "ATTENDED";
-        case "postPayment":
-          return p.postPaymentStatus === "PAID";
-        default:
-          return false;
-      }
-    });
-
-    setData(prev => ({
-      ...prev,
-      applicants: {
-        ...prev.applicants,
-        content: prev.applicants.content.map(p => {
-          switch (field) {
-            case "prePayment":
-              return { ...p, prePaymentStatus: allChecked ? "NOT_PAID" : "PAID" };
-            case "afterPartyAttendance":
-              return { ...p, afterPartyAttendanceStatus: allChecked ? "NOT_ATTENDED" : "ATTENDED" };
-            case "postPayment":
-              return { ...p, postPaymentStatus: allChecked ? "NOT_PAID" : "PAID" };
-            default:
-              return p;
-          }
-        }),
-      },
-    }));
+    console.log("전체 선택/해제:", field);
   };
+
+  if (isLoading) {
+    return (
+      <div css={css({ padding: "30px", textAlign: "center" })}>
+        <Text typo="body1">로딩 중...</Text>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div css={css({ padding: "30px", textAlign: "center" })}>
+        <Text typo="body1" color="error">
+          데이터를 불러오는 중 오류가 발생했습니다.
+        </Text>
+      </div>
+    );
+  }
 
   return (
     <div
       css={css({
-        backgroundColor: color.backgroundAlternative,
-        padding: "30px",
-        borderRadius: space.md,
         marginTop: "30px",
       })}
     >
-      <Text typo="h2">뒤풀이 관리</Text>
       <Space height="lg" />
+
+      {/* 뒤풀이 신청 인원 수 표시 */}
+      <Flex justify="space-between">
+        <Text typo="h2">
+          뒤풀이 신청 인원{" "}
+          <Text as="span" color="primary" typo="h2">
+            {sortedParticipants.length}명
+          </Text>
+        </Text>
+      </Flex>
+
+      <Space height={30} />
+
+      {/* 검색 및 정렬 필터 */}
+      <Flex gap="sm">
+        <SearchBar
+          placeholder="이름, 학번, 전화번호로 검색"
+          style={{ flex: 1 }}
+          value={searchedValue}
+          onChange={setSearchedValue}
+        />
+        <DropDown
+          placeholder="정렬"
+          style={{ flex: "auto" }}
+          value={sortKey}
+          onChange={({ selectedValue }) => setSortKey(selectedValue)}
+        >
+          <DropDownOption value="createdAt" text="최신순" />
+          <DropDownOption value="name" text="이름순" />
+        </DropDown>
+      </Flex>
+
+      <Space height={30} />
 
       <Table fullWidth>
         <Table.Thead>
@@ -164,7 +216,7 @@ export const AfterPartyManagement = () => {
         </Table.Thead>
 
         <Table.Tbody>
-          {participants.map(participant => (
+          {sortedParticipants.map(participant => (
             <Table.Tr
               key={participant.eventParticipationId}
               value={participant.eventParticipationId}
