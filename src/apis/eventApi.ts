@@ -2,6 +2,7 @@
 
 import { apiClient } from ".";
 import {
+  AfterPartyAttendanceListResponse,
   CreateEventRequest,
   EventParticipantsResponse,
   EventResponse,
@@ -76,6 +77,33 @@ export const eventApi = {
     const response = await apiClient.delete(`/admin/event-participations`, {
       data: { eventParticipationIds },
     });
+    return response.data;
+  },
+  getAfterPartyAttendances: async (eventId: number): Promise<AfterPartyAttendanceListResponse> => {
+    const response = await apiClient.get<AfterPartyAttendanceListResponse>(
+      `/admin/event-participations/after-party/attendances`,
+      {
+        params: { event: eventId },
+      },
+    );
+    return response.data;
+  },
+  putAfterPartyAttendances: async (eventParticipationIds: number[]) => {
+    const response = await apiClient.put(`/admin/event-participations/after-party/attend`, {
+      eventParticipationIds,
+    });
+    return response.data;
+  },
+  postAfterPartyAttendanceRevoke: async (data: {
+    eventParticipationId: number;
+    afterPartyUpdateTarget: string;
+  }) => {
+    const response = await apiClient.put(
+      `/admin/event-participations/${data.eventParticipationId}/after-party/revoke`,
+      {
+        afterPartyUpdateTarget: data.afterPartyUpdateTarget,
+      },
+    );
     return response.data;
   },
 };

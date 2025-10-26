@@ -6,11 +6,13 @@ import LogoIcon from "@/assets/logo.svg?react";
 interface AfterPartyAttendanceHeaderProps {
   headerTitle?: string;
   onEditClick?: () => void;
+  isEditMode?: boolean;
 }
 
 export default function AfterPartyAttendanceHeader({
   headerTitle,
   onEditClick,
+  isEditMode = false,
 }: AfterPartyAttendanceHeaderProps) {
   const handleEditClick = () => {
     if (onEditClick) {
@@ -25,7 +27,7 @@ export default function AfterPartyAttendanceHeader({
         <Text typo="h3">{headerTitle}</Text>
       </StyledTitleSection>
       <StyledButton variant="contained" onClick={handleEditClick}>
-        수정
+        {isEditMode ? "저장" : "수정"}
       </StyledButton>
     </StyledHeaderWrapper>
   );
