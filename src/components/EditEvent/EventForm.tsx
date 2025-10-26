@@ -91,8 +91,42 @@ export const EventForm = ({
   const [requiredById, setRequiredById] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(formFields.map(field => [field.id, true])),
   );
+  const [copied, setCopied] = useState<boolean>(false);
 
   const updateEventFormMutation = useUpdateEventFormMutation();
+
+  // 복사할 URL 생성 (eventId가 있을 때만)
+  const getEventUrl = () => {
+    if (!eventId) {
+      return "";
+    }
+    return `${import.meta.env.VITE_EVENT_URL}/event/${eventId}`;
+  };
+
+  const handleCopyUrl = async () => {
+    const url = getEventUrl();
+    if (!url) {
+      console.error("이벤트 ID가 없어 URL을 생성할 수 없습니다.");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000); // 2초 후 복사 상태 초기화
+    } catch (err) {
+      console.error("URL 복사 실패:", err);
+      // fallback: 텍스트 선택 방식
+      const textField = document.createElement("input");
+      textField.value = url;
+      document.body.appendChild(textField);
+      textField.select();
+      document.execCommand("copy");
+      document.body.removeChild(textField);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   const handleRequiredToggle = (id: string, next: boolean) => {
     setRequiredById(prev => ({ ...prev, [id]: next }));
@@ -229,8 +263,14 @@ export const EventForm = ({
     <div>
       <Space height={16} />
       <Flex justify="end" gap="sm">
-        <Button size="sm" variant="sub" icon={<LinkIcon />}>
-          URL 복사하기
+        <Button
+          size="sm"
+          variant="sub"
+          icon={<LinkIcon />}
+          onClick={handleCopyUrl}
+          disabled={!eventId}
+        >
+          {copied ? "복사 완료!" : "URL 복사하기"}
         </Button>
         <Button size="sm" onClick={handlePublish} disabled={updateEventFormMutation.isPending}>
           {updateEventFormMutation.isPending ? "수정 중..." : "저장하기"}
