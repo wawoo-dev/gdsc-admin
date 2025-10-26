@@ -91,8 +91,72 @@ export const EventForm = ({
   const [requiredById, setRequiredById] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(formFields.map(field => [field.id, true])),
   );
+  const [copied, setCopied] = useState<boolean>(false);
+
+  // 초기 상태 저장
+  const [initialState, setInitialState] = useState<{
+    description: string;
+    formValue: EventType | null;
+  }>(() => ({
+    description: formValue?.applicationDescription || "",
+    formValue: formValue,
+  }));
 
   const updateEventFormMutation = useUpdateEventFormMutation();
+
+  // 데이터 변경사항 감지
+  const hasChanges = () => {
+    if (!initialState.formValue || !formValue) {
+      return false;
+    }
+
+    // description 변경 확인
+    const descriptionChanged = description !== initialState.description;
+
+    // formValue의 관련 필드들 변경 확인
+    const formValueChanged =
+      formValue.applicationDescription !== initialState.formValue.applicationDescription ||
+      formValue.afterPartyStatus !== initialState.formValue.afterPartyStatus ||
+      formValue.prePaymentStatus !== initialState.formValue.prePaymentStatus ||
+      formValue.postPaymentStatus !== initialState.formValue.postPaymentStatus ||
+      formValue.rsvpQuestionStatus !== initialState.formValue.rsvpQuestionStatus ||
+      formValue.noticeConfirmQuestionStatus !== initialState.formValue.noticeConfirmQuestionStatus;
+
+    return descriptionChanged || formValueChanged;
+  };
+
+  // 복사할 URL 생성 (eventId가 있을 때만)
+  const getEventUrl = () => {
+    if (!eventId) {
+      return "";
+    }
+    return `${import.meta.env.VITE_EVENT_URL}/event/${eventId}`;
+  };
+
+  const handleCopyUrl = async () => {
+    const url = getEventUrl();
+    if (!url) {
+      console.error("이벤트 ID가 없어 URL을 생성할 수 없습니다.");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000); // 2초 후 복사 상태 초기화
+    } catch (err) {
+      console.error("URL 복사 실패:", err);
+      // fallback: 텍스트 선택 방식
+      const textField = document.createElement("input");
+      textField.value = url;
+      document.body.appendChild(textField);
+      textField.select();
+      document.execCommand("copy");
+      document.body.removeChild(textField);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   const handleRequiredToggle = (id: string, next: boolean) => {
     setRequiredById(prev => ({ ...prev, [id]: next }));
@@ -176,11 +240,23 @@ export const EventForm = ({
       setRequiredById(
         Object.fromEntries(newFormFields.map(field => [field.id, field.optionalChecked ?? true])),
       );
+
+      // 초기 상태 업데이트 (formValue가 변경될 때만)
+      setInitialState(() => ({
+        description: formValue.applicationDescription || "",
+        formValue: formValue,
+      }));
     } else {
       setDescription("");
       const newFormFields = getFormFields(null);
       setFormFields(newFormFields);
       setRequiredById(Object.fromEntries(newFormFields.map(field => [field.id, true])));
+
+      // 초기 상태 업데이트
+      setInitialState({
+        description: "",
+        formValue: null,
+      });
     }
   }, [formValue]);
 
@@ -214,6 +290,11 @@ export const EventForm = ({
         {
           onSuccess: () => {
             console.log("이벤트 폼 정보가 성공적으로 수정되었습니다.");
+            // 저장 성공 후 초기 상태 업데이트
+            setInitialState({
+              description: description,
+              formValue: nextEvent,
+            });
           },
           onError: error => {
             console.error("이벤트 폼 정보 수정 중 오류가 발생했습니다:", error);
@@ -229,10 +310,20 @@ export const EventForm = ({
     <div>
       <Space height={16} />
       <Flex justify="end" gap="sm">
-        <Button size="sm" variant="sub" icon={<LinkIcon />}>
-          URL 복사하기
+        <Button
+          size="sm"
+          variant="sub"
+          icon={<LinkIcon />}
+          onClick={handleCopyUrl}
+          disabled={!eventId}
+        >
+          {copied ? "복사 완료!" : "URL 복사하기"}
         </Button>
-        <Button size="sm" onClick={handlePublish} disabled={updateEventFormMutation.isPending}>
+        <Button
+          size="sm"
+          onClick={handlePublish}
+          disabled={updateEventFormMutation.isPending || !hasChanges()}
+        >
           {updateEventFormMutation.isPending ? "수정 중..." : "저장하기"}
         </Button>
       </Flex>
