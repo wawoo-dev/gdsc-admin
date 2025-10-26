@@ -1,5 +1,6 @@
 import { RouteObject, createBrowserRouter, Navigate } from "react-router-dom";
 import Layout from "@/components/@layout/Layout";
+import AfterPartyAttendancePage from "@/pages/AfterPartyAttendancePage";
 import AllMemberHistoryPerSemesterPage from "@/pages/AllMemberHistoryPerSemesterPage";
 import AllMembersPage from "@/pages/AllMembersPage";
 import AuthErrorPage from "@/pages/AuthErrorPage";
@@ -57,6 +58,7 @@ const routes: RouteObject[] = [
     path: RoutePath.AuthorizedError,
     element: <AuthErrorPage />,
   },
+  { path: "test", element: <AfterPartyAttendancePage /> },
   { path: "*", element: <NotFoundErrorPage /> },
 ];
 

@@ -10,13 +10,13 @@ interface AttendanceMember {
   phone: string;
 }
 
-interface AfterEventAttendanceTableProps {
+interface AfterPartyAttendanceTableProps {
   isEditMode?: boolean;
 }
 
-export default function AfterEventAttendanceTable({
+export default function AfterPartyAttendanceTable({
   isEditMode = false,
-}: AfterEventAttendanceTableProps) {
+}: AfterPartyAttendanceTableProps) {
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set([3, 4, 5, 6]));
 
   const attendanceList: AttendanceMember[] = [

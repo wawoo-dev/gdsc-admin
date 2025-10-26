@@ -3,15 +3,15 @@ import { Button } from "@mui/material";
 import { Text } from "../@common/Text";
 import LogoIcon from "@/assets/logo.svg?react";
 
-interface AfterEventAttendanceHeaderProps {
+interface AfterPartyAttendanceHeaderProps {
   headerTitle?: string;
   onEditClick?: () => void;
 }
 
-export default function AfterEventAttendanceHeader({
+export default function AfterPartyAttendanceHeader({
   headerTitle,
   onEditClick,
-}: AfterEventAttendanceHeaderProps) {
+}: AfterPartyAttendanceHeaderProps) {
   const handleEditClick = () => {
     if (onEditClick) {
       onEditClick();

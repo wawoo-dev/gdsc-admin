@@ -26,19 +26,19 @@ const StyledContent = styled("div")({
   margin: "auto",
 });
 
-interface AfterEventAttendanceSummaryProps {
+interface AfterPartyAttendanceSummaryProps {
   totalCount?: number;
   applyedAndAttendedCount?: number;
   applyedAndNotAttendedCount?: number;
   onSiteApplyedCount?: number;
 }
 
-export default function AfterEventAttendanceSummary({
+export default function AfterPartyAttendanceSummary({
   totalCount,
   applyedAndAttendedCount,
   applyedAndNotAttendedCount,
   onSiteApplyedCount,
-}: AfterEventAttendanceSummaryProps) {
+}: AfterPartyAttendanceSummaryProps) {
   return (
     <StyledContainer>
       <StyledTitleSection>
