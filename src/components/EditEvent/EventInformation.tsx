@@ -93,6 +93,49 @@ export const EventInformation = ({
   );
   const [copyUrlModalOpen, setCopyUrlModalOpen] = useState(false);
 
+  // 초기 상태 저장
+  const [initialState, setInitialState] = useState<{
+    title: string;
+    venue: string;
+    regularRoleOnlyStatus: "ENABLED" | "DISABLED";
+    selectedRange: { from: Date | undefined; to: Date | undefined } | undefined;
+    selectedEventDate: Date | undefined;
+    mainEventMaxCount: string;
+    afterPartyMaxCount: string;
+    mainEventLimitEnabled: boolean;
+    afterPartyLimitEnabled: boolean;
+  }>(() => ({
+    title: formValue?.name || "",
+    venue: formValue?.venue || "",
+    regularRoleOnlyStatus: formValue?.regularRoleOnlyStatus || "DISABLED",
+    selectedRange: formValue
+      ? {
+          from: parseISO(formValue.applicationPeriod?.startDate),
+          to: parseISO(formValue.applicationPeriod?.endDate),
+        }
+      : undefined,
+    selectedEventDate: formValue?.startAt ? new Date(formValue?.startAt) : undefined,
+    mainEventMaxCount: formValue?.mainEventMaxApplicantCount?.toString() || "",
+    afterPartyMaxCount: formValue?.afterPartyMaxApplicantCount?.toString() || "",
+    mainEventLimitEnabled: eventId ? (formValue?.mainEventMaxApplicantCount || 0) > 0 : true,
+    afterPartyLimitEnabled: eventId ? (formValue?.afterPartyMaxApplicantCount || 0) > 0 : true,
+  }));
+
+  // 데이터 변경사항 감지
+  const hasChanges = () => {
+    return (
+      title !== initialState.title ||
+      venue !== initialState.venue ||
+      regularRoleOnlyStatus !== initialState.regularRoleOnlyStatus ||
+      JSON.stringify(selectedRange) !== JSON.stringify(initialState.selectedRange) ||
+      JSON.stringify(selectedEventDate) !== JSON.stringify(initialState.selectedEventDate) ||
+      mainEventMaxCount !== initialState.mainEventMaxCount ||
+      afterPartyMaxCount !== initialState.afterPartyMaxCount ||
+      mainEventLimitEnabled !== initialState.mainEventLimitEnabled ||
+      afterPartyLimitEnabled !== initialState.afterPartyLimitEnabled
+    );
+  };
+
   // 신청 기간이 지났는지 확인하는 함수
   const isApplicationInPeriod = () => {
     if (!formValue?.applicationPeriod?.startDate || !formValue?.applicationPeriod?.endDate) {
@@ -120,6 +163,22 @@ export const EventInformation = ({
       setRegularRoleOnlyStatus(formValue.regularRoleOnlyStatus);
       setMainEventLimitEnabled(eventId ? (formValue.mainEventMaxApplicantCount || 0) > 0 : true);
       setAfterPartyLimitEnabled(formValue.afterPartyStatus === "DISABLED" ? false : true);
+
+      // 초기 상태 업데이트 (formValue가 변경될 때만)
+      setInitialState({
+        title: formValue.name,
+        venue: formValue.venue,
+        regularRoleOnlyStatus: formValue.regularRoleOnlyStatus,
+        selectedRange: {
+          from: parseISO(formValue.applicationPeriod?.startDate),
+          to: parseISO(formValue.applicationPeriod?.endDate),
+        },
+        selectedEventDate: parseISO(formValue.startAt),
+        mainEventMaxCount: formValue.mainEventMaxApplicantCount?.toString() || "",
+        afterPartyMaxCount: formValue.afterPartyMaxApplicantCount?.toString() || "",
+        mainEventLimitEnabled: eventId ? (formValue.mainEventMaxApplicantCount || 0) > 0 : true,
+        afterPartyLimitEnabled: formValue.afterPartyStatus === "DISABLED" ? false : true,
+      });
     } else {
       setSelectedRange(undefined);
       setSelectedEventDate(undefined);
@@ -130,6 +189,19 @@ export const EventInformation = ({
       setRegularRoleOnlyStatus("DISABLED");
       setMainEventLimitEnabled(eventId ? false : true);
       setAfterPartyLimitEnabled(eventId ? false : true);
+
+      // 초기 상태 업데이트
+      setInitialState({
+        title: "",
+        venue: "",
+        regularRoleOnlyStatus: "DISABLED",
+        selectedRange: undefined,
+        selectedEventDate: undefined,
+        mainEventMaxCount: "",
+        afterPartyMaxCount: "",
+        mainEventLimitEnabled: eventId ? false : true,
+        afterPartyLimitEnabled: eventId ? false : true,
+      });
     }
   }, [formValue, eventId]);
 
@@ -205,6 +277,18 @@ export const EventInformation = ({
         {
           onSuccess: () => {
             updateFormValues();
+            // 저장 성공 후 초기 상태 업데이트
+            setInitialState({
+              title: title,
+              venue: venue,
+              regularRoleOnlyStatus: regularRoleOnlyStatus,
+              selectedRange: selectedRange,
+              selectedEventDate: selectedEventDate,
+              mainEventMaxCount: mainEventMaxCount,
+              afterPartyMaxCount: afterPartyMaxCount,
+              mainEventLimitEnabled: mainEventLimitEnabled,
+              afterPartyLimitEnabled: afterPartyLimitEnabled,
+            });
           },
           onError: error => {
             console.error("기본 정보 저장 중 오류가 발생했습니다:", error);
@@ -218,6 +302,18 @@ export const EventInformation = ({
           updateFormValues();
           setCopyUrlModalOpen(true);
           setEventUrl(`${import.meta.env.VITE_EVENT_URL}/event/${data.eventId}`);
+          // 저장 성공 후 초기 상태 업데이트
+          setInitialState({
+            title: title,
+            venue: venue,
+            regularRoleOnlyStatus: regularRoleOnlyStatus,
+            selectedRange: selectedRange,
+            selectedEventDate: selectedEventDate,
+            mainEventMaxCount: mainEventMaxCount,
+            afterPartyMaxCount: afterPartyMaxCount,
+            mainEventLimitEnabled: mainEventLimitEnabled,
+            afterPartyLimitEnabled: afterPartyLimitEnabled,
+          });
           console.log("이벤트가 성공적으로 생성되었습니다:", data);
         },
         onError: error => {
@@ -492,7 +588,9 @@ export const EventInformation = ({
         <Button
           onClick={handleSave}
           size="sm"
-          disabled={createEventMutation.isPending || updateBasicInfoMutation.isPending}
+          disabled={
+            createEventMutation.isPending || updateBasicInfoMutation.isPending || !hasChanges()
+          }
         >
           {eventId ? "저장하기" : "게시하기"}
         </Button>
