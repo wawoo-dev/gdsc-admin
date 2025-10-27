@@ -85,7 +85,10 @@ export const CopyUrlModal = ({ open, onClose, url }: CopyUrlModalProps) => {
         {/* URL 입력 필드 */}
         <TextField
           label={""}
-          value={url}
+          textareaProps={{
+            disabled: true,
+          }}
+          placeholder={url}
           css={css({
             "& .MuiInputBase-root": {
               "backgroundColor": color.backgroundAlternative,

@@ -1,6 +1,7 @@
 // api/events.ts
 
 import { apiClient } from ".";
+import { AfterPartyData } from "@/components/EditEvent/mockData/afterPartyMockData";
 import {
   AfterPartyAttendanceListResponse,
   CreateEventRequest,
@@ -76,6 +77,64 @@ export const eventApi = {
   deleteParticipants: async (eventParticipationIds: number[]) => {
     const response = await apiClient.delete(`/admin/event-participations`, {
       data: { eventParticipationIds },
+    });
+    return response.data;
+  },
+  getAfterPartyApplicants: async (
+    eventId: number,
+    page: number = 0,
+    size: number = 20,
+    sort: string = "",
+  ): Promise<AfterPartyData> => {
+    const response = await apiClient.get<AfterPartyData>(
+      `/admin/event-participations/after-party/applicants`,
+      {
+        params: { event: eventId, page, size, sort },
+      },
+    );
+    return response.data;
+  },
+  updateAfterPartyStatus: async (
+    eventParticipationId: number,
+    afterPartyUpdateTarget: "ATTENDANCE" | "PRE_PAYMENT" | "POST_PAYMENT",
+  ) => {
+    const response = await apiClient.put(
+      `/admin/event-participations/${eventParticipationId}/after-party/confirm`,
+      {
+        afterPartyUpdateTarget,
+      },
+    );
+    return response.data;
+  },
+  revokeAfterPartyStatus: async (
+    eventParticipationId: number,
+    afterPartyUpdateTarget: "ATTENDANCE" | "PRE_PAYMENT" | "POST_PAYMENT",
+  ) => {
+    const response = await apiClient.put(
+      `/admin/event-participations/${eventParticipationId}/after-party/revoke`,
+      {
+        afterPartyUpdateTarget,
+      },
+    );
+    return response.data;
+  },
+  confirmAllAfterPartyStatus: async (
+    eventId: number,
+    afterPartyUpdateTarget: "ATTENDANCE" | "PRE_PAYMENT" | "POST_PAYMENT",
+  ) => {
+    const response = await apiClient.put(`/admin/event-participations/after-party/confirm-all`, {
+      eventId,
+      afterPartyUpdateTarget,
+    });
+    return response.data;
+  },
+  revokeAllAfterPartyStatus: async (
+    eventId: number,
+    afterPartyUpdateTarget: "ATTENDANCE" | "PRE_PAYMENT" | "POST_PAYMENT",
+  ) => {
+    const response = await apiClient.put(`/admin/event-participations/after-party/revoke-all`, {
+      eventId,
+      afterPartyUpdateTarget,
     });
     return response.data;
   },
