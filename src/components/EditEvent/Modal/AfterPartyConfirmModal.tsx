@@ -10,10 +10,11 @@ import { Text } from "../../@common/Text";
 interface AfterPartyConfirmModalProps {
   open: boolean;
   onClose: () => void;
+  eventId: string;
 }
 
-export const AfterPartyConfirmModal = ({ open, onClose }: AfterPartyConfirmModalProps) => {
-  const qrCodeUrl = "https://example.com/qr-code";
+export const AfterPartyConfirmModal = ({ open, onClose, eventId }: AfterPartyConfirmModalProps) => {
+  const qrCodeUrl = `${window.location.origin}/after-party/${eventId}`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(qrCodeUrl);
