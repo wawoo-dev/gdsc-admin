@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { css } from "@emotion/react";
 import { Modal } from "@mui/material";
 import { QRCodeCanvas } from "qrcode.react";
@@ -14,11 +15,20 @@ interface AfterPartyConfirmModalProps {
 }
 
 export const AfterPartyConfirmModal = ({ open, onClose, eventId }: AfterPartyConfirmModalProps) => {
-  const qrCodeUrl = `${window.location.origin}/events-home/after-party/${eventId}`;
+  const qrCodeUrl = useMemo(() => {
+    if (typeof window === "undefined") {
+      return "";
+    }
+    return `${window.location.origin}/after-party/${eventId}`;
+  }, [eventId]);
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(qrCodeUrl);
-    toast.success("링크가 복사되었어요!");
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(qrCodeUrl);
+      toast.success("링크가 복사되었어요!");
+    } catch {
+      toast.error("링크 복사에 실패했어요. 다시 시도해주세요.");
+    }
   };
 
   return (
