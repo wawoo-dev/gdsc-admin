@@ -132,9 +132,9 @@ export default function AfterPartyAttendancePage() {
     >
       <AfterPartyAttendanceSummary
         totalCount={totalAttendeesCount}
-        applyedAndAttendedCount={attendedAfterApplyingCount}
-        applyedAndNotAttendedCount={notAttendedAfterApplyingCount}
-        onSiteApplyedCount={onSiteApplicationCount}
+        appliedAndAttendedCount={attendedAfterApplyingCount}
+        appliedAndNotAttendedCount={notAttendedAfterApplyingCount}
+        onSiteAppliedCount={onSiteApplicationCount}
       />
       <AfterPartyAttendanceTable
         isEditMode={isEditMode}

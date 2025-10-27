@@ -28,16 +28,16 @@ const StyledContent = styled("div")({
 
 interface AfterPartyAttendanceSummaryProps {
   totalCount?: number;
-  applyedAndAttendedCount?: number;
-  applyedAndNotAttendedCount?: number;
-  onSiteApplyedCount?: number;
+  appliedAndAttendedCount?: number;
+  appliedAndNotAttendedCount?: number;
+  onSiteAppliedCount?: number;
 }
 
 export default function AfterPartyAttendanceSummary({
   totalCount,
-  applyedAndAttendedCount,
-  applyedAndNotAttendedCount,
-  onSiteApplyedCount,
+  appliedAndAttendedCount,
+  appliedAndNotAttendedCount,
+  onSiteAppliedCount,
 }: AfterPartyAttendanceSummaryProps) {
   return (
     <StyledContainer>
@@ -50,11 +50,11 @@ export default function AfterPartyAttendanceSummary({
         </Text>
       </StyledTitleSection>
       <StyledContentSection>
-        <AttendanceStatusCell title="신청 후 참석" value={applyedAndAttendedCount ?? 0} />
+        <AttendanceStatusCell title="신청 후 참석" value={appliedAndAttendedCount ?? 0} />
         <StyledDivider />
-        <AttendanceStatusCell title="신청 후 미참석" value={applyedAndNotAttendedCount ?? 0} />
+        <AttendanceStatusCell title="신청 후 미참석" value={appliedAndNotAttendedCount ?? 0} />
         <StyledDivider />
-        <AttendanceStatusCell title="현장 신청" value={onSiteApplyedCount ?? 0} />
+        <AttendanceStatusCell title="현장 신청" value={onSiteAppliedCount ?? 0} />
       </StyledContentSection>
     </StyledContainer>
   );
