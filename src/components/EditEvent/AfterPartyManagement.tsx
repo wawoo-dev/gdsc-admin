@@ -436,11 +436,7 @@ export const AfterPartyManagement = () => {
       </Flex>
 
       {/* 뒤풀이 인원 확인 모달 */}
-      <AfterPartyConfirmModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        eventId={String(eventId)}
-      />
+      <AfterPartyConfirmModal open={modalOpen} onClose={() => setModalOpen(false)} eventId={id} />
     </div>
   );
 };
