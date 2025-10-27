@@ -10,7 +10,7 @@ import { Text } from "../../@common/Text";
 interface AfterPartyConfirmModalProps {
   open: boolean;
   onClose: () => void;
-  eventId: string;
+  eventId: number;
 }
 
 export const AfterPartyConfirmModal = ({ open, onClose, eventId }: AfterPartyConfirmModalProps) => {
