@@ -14,7 +14,7 @@ interface AfterPartyConfirmModalProps {
 }
 
 export const AfterPartyConfirmModal = ({ open, onClose, eventId }: AfterPartyConfirmModalProps) => {
-  const qrCodeUrl = `${window.location.origin}/after-party/${eventId}`;
+  const qrCodeUrl = `${window.location.origin}/events-home/after-party/${eventId}`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(qrCodeUrl);
