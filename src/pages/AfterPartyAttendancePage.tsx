@@ -1,14 +1,19 @@
 import { useState, useMemo, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import MobileLayout from "@/components/@layout/MobileLayout";
 import AfterPartyAttendanceHeader from "@/components/AfterPartyAttendance/AfterPartyAttendanceHeader";
 import AfterPartyAttendanceSummary from "@/components/AfterPartyAttendance/AfterPartyAttendanceSummary";
 import AfterPartyAttendanceTable from "@/components/AfterPartyAttendance/AfterPartyAttendanceTable";
+import { QueryKey } from "@/constants/queryKey";
 import usePutAfterPartyAttendanceMutation from "@/hooks/mutations/usePutAfterPartyAttendancesMutation";
 import useRevokeAfterPartyAttendanceMutation from "@/hooks/mutations/useRevokeAfterPartyAttendanceMutation";
 import useGetAfterPartyAttendancesQuery from "@/hooks/queries/useGetAfterPartyAttendancesQuery";
 
 export default function AfterPartyAttendancePage() {
   const [isEditMode, setIsEditMode] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const queryClient = useQueryClient();
+
   const {
     eventParticipantList,
     totalAttendeesCount,
@@ -22,7 +27,7 @@ export default function AfterPartyAttendancePage() {
       new Set(
         (eventParticipantList || [])
           .filter(participant => participant.afterPartyAttendanceStatus === "ATTENDED")
-          .map(participant => participant.memberId),
+          .map(participant => participant.eventParticipationId),
       ),
     [eventParticipantList],
   );
@@ -35,11 +40,21 @@ export default function AfterPartyAttendancePage() {
       setSelectedIds(initialSelectedIds);
     }
   }, [eventParticipantList, initialSelectedIds]);
+
+  // 변경사항 감지
+  useEffect(() => {
+    const initialIdsArray = Array.from(initialSelectedIds).sort();
+    const currentIdsArray = Array.from(selectedIds).sort();
+    const hasChanges = !(
+      initialIdsArray.length === currentIdsArray.length &&
+      initialIdsArray.every((id, index) => id === currentIdsArray[index])
+    );
+    setHasUnsavedChanges(hasChanges);
+  }, [selectedIds, initialSelectedIds]);
   const mutation = usePutAfterPartyAttendanceMutation();
   const revokeMutation = useRevokeAfterPartyAttendanceMutation();
 
   const handleSave = async () => {
-    // 초기값과 현재값이 같으면 저장하지 않음
     const initialIdsArray = Array.from(initialSelectedIds).sort();
     const currentIdsArray = Array.from(selectedIds).sort();
 
@@ -51,60 +66,75 @@ export default function AfterPartyAttendancePage() {
       return;
     }
 
-    // 추가된 ID들 (새로 선택된 것들)
-    const addedIds = Array.from(selectedIds).filter(id => !initialSelectedIds.has(id));
+    // 추가된 ID들 (새로 선택된 eventParticipationId들)
+    const addedEventParticipationIds = Array.from(selectedIds).filter(
+      id => !initialSelectedIds.has(id),
+    );
 
-    // 제거된 ID들 (선택 해제된 것들)
-    const removedIds = Array.from(initialSelectedIds).filter(id => !selectedIds.has(id));
+    // 제거된 ID들 (선택 해제된 eventParticipationId들)
+    const removedEventParticipationIds = Array.from(initialSelectedIds).filter(
+      id => !selectedIds.has(id),
+    );
+
+    console.log("저장 시작:", { addedEventParticipationIds, removedEventParticipationIds });
 
     try {
       // 추가된 항목들 처리
-      if (addedIds.length > 0) {
-        const addedEventParticipationIds = addedIds
-          .map(memberId => {
-            const participant = eventParticipantList?.find(p => p.memberId === memberId);
-            return participant?.eventParticipationId;
-          })
-          .filter((id): id is number => id !== undefined);
+      if (addedEventParticipationIds.length > 0) {
+        await new Promise((resolve, reject) => {
+          mutation.mutate(addedEventParticipationIds, {
+            onSuccess: () => {
+              resolve(undefined);
+            },
+            onError: reject,
+          });
+        });
+      }
 
-        if (addedEventParticipationIds.length > 0) {
+      // 제거된 항목들 처리 (순차적으로 실행)
+      if (removedEventParticipationIds.length > 0) {
+        console.log("제거 요청 시작:", removedEventParticipationIds);
+
+        for (const eventParticipationId of removedEventParticipationIds) {
+          console.log("제거 요청 전송:", eventParticipationId);
           await new Promise((resolve, reject) => {
-            mutation.mutate(addedEventParticipationIds, {
-              onSuccess: resolve,
-              onError: reject,
-            });
+            revokeMutation.mutate(
+              {
+                eventParticipationId: eventParticipationId,
+                afterPartyUpdateTarget: "ATTENDANCE",
+              },
+              {
+                onSuccess: () => {
+                  console.log("제거 요청 성공:", eventParticipationId);
+                  resolve(undefined);
+                },
+                onError: error => {
+                  console.error("제거 요청 실패:", eventParticipationId, error);
+                  reject(error);
+                },
+              },
+            );
           });
         }
       }
 
-      // 제거된 항목들 처리 (병렬로 실행)
-      if (removedIds.length > 0) {
-        const revokePromises = removedIds.map(memberId => {
-          const participant = eventParticipantList?.find(p => p.memberId === memberId);
-          if (participant?.eventParticipationId) {
-            return new Promise((resolve, reject) => {
-              revokeMutation.mutate(
-                {
-                  eventParticipationId: participant.eventParticipationId,
-                  afterPartyUpdateTarget: "ATTENDANCE",
-                },
-                {
-                  onSuccess: resolve,
-                  onError: reject,
-                },
-              );
-            });
-          }
-          return Promise.resolve();
-        });
-
-        await Promise.all(revokePromises);
-      }
-
       setIsEditMode(false);
+
+      // 편집 모드 종료 후 쿼리 무효화
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: [QueryKey.afterPartyAttendances] });
+      }, 100);
     } catch (error) {
       console.error("저장 중 오류가 발생했습니다:", error);
     }
+  };
+
+  const handleSearchModalClose = () => {
+    setIsEditMode(false);
+  };
+
+  const handleParticipantAdded = () => {
+    queryClient.invalidateQueries({ queryKey: [QueryKey.afterPartyAttendances] });
   };
 
   return (
@@ -120,6 +150,7 @@ export default function AfterPartyAttendancePage() {
             }
           }}
           isEditMode={isEditMode}
+          hasUnsavedChanges={hasUnsavedChanges}
         />
       }
     >
@@ -135,6 +166,14 @@ export default function AfterPartyAttendancePage() {
         selectedIds={selectedIds}
         onSelectedIdsChange={setSelectedIds}
       />
+      {/* 바텀시트 구현 필요 */}
+      {isEditMode && (
+        <div>
+          <p>검색 모달 (추후 구현)</p>
+          <button onClick={handleSearchModalClose}>닫기</button>
+          <button onClick={handleParticipantAdded}>참가자 추가 (테스트)</button>
+        </div>
+      )}
     </MobileLayout>
   );
 }

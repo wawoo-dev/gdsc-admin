@@ -16,16 +16,16 @@ export default function AfterPartyAttendanceTable({
   selectedIds,
   onSelectedIdsChange,
 }: AfterPartyAttendanceTableProps) {
-  const handleToggle = (memberId: number) => {
+  const handleToggle = (eventParticipationId: number) => {
     if (!isEditMode) {
       return;
     }
 
     const newSet = new Set(selectedIds);
-    if (newSet.has(memberId)) {
-      newSet.delete(memberId);
+    if (newSet.has(eventParticipationId)) {
+      newSet.delete(eventParticipationId);
     } else {
-      newSet.add(memberId);
+      newSet.add(eventParticipationId);
     }
     onSelectedIdsChange(newSet);
   };
@@ -53,13 +53,13 @@ export default function AfterPartyAttendanceTable({
       </Header>
 
       <List>
-        {afterPartyParticipants.map(participant => {
-          const isSelected = selectedIds.has(participant.memberId);
+        {afterPartyParticipants.map((participant, index) => {
+          const isSelected = selectedIds.has(participant.eventParticipationId);
 
           return (
             <ListItem
-              key={participant.memberId}
-              onClick={() => handleToggle(participant.memberId)}
+              key={participant.eventParticipationId}
+              onClick={() => handleToggle(participant.eventParticipationId)}
               isSelected={isSelected && isEditMode}
               isClickable={isEditMode}
             >
