@@ -7,14 +7,12 @@ interface AfterPartyAttendanceHeaderProps {
   headerTitle?: string;
   onEditClick?: () => void;
   isEditMode?: boolean;
-  hasUnsavedChanges?: boolean;
 }
 
 export default function AfterPartyAttendanceHeader({
   headerTitle,
   onEditClick,
   isEditMode = false,
-  hasUnsavedChanges = false,
 }: AfterPartyAttendanceHeaderProps) {
   const handleEditClick = () => {
     if (onEditClick) {
@@ -28,10 +26,7 @@ export default function AfterPartyAttendanceHeader({
         <LogoIcon width={49} height={24} />
         <Text typo="h3">{headerTitle}</Text>
       </StyledTitleSection>
-      <StyledButton 
-        variant="contained" 
-        onClick={handleEditClick}
-      >
+      <StyledButton variant="contained" onClick={handleEditClick}>
         {isEditMode ? "저장" : "수정"}
       </StyledButton>
     </StyledHeaderWrapper>

@@ -12,10 +12,10 @@ import useGetAfterPartyAttendancesQuery from "@/hooks/queries/useGetAfterPartyAt
 
 export default function AfterPartyAttendancePage() {
   const [isEditMode, setIsEditMode] = useState(false);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
   const eventId = id ? parseInt(id, 10) : 0;
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
 
   const {
     eventParticipantList,
@@ -35,25 +35,12 @@ export default function AfterPartyAttendancePage() {
     [eventParticipantList],
   );
 
-  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
-
-  // eventParticipantList가 로드되면 초기값 설정
   useEffect(() => {
     if (eventParticipantList) {
       setSelectedIds(initialSelectedIds);
     }
   }, [eventParticipantList, initialSelectedIds]);
 
-  // 변경사항 감지
-  useEffect(() => {
-    const initialIdsArray = Array.from(initialSelectedIds).sort();
-    const currentIdsArray = Array.from(selectedIds).sort();
-    const hasChanges = !(
-      initialIdsArray.length === currentIdsArray.length &&
-      initialIdsArray.every((id, index) => id === currentIdsArray[index])
-    );
-    setHasUnsavedChanges(hasChanges);
-  }, [selectedIds, initialSelectedIds]);
   const mutation = usePutAfterPartyAttendanceMutation();
   const revokeMutation = useRevokeAfterPartyAttendanceMutation();
 
@@ -140,7 +127,6 @@ export default function AfterPartyAttendancePage() {
             }
           }}
           isEditMode={isEditMode}
-          hasUnsavedChanges={hasUnsavedChanges}
         />
       }
     >
