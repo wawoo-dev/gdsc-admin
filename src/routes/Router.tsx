@@ -58,8 +58,11 @@ const routes: RouteObject[] = [
     path: RoutePath.AuthorizedError,
     element: <AuthErrorPage />,
   },
-  { path: "test", element: <AfterPartyAttendancePage /> },
   { path: "*", element: <NotFoundErrorPage /> },
+  {
+    path: RoutePath.AfterPartyAttendance,
+    element: <AfterPartyAttendancePage />,
+  },
 ];
 
 const Router = createBrowserRouter(routes);

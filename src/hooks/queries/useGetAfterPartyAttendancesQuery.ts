@@ -3,9 +3,10 @@ import { eventApi } from "@/apis/eventApi";
 import { QueryKey } from "@/constants/queryKey";
 
 export default function useGetAfterPartyAttendancesQuery(eventId: number) {
-  const { data } = useQuery({
+  const { data, isError, error } = useQuery({
     queryKey: [QueryKey.afterPartyAttendances, eventId],
     queryFn: () => eventApi.getAfterPartyAttendances(eventId),
+    retry: false,
   });
 
   const eventParticipantList = data?.eventParticipationDtos;
@@ -20,5 +21,7 @@ export default function useGetAfterPartyAttendancesQuery(eventId: number) {
     attendedAfterApplyingCount,
     notAttendedAfterApplyingCount,
     onSiteApplicationCount,
+    isError,
+    error,
   };
 }

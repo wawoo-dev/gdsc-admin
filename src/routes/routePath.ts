@@ -25,6 +25,7 @@ const RoutePath = {
 
   EventsHomePage: "/events-home",
   EditEvent: "/events-home/edit",
+  AfterPartyAttendance: "/events-home/after-party/:id",
   Error: "/error",
 } as const;
 

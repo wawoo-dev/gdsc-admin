@@ -53,7 +53,7 @@ export default function AfterPartyAttendanceTable({
       </Header>
 
       <List>
-        {afterPartyParticipants.map((participant, index) => {
+        {afterPartyParticipants.map(participant => {
           const isSelected = selectedIds.has(participant.eventParticipationId);
 
           return (
@@ -63,9 +63,13 @@ export default function AfterPartyAttendanceTable({
               isSelected={isSelected && isEditMode}
               isClickable={isEditMode}
             >
-              <Text style={{ flex: 1.2 }}>{participant.participant.studentId}</Text>
-              <Text style={{ flex: 1 }}>{participant.participant.name}</Text>
-              <Text style={{ flex: 1.5 }}>{participant.participant.phone}</Text>
+              <Text style={{ flex: 1.2 }}>
+                {participant.participant?.studentId || `회원 ID: ${participant.memberId}`}
+              </Text>
+              <Text style={{ flex: 1 }}>{participant.participant?.name || "정보 없음"}</Text>
+              <Text style={{ flex: 1.5 }}>
+                {participant.participant?.phone ? participant.participant.phone.slice(-4) : "-"}
+              </Text>
               {isEditMode ? (
                 <CheckboxWrapper>
                   <Checkbox isSelected={isSelected}>{isSelected && <CheckIcon />}</Checkbox>

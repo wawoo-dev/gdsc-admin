@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
 import MobileLayout from "@/components/@layout/MobileLayout";
 import AfterPartyAttendanceHeader from "@/components/AfterPartyAttendance/AfterPartyAttendanceHeader";
 import AfterPartyAttendanceSummary from "@/components/AfterPartyAttendance/AfterPartyAttendanceSummary";
@@ -13,6 +14,8 @@ export default function AfterPartyAttendancePage() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const queryClient = useQueryClient();
+  const { id } = useParams<{ id: string }>();
+  const eventId = id ? parseInt(id, 10) : 0;
 
   const {
     eventParticipantList,
@@ -20,7 +23,7 @@ export default function AfterPartyAttendancePage() {
     attendedAfterApplyingCount,
     notAttendedAfterApplyingCount,
     onSiteApplicationCount,
-  } = useGetAfterPartyAttendancesQuery(15);
+  } = useGetAfterPartyAttendancesQuery(eventId);
 
   const initialSelectedIds = useMemo(
     () =>
@@ -76,16 +79,12 @@ export default function AfterPartyAttendancePage() {
       id => !selectedIds.has(id),
     );
 
-    console.log("저장 시작:", { addedEventParticipationIds, removedEventParticipationIds });
-
     try {
       // 추가된 항목들 처리
       if (addedEventParticipationIds.length > 0) {
         await new Promise((resolve, reject) => {
           mutation.mutate(addedEventParticipationIds, {
-            onSuccess: () => {
-              resolve(undefined);
-            },
+            onSuccess: () => resolve(undefined),
             onError: reject,
           });
         });
@@ -93,10 +92,7 @@ export default function AfterPartyAttendancePage() {
 
       // 제거된 항목들 처리 (순차적으로 실행)
       if (removedEventParticipationIds.length > 0) {
-        console.log("제거 요청 시작:", removedEventParticipationIds);
-
         for (const eventParticipationId of removedEventParticipationIds) {
-          console.log("제거 요청 전송:", eventParticipationId);
           await new Promise((resolve, reject) => {
             revokeMutation.mutate(
               {
@@ -104,14 +100,8 @@ export default function AfterPartyAttendancePage() {
                 afterPartyUpdateTarget: "ATTENDANCE",
               },
               {
-                onSuccess: () => {
-                  console.log("제거 요청 성공:", eventParticipationId);
-                  resolve(undefined);
-                },
-                onError: error => {
-                  console.error("제거 요청 실패:", eventParticipationId, error);
-                  reject(error);
-                },
+                onSuccess: () => resolve(undefined),
+                onError: error => reject(error),
               },
             );
           });
