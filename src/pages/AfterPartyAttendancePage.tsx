@@ -9,6 +9,7 @@ import { QueryKey } from "@/constants/queryKey";
 import usePutAfterPartyAttendanceMutation from "@/hooks/mutations/usePutAfterPartyAttendancesMutation";
 import useRevokeAfterPartyAttendanceMutation from "@/hooks/mutations/useRevokeAfterPartyAttendanceMutation";
 import useGetAfterPartyAttendancesQuery from "@/hooks/queries/useGetAfterPartyAttendancesQuery";
+import { useGetEvent } from "@/hooks/queries/useGetEvent";
 
 export default function AfterPartyAttendancePage() {
   const [isEditMode, setIsEditMode] = useState(false);
@@ -24,6 +25,8 @@ export default function AfterPartyAttendancePage() {
     notAttendedAfterApplyingCount,
     onSiteApplicationCount,
   } = useGetAfterPartyAttendancesQuery(eventId);
+
+  const eventData = useGetEvent(eventId);
 
   const initialSelectedIds = useMemo(
     () =>
@@ -118,7 +121,7 @@ export default function AfterPartyAttendancePage() {
     <MobileLayout
       header={
         <AfterPartyAttendanceHeader
-          headerTitle="25학년도 2학기 개강총회"
+          headerTitle={eventData.data?.eventData?.name || "뒤풀이 참석자 관리"}
           onEditClick={() => {
             if (isEditMode) {
               handleSave();

@@ -31,6 +31,10 @@ export const eventApi = {
     const response = await apiClient.put(`/admin/events/${eventId}/form-info`, eventData);
     return response.data;
   },
+  getSpecificEvent: async (eventId: number): Promise<EventType> => {
+    const response = await apiClient.get<EventType>(`/common/events/${eventId}`);
+    return response.data;
+  },
   getEventList: async (page: number = 1, size: number = 20): Promise<EventResponse> => {
     const response = await apiClient.get<EventResponse>(`/admin/events?page=${page}&size=${size}`);
     return response.data;

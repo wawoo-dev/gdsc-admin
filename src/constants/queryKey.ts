@@ -13,5 +13,6 @@ export const enum QueryKey {
   studyList = "studyList",
   searchMemberList = "searchMemberList",
   eventList = "eventList",
+  specificEvent = "specificEvent",
   afterPartyAttendances = "afterPartyAttendances",
 }
