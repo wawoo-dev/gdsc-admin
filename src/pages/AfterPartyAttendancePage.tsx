@@ -39,10 +39,10 @@ export default function AfterPartyAttendancePage() {
   );
 
   useEffect(() => {
-    if (eventParticipantList) {
+    if (eventParticipantList && !isEditMode) {
       setSelectedIds(initialSelectedIds);
     }
-  }, [eventParticipantList, initialSelectedIds]);
+  }, [eventParticipantList, initialSelectedIds, isEditMode]);
 
   const mutation = usePutAfterPartyAttendanceMutation();
   const revokeMutation = useRevokeAfterPartyAttendanceMutation();
@@ -100,12 +100,10 @@ export default function AfterPartyAttendancePage() {
 
       setIsEditMode(false);
 
-      // 편집 모드 종료 후 쿼리 무효화
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: [QueryKey.afterPartyAttendances] });
-      }, 100);
+      queryClient.invalidateQueries({ queryKey: [QueryKey.afterPartyAttendances] });
     } catch (error) {
       console.error("저장 중 오류가 발생했습니다:", error);
+      setSelectedIds(initialSelectedIds);
     }
   };
 
