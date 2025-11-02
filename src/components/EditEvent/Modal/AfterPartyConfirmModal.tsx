@@ -19,7 +19,7 @@ export const AfterPartyConfirmModal = ({ open, onClose, eventId }: AfterPartyCon
     if (typeof window === "undefined") {
       return "";
     }
-    return `${window.location.origin}/after-party/${eventId}`;
+    return `${window.location.origin}/events-home/after-party/${eventId}`;
   }, [eventId]);
 
   const handleCopyLink = async () => {

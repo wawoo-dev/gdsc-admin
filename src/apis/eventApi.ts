@@ -3,6 +3,7 @@
 import { apiClient } from ".";
 import { AfterPartyData } from "@/components/EditEvent/mockData/afterPartyMockData";
 import {
+  AfterPartyAttendanceListResponse,
   CreateEventRequest,
   EventParticipantsResponse,
   EventResponse,
@@ -28,6 +29,10 @@ export const eventApi = {
   },
   updateEventForm: async (eventId: number, eventData: UpdateEventFormRequest) => {
     const response = await apiClient.put(`/admin/events/${eventId}/form-info`, eventData);
+    return response.data;
+  },
+  getSpecificEvent: async (eventId: number): Promise<EventType> => {
+    const response = await apiClient.get<EventType>(`/common/events/${eventId}`);
     return response.data;
   },
   getEventList: async (page: number = 1, size: number = 20): Promise<EventResponse> => {
@@ -135,6 +140,33 @@ export const eventApi = {
       eventId,
       afterPartyUpdateTarget,
     });
+    return response.data;
+  },
+  getAfterPartyAttendances: async (eventId: number): Promise<AfterPartyAttendanceListResponse> => {
+    const response = await apiClient.get<AfterPartyAttendanceListResponse>(
+      `/admin/event-participations/after-party/attendances`,
+      {
+        params: { event: eventId },
+      },
+    );
+    return response.data;
+  },
+  putAfterPartyAttendances: async (eventParticipationIds: number[]) => {
+    const response = await apiClient.put(`/admin/event-participations/after-party/attend`, {
+      eventParticipationIds,
+    });
+    return response.data;
+  },
+  postAfterPartyAttendanceRevoke: async (data: {
+    eventParticipationId: number;
+    afterPartyUpdateTarget: string;
+  }) => {
+    const response = await apiClient.put(
+      `/admin/event-participations/${data.eventParticipationId}/after-party/revoke`,
+      {
+        afterPartyUpdateTarget: data.afterPartyUpdateTarget,
+      },
+    );
     return response.data;
   },
 };

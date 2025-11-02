@@ -7,6 +7,7 @@ import { FormField } from "./FormField";
 import { FormFieldProps } from "./FormField";
 import { Flex } from "../@common/Flex";
 import { Space } from "../@common/Space";
+import { Text } from "../@common/Text";
 import { useUpdateEventFormMutation } from "@/hooks/mutations/useUpdateEventFormMutation";
 import { EventType, UpdateEventFormRequest } from "@/types/dtos/event";
 const getFormFields = (formValue: EventType | null): FormFieldProps[] => {
@@ -50,11 +51,15 @@ const getFormFields = (formValue: EventType | null): FormFieldProps[] => {
     },
     {
       id: "prePayment",
-      type: "option-select",
+      type: "textfield",
       title: "선입금을 완료하였나요?",
       optional: true,
       optionalChecked: formValue?.prePaymentStatus === "ENABLED", // ENABLED일 때 true
-      options: [{ value: "선입금", label: "예, 완료했습니다." }],
+      value: (
+        <Text typo="body1" color="error">
+          정산이 있는 행사일 경우 아래 토글을 켜주세요.
+        </Text>
+      ),
     },
     {
       id: "postPayment",
@@ -313,7 +318,7 @@ export const EventForm = ({
         <Button
           size="sm"
           variant="sub"
-          icon={<LinkIcon />}
+          icon={<LinkIcon stroke="primary" />}
           onClick={handleCopyUrl}
           disabled={!eventId}
         >
