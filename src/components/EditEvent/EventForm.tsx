@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { css } from "@emotion/react";
 import { Link as LinkIcon } from "wowds-icons";
-import { typography } from "wowds-tokens";
+import { color, typography } from "wowds-tokens";
 import Button from "wowds-ui/Button";
 import { FormField } from "./FormField";
 import { FormFieldProps } from "./FormField";
@@ -318,7 +318,7 @@ export const EventForm = ({
         <Button
           size="sm"
           variant="sub"
-          icon={<LinkIcon />}
+          icon={<LinkIcon stroke="primary" />}
           onClick={handleCopyUrl}
           disabled={!eventId}
         >
