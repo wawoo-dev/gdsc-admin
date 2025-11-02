@@ -17,7 +17,7 @@ interface TextFieldProps extends OptionalControlled {
   id: string;
   type: "textfield";
   title: string;
-  value: string;
+  value: React.ReactNode;
   isDisabled?: boolean;
 }
 
