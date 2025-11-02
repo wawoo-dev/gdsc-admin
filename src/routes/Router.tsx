@@ -1,5 +1,6 @@
 import { RouteObject, createBrowserRouter, Navigate } from "react-router-dom";
 import Layout from "@/components/@layout/Layout";
+import AfterPartyAttendancePage from "@/pages/AfterPartyAttendancePage";
 import AllMemberHistoryPerSemesterPage from "@/pages/AllMemberHistoryPerSemesterPage";
 import AllMembersPage from "@/pages/AllMembersPage";
 import AuthErrorPage from "@/pages/AuthErrorPage";
@@ -58,6 +59,10 @@ const routes: RouteObject[] = [
     element: <AuthErrorPage />,
   },
   { path: "*", element: <NotFoundErrorPage /> },
+  {
+    path: RoutePath.AfterPartyAttendance,
+    element: <AfterPartyAttendancePage />,
+  },
 ];
 
 const Router = createBrowserRouter(routes);

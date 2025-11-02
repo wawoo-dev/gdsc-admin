@@ -128,3 +128,26 @@ export interface SearchMemberListResponse {
   participable: boolean;
   phone: string;
 }
+
+export type MainEventApplicationStatus = "NOT_APPLIED" | "APPLIED";
+export type AfterPartyAttendanceStatus = "NONE" | "NOT_ATTENDED" | "ATTENDED";
+export type PaymentStatus = "NONE" | "UNPAID" | "PAID";
+
+export interface AfterPartyAttendanceListResponse {
+  totalAttendeesCount: number;
+  attendedAfterApplyingCount: number;
+  notAttendedAfterApplyingCount: number;
+  onSiteApplicationCount: number;
+  eventParticipationDtos: EventParticipantDto[];
+}
+
+export interface EventParticipantDto {
+  eventParticipationId: number;
+  participant: Participant;
+  memberId: number;
+  mainEventApplicationStatus: MainEventApplicationStatus;
+  afterPartyApplicationStatus: AfterPartyApplicationStatus;
+  afterPartyAttendanceStatus: AfterPartyAttendanceStatus;
+  prePaymentStatus: PaymentStatus;
+  postPaymentStatus: PaymentStatus;
+}
