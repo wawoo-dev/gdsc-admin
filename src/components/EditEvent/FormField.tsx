@@ -67,6 +67,7 @@ export const FormField = (props: FormFieldProps) => {
             </RadioGroup>
           )}
           {optional && (
+            //NOTE: wowds-ui/Switch는 disabled/checked 구현이 되어 있지 않아 mui 로 교체
             <Flex justify="flex-end">
               <Switch
                 checked={enabled}
