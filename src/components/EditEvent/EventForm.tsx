@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { css } from "@emotion/react";
 import { Link as LinkIcon } from "wowds-icons";
-import { color, typography } from "wowds-tokens";
+import { typography } from "wowds-tokens";
 import Button from "wowds-ui/Button";
 import { FormField } from "./FormField";
 import { FormFieldProps } from "./FormField";
