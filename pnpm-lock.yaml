@@ -66,8 +66,8 @@ importers:
         specifier: ^0.1.6
         version: 0.1.6
       wowds-ui:
-        specifier: ^0.2.0
-        version: 0.2.6(next@15.5.3(@babel/core@7.28.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^0.3.1
+        version: 0.3.1(next@15.5.3(@babel/core@7.28.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       zustand:
         specifier: ^4.4.7
         version: 4.5.7(@types/react@18.3.24)(react@18.3.1)
@@ -4558,8 +4558,8 @@ packages:
   wowds-tokens@0.1.6:
     resolution: {integrity: sha512-AitpIpeuVIxz6mXevyLx2JI34ydLwgOMPzO7byb65XPs/Mhi8KJ3DQZBEBjsQ/arWjXPugVJRRIO4oMZ2lkzdg==}
 
-  wowds-ui@0.2.6:
-    resolution: {integrity: sha512-PHtLpQxkM3rFwo0RrVUXeHVbgsiM+sMZXyXFiE5beWqVP75JukFXbFpH1umWppW14Fz5wJZQsNxfOq6Ft8JI0Q==}
+  wowds-ui@0.3.1:
+    resolution: {integrity: sha512-n1KSCR/3TNvZ0SxkxbHNmLL1nzPCqd7Mr7WmOysmqVMG0kaXClo4gRW2BtFrQqxle5qZBMercUxj17nVEPJt7A==}
     peerDependencies:
       next: '>=14.2.25'
       react: ^18.2.0
@@ -9594,7 +9594,7 @@ snapshots:
 
   wowds-tokens@0.1.6: {}
 
-  wowds-ui@0.2.6(next@15.5.3(@babel/core@7.28.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  wowds-ui@0.3.1(next@15.5.3(@babel/core@7.28.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       clsx: 2.1.1
       lottie-react: 2.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
