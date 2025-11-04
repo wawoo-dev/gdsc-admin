@@ -1,10 +1,13 @@
 import { useState, useMemo, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
+import BottomSheet from "@/components/@common/BottomSheet";
 import MobileLayout from "@/components/@layout/MobileLayout";
 import AfterPartyAttendanceHeader from "@/components/AfterPartyAttendance/AfterPartyAttendanceHeader";
 import AfterPartyAttendanceSummary from "@/components/AfterPartyAttendance/AfterPartyAttendanceSummary";
 import AfterPartyAttendanceTable from "@/components/AfterPartyAttendance/AfterPartyAttendanceTable";
+import AfterPartyBottomSearch from "@/components/AfterPartyAttendance/AfterPartyBottomSearch";
+import AfterPartySearchBottomSheet from "@/components/AfterPartyAttendance/AfterPartySearchBottomSheet";
 import { QueryKey } from "@/constants/queryKey";
 import usePutAfterPartyAttendanceMutation from "@/hooks/mutations/usePutAfterPartyAttendancesMutation";
 import useRevokeAfterPartyAttendanceMutation from "@/hooks/mutations/useRevokeAfterPartyAttendanceMutation";
@@ -13,6 +16,7 @@ import { useGetEvent } from "@/hooks/queries/useGetEvent";
 
 export default function AfterPartyAttendancePage() {
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
   const eventId = id ? parseInt(id, 10) : 0;
@@ -113,6 +117,7 @@ export default function AfterPartyAttendancePage() {
 
   const handleParticipantAdded = () => {
     queryClient.invalidateQueries({ queryKey: [QueryKey.afterPartyAttendances] });
+    setIsBottomSheetOpen(true);
   };
 
   return (
@@ -144,12 +149,11 @@ export default function AfterPartyAttendancePage() {
         onSelectedIdsChange={setSelectedIds}
       />
       {/* 바텀시트 구현 필요 */}
-      {isEditMode && (
-        <div>
-          <p>검색 모달 (추후 구현)</p>
-          <button onClick={handleSearchModalClose}>닫기</button>
-          <button onClick={handleParticipantAdded}>참가자 추가 (테스트)</button>
-        </div>
+      {isEditMode && <AfterPartyBottomSearch handleParticipantAdded={handleParticipantAdded} />}
+      {isBottomSheetOpen && (
+        <BottomSheet setIsOpen={setIsBottomSheetOpen}>
+          <AfterPartySearchBottomSheet />
+        </BottomSheet>
       )}
     </MobileLayout>
   );
