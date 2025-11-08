@@ -21,6 +21,9 @@ export default function AfterPartyAttendancePage() {
   const { id } = useParams<{ id: string }>();
   const eventId = id ? parseInt(id, 10) : 0;
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchName, setSearchName] = useState("");
+  const [notFound, setNotFound] = useState(false);
 
   const {
     eventParticipantList,
@@ -52,6 +55,8 @@ export default function AfterPartyAttendancePage() {
   const revokeMutation = useRevokeAfterPartyAttendanceMutation();
 
   const handleSave = async () => {
+    setSearchTerm("");
+    setSearchName("");
     const initialIdsArray = Array.from(initialSelectedIds).sort();
     const currentIdsArray = Array.from(selectedIds).sort();
 
@@ -111,13 +116,23 @@ export default function AfterPartyAttendancePage() {
     }
   };
 
-  const handleSearchModalClose = () => {
-    setIsEditMode(false);
-  };
-
   const handleParticipantAdded = () => {
     queryClient.invalidateQueries({ queryKey: [QueryKey.afterPartyAttendances] });
     setIsBottomSheetOpen(true);
+  };
+
+  const handleNotFoundName = () => {
+    setNotFound(true);
+    setIsBottomSheetOpen(true);
+  };
+  const onCloseBottomSheet = () => {
+    setIsBottomSheetOpen(false);
+    setNotFound(false); // notFound 케이스면 함께 리셋 추천
+    setSearchName("");
+  };
+
+  const handleSearchParticipant = () => {
+    setSearchName(searchTerm);
   };
 
   return (
@@ -147,12 +162,24 @@ export default function AfterPartyAttendancePage() {
         afterPartyParticipants={eventParticipantList || []}
         selectedIds={selectedIds}
         onSelectedIdsChange={setSelectedIds}
+        searchName={searchName}
+        handleNotFoundName={handleNotFoundName}
       />
       {/* 바텀시트 구현 필요 */}
-      {isEditMode && <AfterPartyBottomSearch handleParticipantAdded={handleParticipantAdded} />}
+      {isEditMode && (
+        <AfterPartyBottomSearch
+          handleParticipantAdded={handleParticipantAdded}
+          handleSearch={handleSearchParticipant}
+          setSearchTerm={setSearchTerm}
+        />
+      )}
       {isBottomSheetOpen && (
-        <BottomSheet setIsOpen={setIsBottomSheetOpen}>
-          <AfterPartySearchBottomSheet />
+        <BottomSheet onCloseBottomSheet={onCloseBottomSheet}>
+          <AfterPartySearchBottomSheet
+            notFound={notFound}
+            searchName={searchName}
+            onCloseBottomSheet={onCloseBottomSheet}
+          />
         </BottomSheet>
       )}
     </MobileLayout>

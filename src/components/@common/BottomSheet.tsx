@@ -3,16 +3,16 @@ import XIcon from "@/assets/x.svg?react";
 
 export default function BottomSheet({
   children,
-  setIsOpen,
+  onCloseBottomSheet,
 }: {
   children: React.ReactNode;
-  setIsOpen: (isOpen: boolean) => void;
+  onCloseBottomSheet: () => void;
 }) {
   return (
-    <OverLay onClick={() => setIsOpen(false)}>
+    <OverLay onClick={onCloseBottomSheet}>
       <BottomSheetWrapper onClick={e => e.stopPropagation()}>
         <Header>
-          <XIcon onClick={() => setIsOpen(false)} />
+          <XIcon onClick={onCloseBottomSheet} />
         </Header>
         <Body>{children}</Body>
       </BottomSheetWrapper>

@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import styled from "@emotion/styled";
+import { color } from "wowds-tokens";
 import { Text } from "../@common/Text";
 import CheckIcon from "@/assets/check.svg?react";
 import { EventParticipantDto } from "@/types/dtos/event";
@@ -8,6 +10,8 @@ interface AfterPartyAttendanceTableProps {
   isEditMode?: boolean;
   selectedIds: Set<number>;
   onSelectedIdsChange: (selectedIds: Set<number>) => void;
+  searchName: string;
+  handleNotFoundName: () => void;
 }
 
 export default function AfterPartyAttendanceTable({
@@ -15,6 +19,8 @@ export default function AfterPartyAttendanceTable({
   afterPartyParticipants,
   selectedIds,
   onSelectedIdsChange,
+  searchName,
+  handleNotFoundName,
 }: AfterPartyAttendanceTableProps) {
   const handleToggle = (eventParticipationId: number) => {
     if (!isEditMode) {
@@ -29,6 +35,32 @@ export default function AfterPartyAttendanceTable({
     }
     onSelectedIdsChange(newSet);
   };
+  useEffect(() => {
+    if (!searchName || !searchName.trim()) {
+      return;
+    }
+    if (!afterPartyParticipants || afterPartyParticipants.length === 0) {
+      return;
+    }
+
+    // 케이스 인식(대소문자 무시)
+    const term = searchName.trim().toLowerCase();
+    const matches = afterPartyParticipants.filter(p =>
+      (p.participant?.name || "").toLowerCase().includes(term),
+    );
+
+    if (matches.length === 0) {
+      handleNotFoundName();
+      return;
+    }
+
+    // 첫 매칭으로 스크롤 (동명이인 여러 명이면 첫 번째로 이동)
+    const targetId = `afterparty-row-${matches[0].eventParticipationId}`;
+    const el = document.getElementById(targetId);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [searchName, afterPartyParticipants, handleNotFoundName]);
 
   return (
     <Container>
@@ -58,16 +90,26 @@ export default function AfterPartyAttendanceTable({
 
           return (
             <ListItem
+              id={`afterparty-row-${participant.eventParticipationId}`} // ✅ 스크롤 타깃
+              data-name={participant.participant?.name || ""} // (선택) 디버깅/필터용
               key={participant.eventParticipationId}
               onClick={() => handleToggle(participant.eventParticipationId)}
               isSelected={isSelected && isEditMode}
               isClickable={isEditMode}
+              isSearchTerm={
+                !!searchName &&
+                (participant.participant?.name || "")
+                  .toLowerCase()
+                  .includes(searchName.toLowerCase())
+              }
             >
-              <Text style={{ flex: 1.2 }}>
+              <Text style={{ flex: 1.2, color: isSelected ? color.mono700 : "inherit" }}>
                 {participant.participant?.studentId || `회원 ID: ${participant.memberId}`}
               </Text>
-              <Text style={{ flex: 1 }}>{participant.participant?.name || "정보 없음"}</Text>
-              <Text style={{ flex: 1.5 }}>
+              <Text style={{ flex: 1, color: isSelected ? color.mono700 : "inherit" }}>
+                {participant.participant?.name || "정보 없음"}
+              </Text>
+              <Text style={{ flex: 1.5, color: isSelected ? color.mono700 : "inherit" }}>
                 {participant.participant?.phone ? participant.participant.phone.slice(-4) : "-"}
               </Text>
               {isEditMode ? (
@@ -111,18 +153,17 @@ const List = styled.div`
   flex-direction: column;
 `;
 
-const ListItem = styled.div<{ isSelected: boolean; isClickable: boolean }>`
+const ListItem = styled.div<{ isSelected: boolean; isClickable: boolean; isSearchTerm: boolean }>`
   display: flex;
   align-items: center;
   padding: 12px 8px;
   gap: 16px;
   background-color: ${props => (props.isSelected ? "#f5f5f5" : "#ffffff")};
-  border: 1px solid #f0f0f0;
+  border: ${props => (props.isSearchTerm ? "1px solid #2196f3" : "1px solid #f0f0f0")};
   border-radius: 4px;
   margin-bottom: 8px;
   cursor: ${props => (props.isClickable ? "pointer" : "default")};
   transition: all 0.2s;
-
   &:hover {
     background-color: ${props => {
       if (!props.isClickable) {
