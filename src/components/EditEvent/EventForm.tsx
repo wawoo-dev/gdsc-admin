@@ -21,7 +21,7 @@ const getFormFields = (formValue: EventType | null): FormFieldProps[] => {
       id: "phone",
       type: "textfield",
       title: "전화번호를 입력해주세요",
-      value: "예: 01012345678",
+      value: "예: 010-1234-5678",
     },
     {
       id: "studentId",
