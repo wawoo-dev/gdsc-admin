@@ -45,8 +45,8 @@ export default function AfterPartyAttendanceTable({
 
     // 케이스 인식(대소문자 무시)
     const term = searchName.trim().toLowerCase();
-    const matches = afterPartyParticipants.filter(p =>
-      (p.participant?.name || "").toLowerCase().includes(term),
+    const matches = afterPartyParticipants.filter(
+      p => (p.participant?.name || "").toLowerCase() === term,
     );
 
     if (matches.length === 0) {
@@ -90,17 +90,14 @@ export default function AfterPartyAttendanceTable({
 
           return (
             <ListItem
-              id={`afterparty-row-${participant.eventParticipationId}`} // ✅ 스크롤 타깃
-              data-name={participant.participant?.name || ""} // (선택) 디버깅/필터용
+              id={`afterparty-row-${participant.eventParticipationId}`} //스크롤 타깃
               key={participant.eventParticipationId}
               onClick={() => handleToggle(participant.eventParticipationId)}
               isSelected={isSelected && isEditMode}
               isClickable={isEditMode}
               isSearchTerm={
                 !!searchName &&
-                (participant.participant?.name || "")
-                  .toLowerCase()
-                  .includes(searchName.toLowerCase())
+                (participant.participant?.name || "").toLowerCase() === searchName.toLowerCase()
               }
             >
               <Text style={{ flex: 1.2, color: isSelected ? color.mono700 : "inherit" }}>
@@ -130,6 +127,7 @@ export default function AfterPartyAttendanceTable({
 const Container = styled.div`
   width: 100%;
   margin: 16px auto;
+  margin-bottom: 60px;
 `;
 
 const Header = styled.div`

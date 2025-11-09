@@ -176,9 +176,11 @@ export default function AfterPartyAttendancePage() {
       {isBottomSheetOpen && (
         <BottomSheet onCloseBottomSheet={onCloseBottomSheet}>
           <AfterPartySearchBottomSheet
+            setNotFound={setNotFound}
             notFound={notFound}
             searchName={searchName}
             onCloseBottomSheet={onCloseBottomSheet}
+            eventId={eventId}
           />
         </BottomSheet>
       )}
