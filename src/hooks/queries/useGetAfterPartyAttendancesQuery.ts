@@ -3,7 +3,7 @@ import { eventApi } from "@/apis/eventApi";
 import { QueryKey } from "@/constants/queryKey";
 
 export default function useGetAfterPartyAttendancesQuery(eventId: number) {
-  const { data, isError, error } = useQuery({
+  const { data, isError, error, refetch } = useQuery({
     queryKey: [QueryKey.afterPartyAttendances, eventId],
     queryFn: () => eventApi.getAfterPartyAttendances(eventId),
     retry: false,
@@ -23,5 +23,6 @@ export default function useGetAfterPartyAttendancesQuery(eventId: number) {
     onSiteApplicationCount,
     isError,
     error,
+    refetch,
   };
 }
