@@ -154,6 +154,8 @@ const AfterPartySearchBottomSheet = ({
                 setSelectedMember={setSelectedMember}
                 onCloseBottomSheet={onCloseBottomSheet}
                 handleAddNewMember={handleAddNewMember}
+                setNotFoundInternal={setNotFoundInternal}
+                setSearchResults={setSearchResults}
               />
             </>
           ) : (

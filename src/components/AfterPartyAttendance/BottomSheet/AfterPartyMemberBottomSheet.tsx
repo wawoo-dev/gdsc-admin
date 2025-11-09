@@ -2,6 +2,7 @@ import { Button, styled } from "@mui/material";
 import MemberSelect from "@/components/@common/MemberSelect";
 import { Text } from "@/components/@common/Text";
 import { Participant } from "@/types/dtos/event";
+import { SearchMemberListResponse } from "@/types/dtos/event";
 
 interface AfterPartyMemberBottomSheetProps {
   searchResults: Participant[];
@@ -9,6 +10,8 @@ interface AfterPartyMemberBottomSheetProps {
   setSelectedMember: (member: Participant) => void;
   onCloseBottomSheet: () => void;
   handleAddNewMember: () => void;
+  setNotFoundInternal: (value: boolean) => void;
+  setSearchResults: (value: SearchMemberListResponse[]) => void;
 }
 const AfterPartyMemberBottomSheet = ({
   searchResults,
@@ -16,6 +19,8 @@ const AfterPartyMemberBottomSheet = ({
   setSelectedMember,
   onCloseBottomSheet,
   handleAddNewMember,
+  setNotFoundInternal,
+  setSearchResults,
 }: AfterPartyMemberBottomSheetProps) => {
   return (
     <>
@@ -37,6 +42,11 @@ const AfterPartyMemberBottomSheet = ({
         color="mono800"
         style={{
           textDecoration: "underline",
+          cursor: "pointer",
+        }}
+        onClick={() => {
+          setNotFoundInternal(true);
+          setSearchResults([]);
         }}
       >
         아니요, 회원 명단에 없는 사람입니다.
