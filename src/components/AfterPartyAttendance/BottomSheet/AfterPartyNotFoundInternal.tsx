@@ -21,6 +21,7 @@ const AfterPartyNotFoundInternal = ({
   onCloseBottomSheet,
   handleAddNotFoundMember,
   phone,
+  studentId,
   setPhone,
   setStudentId,
   invalidMessage,
@@ -96,6 +97,7 @@ const AfterPartyNotFoundInternal = ({
             type="text"
             placeholder="학번을 입력하세요"
             onChange={handleSIDChange}
+            value={studentId}
             maxLength={7}
           />
         </MemberInputWrapper>

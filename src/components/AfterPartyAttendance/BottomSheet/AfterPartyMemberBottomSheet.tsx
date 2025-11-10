@@ -28,6 +28,7 @@ const AfterPartyMemberBottomSheet = ({
       <MemberWrapper>
         {searchResults.map(member => (
           <MemberSelect
+            key={member.studentId}
             name={member.name}
             SID={member.studentId}
             onSelect={() => {
