@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { styled } from "@mui/material";
+import styled from "@emotion/styled";
 import { Button } from "@mui/material";
 import { color } from "wowds-tokens";
 import Search from "@/assets/search.svg?react";

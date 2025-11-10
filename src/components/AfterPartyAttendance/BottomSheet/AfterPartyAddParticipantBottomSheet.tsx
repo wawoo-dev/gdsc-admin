@@ -1,5 +1,5 @@
+import styled from "@emotion/styled";
 import { Button } from "@mui/material";
-import { styled } from "@mui/system";
 import { Text } from "@/components/@common/Text";
 
 interface AfterPartyAddParticipantBottomSheetProps {

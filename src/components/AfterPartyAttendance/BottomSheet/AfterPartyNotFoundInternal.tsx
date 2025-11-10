@@ -1,5 +1,5 @@
+import styled from "@emotion/styled";
 import { Button } from "@mui/material";
-import { styled } from "@mui/system";
 import { color } from "wowds-tokens";
 import { Text } from "@/components/@common/Text";
 
