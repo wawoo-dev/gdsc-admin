@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "@emotion/styled";
 import { Button } from "@mui/material";
 import { color } from "wowds-tokens";
@@ -9,22 +9,31 @@ export default function AfterPartyBottomSearch({
   handleParticipantAdded,
   handleSearch,
   setSearchTerm,
+  searchTerm,
 }: {
   handleParticipantAdded: () => void;
   handleSearch: () => void;
   setSearchTerm: (term: string) => void;
+  searchTerm: string;
 }) {
   const [isSearching, setIsSearching] = useState(false);
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setIsSearching(e.target.value.length > 0);
-  };
+
+  useEffect(() => {
+    setIsSearching(searchTerm.length > 0);
+  }, [searchTerm]);
 
   return (
     <BottomSheetWrapper onClick={e => e.stopPropagation()}>
       <InputWrapper>
         <Search />
-        <Input type="text" placeholder="이름을 입력하세요" onChange={handleInputChange} />
+        <Input
+          type="text"
+          placeholder="이름을 입력하세요"
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            setSearchTerm(e.target.value);
+          }}
+          value={searchTerm}
+        />
       </InputWrapper>
       {isSearching ? (
         <SearchButton variant="contained" onClick={handleSearch}>

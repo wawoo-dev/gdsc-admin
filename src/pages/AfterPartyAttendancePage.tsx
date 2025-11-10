@@ -131,6 +131,7 @@ export default function AfterPartyAttendancePage() {
     setIsBottomSheetOpen(false);
     setNotFound(false); // notFound 케이스면 함께 리셋 추천
     setSearchName("");
+    setSearchTerm("");
   };
 
   const handleSearchParticipant = () => {
@@ -167,12 +168,12 @@ export default function AfterPartyAttendancePage() {
         searchName={searchName}
         handleNotFoundName={handleNotFoundName}
       />
-      {/* 바텀시트 구현 필요 */}
       {isEditMode && (
         <AfterPartyBottomSearch
           handleParticipantAdded={handleParticipantAdded}
           handleSearch={handleSearchParticipant}
           setSearchTerm={setSearchTerm}
+          searchTerm={searchTerm}
         />
       )}
       {isBottomSheetOpen && (
