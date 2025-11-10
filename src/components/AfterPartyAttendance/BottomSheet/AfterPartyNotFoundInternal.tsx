@@ -9,8 +9,10 @@ interface AfterPartyNotFoundInternalProps {
   onCloseBottomSheet: () => void;
   handleAddNotFoundMember: () => void;
   phone: string;
+  studentId: string;
   setPhone: (phone: string) => void;
   setStudentId: (studentId: string) => void;
+  invalidMessage?: string;
 }
 
 const AfterPartyNotFoundInternal = ({
@@ -21,7 +23,41 @@ const AfterPartyNotFoundInternal = ({
   phone,
   setPhone,
   setStudentId,
+  invalidMessage,
 }: AfterPartyNotFoundInternalProps) => {
+  const handleSIDChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value.toUpperCase();
+
+    // 문자 + 숫자만 통과
+    val = val.replace(/[^A-Za-z0-9]/g, "");
+
+    // 7자리 제한
+    val = val.slice(0, 7);
+
+    setStudentId(val);
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value;
+
+    // 숫자만 통과
+    val = val.replace(/[^0-9]/g, "");
+    // 11자리 제한
+    val = val.slice(0, 11);
+
+    setPhone(val);
+  };
+
+  const formattedPhoneUI = (phone: string) => {
+    // 전화번호를 000-0000-0000 형식으로 변환
+    if (phone.length === 10) {
+      return phone.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
+    } else if (phone.length === 11) {
+      return phone.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
+    }
+    return phone;
+  };
+
   return (
     <>
       <NotFoundWrapper>
@@ -45,9 +81,11 @@ const AfterPartyNotFoundInternal = ({
             전화번호<Text color="primary">*</Text>
           </Text>
           <MemberInput
-            type="text"
+            type="phone"
             placeholder="전화번호를 입력하세요"
-            onChange={e => setPhone(e.target.value)}
+            onChange={handlePhoneChange}
+            maxLength={13}
+            value={formattedPhoneUI(phone)}
           />
         </MemberInputWrapper>
         <MemberInputWrapper>
@@ -57,10 +95,12 @@ const AfterPartyNotFoundInternal = ({
           <MemberInput
             type="text"
             placeholder="학번을 입력하세요"
-            onChange={e => setStudentId(e.target.value)}
+            onChange={handleSIDChange}
+            maxLength={7}
           />
         </MemberInputWrapper>
       </NotFoundWrapper>
+      <WarningText>{invalidMessage}</WarningText>
 
       <ButtonWrapper>
         <CheckButton variant="outlined" onClick={onCloseBottomSheet}>
@@ -111,6 +151,12 @@ const MemberInput = styled("input")({
   backgroundColor: color.mono50,
   maxWidth: "80%",
   borderRadius: "4px",
+});
+const WarningText = styled("div")({
+  color: color.error,
+  fontSize: "12px",
+  marginTop: "4px",
+  height: "16px",
 });
 
 const MemberInputWrapper = styled("div")({

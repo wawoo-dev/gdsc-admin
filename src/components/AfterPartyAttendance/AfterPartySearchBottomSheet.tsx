@@ -30,6 +30,7 @@ const AfterPartySearchBottomSheet = ({
   const [notFoundInternal, setNotFoundInternal] = useState(false);
   const [phone, setPhone] = useState("");
   const [studentId, setStudentId] = useState("");
+  const [invalidMessage, setInvalidMessage] = useState("");
 
   const { data: searchResponse, isLoading } = useGetSearchMemberListQuery(
     eventId,
@@ -38,6 +39,13 @@ const AfterPartySearchBottomSheet = ({
   );
   const postParticipantsMutation = usePostAfterPartyMemberOnsiteMutation();
   const { refetch } = useGetAfterPartyAttendancesQuery(eventId);
+
+  const formattedPhone = (phone: string) => {
+    // Remove all non-digit characters
+    const digits = phone.replace(/\D/g, "");
+    console.log("Formatted phone digits:", digits);
+    return digits;
+  };
 
   const handleAddNewMember = async () => {
     if (selectedMember === null) {
@@ -65,13 +73,22 @@ const AfterPartySearchBottomSheet = ({
       console.log("Search term is empty. Cannot add not found member.");
       return;
     }
+    if (studentId === "" || /^[A-Za-z][0-9]{6}$/.test(studentId)) {
+      if (!/^01[016789][0-9]{8}$/.test(phone)) {
+        setInvalidMessage("전화번호 형식이 올바르지 않습니다. ex) 010-1234-5678");
+        return;
+      }
+    } else {
+      setInvalidMessage("학번 형식이 올바르지 않습니다. ex) A123456 or 빈칸");
+      return;
+    }
     try {
       await postParticipantsMutation.mutateAsync({
         eventId,
         participant: {
           name: searchName?.trim() || searchTerm.trim(),
           studentId: studentId.trim(),
-          phone: phone.trim(),
+          phone: formattedPhone(phone).trim(),
         },
       });
     } catch (error) {
@@ -164,8 +181,10 @@ const AfterPartySearchBottomSheet = ({
                   onCloseBottomSheet={onCloseBottomSheet}
                   handleAddNotFoundMember={handleAddNotFoundMember}
                   phone={phone}
+                  studentId={studentId}
                   setPhone={setPhone}
                   setStudentId={setStudentId}
+                  invalidMessage={invalidMessage}
                 />
               </>
             )
