@@ -23,7 +23,7 @@ const AfterPartyAddParticipantBottomSheet = ({
           type="text"
           placeholder="이름을 입력하세요"
           value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
         />
       </Text>
       <Text typo="h2" style={{ width: "100%" }}>
