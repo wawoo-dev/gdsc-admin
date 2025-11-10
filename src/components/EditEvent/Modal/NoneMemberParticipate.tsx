@@ -63,7 +63,7 @@ export const NoneMemberParticipate = ({
       <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         <TextField placeholder="C123456" label="학번" value={studentId} onChange={setStudentId} />
 
-        <TextField placeholder="010-1234-5678" label="전화번호" value={phone} onChange={setPhone} />
+        <TextField placeholder="01012345678" label="전화번호" value={phone} onChange={setPhone} />
       </div>
 
       <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>

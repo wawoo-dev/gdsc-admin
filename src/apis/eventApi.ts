@@ -169,4 +169,14 @@ export const eventApi = {
     );
     return response.data;
   },
+  postAfterPartyOnsiteAttendance: async (
+    eventId: number,
+    participant: { name: string; studentId: string; phone: string },
+  ) => {
+    const response = await apiClient.post(`/admin/event-participations/join/onsite`, {
+      eventId: eventId,
+      participant,
+    });
+    return response.data;
+  },
 };
