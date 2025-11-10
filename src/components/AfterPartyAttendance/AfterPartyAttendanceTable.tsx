@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { color } from "wowds-tokens";
 import { Text } from "../@common/Text";
@@ -22,6 +22,7 @@ export default function AfterPartyAttendanceTable({
   searchName,
   handleNotFoundName,
 }: AfterPartyAttendanceTableProps) {
+  const [hasScrolled, setHasScrolled] = useState(false);
   const handleToggle = (eventParticipationId: number) => {
     if (!isEditMode) {
       return;
@@ -42,6 +43,9 @@ export default function AfterPartyAttendanceTable({
     if (!afterPartyParticipants || afterPartyParticipants.length === 0) {
       return;
     }
+    if (hasScrolled) {
+      return;
+    }
 
     // 케이스 인식(대소문자 무시)
     const term = searchName.trim().toLowerCase();
@@ -59,8 +63,15 @@ export default function AfterPartyAttendanceTable({
     const el = document.getElementById(targetId);
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "center" });
+      setHasScrolled(true);
     }
   }, [searchName, afterPartyParticipants, handleNotFoundName]);
+
+  useEffect(() => {
+    if (!searchName || !searchName.trim()) {
+      setHasScrolled(false);
+    }
+  }, [searchName]);
 
   return (
     <Container>
