@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import styled from "@emotion/styled";
 import { color } from "wowds-tokens";
 import { Text } from "../@common/Text";
@@ -22,7 +22,6 @@ export default function AfterPartyAttendanceTable({
   searchName,
   handleNotFoundName,
 }: AfterPartyAttendanceTableProps) {
-  const [hasScrolled, setHasScrolled] = useState(false);
   const handleToggle = (eventParticipationId: number) => {
     if (!isEditMode) {
       return;
@@ -36,18 +35,43 @@ export default function AfterPartyAttendanceTable({
     }
     onSelectedIdsChange(newSet);
   };
+  const scrolledRef = useRef(false);
+
   useEffect(() => {
-    if (!searchName || !searchName.trim()) {
+    // 검색어 바뀌면 다시 스크롤 허용
+    scrolledRef.current = false;
+  }, [searchName]);
+
+  useEffect(() => {
+    // 새 검색 결과가 렌더되면 다시 스크롤 허용
+    scrolledRef.current = false;
+  }, [afterPartyParticipants]);
+
+  useEffect(() => {
+    if (!searchName?.trim()) {
       return;
     }
-    if (!afterPartyParticipants || afterPartyParticipants.length === 0) {
+    if (!afterPartyParticipants?.length) {
       return;
     }
-    if (hasScrolled) {
+    if (scrolledRef.current) {
       return;
     }
 
-    // 케이스 인식(대소문자 무시)
+    // retry helper to wait until DOM paints the row
+    const tryScrollIntoView = (targetId: string, attempts = 5) => {
+      if (attempts <= 0) {
+        return;
+      }
+      const el = document.getElementById(targetId);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        scrolledRef.current = true; // mark success
+      } else {
+        requestAnimationFrame(() => tryScrollIntoView(targetId, attempts - 1));
+      }
+    };
+
     const term = searchName.trim().toLowerCase();
     const matches = afterPartyParticipants.filter(
       p => (p.participant?.name || "").toLowerCase() === term,
@@ -58,20 +82,9 @@ export default function AfterPartyAttendanceTable({
       return;
     }
 
-    // 첫 매칭으로 스크롤 (동명이인 여러 명이면 첫 번째로 이동)
     const targetId = `afterparty-row-${matches[0].eventParticipationId}`;
-    const el = document.getElementById(targetId);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
-      setHasScrolled(true);
-    }
+    requestAnimationFrame(() => tryScrollIntoView(targetId));
   }, [searchName, afterPartyParticipants, handleNotFoundName]);
-
-  useEffect(() => {
-    if (!searchName || !searchName.trim()) {
-      setHasScrolled(false);
-    }
-  }, [searchName]);
 
   return (
     <Container>
