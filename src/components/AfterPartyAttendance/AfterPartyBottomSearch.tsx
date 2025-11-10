@@ -87,5 +87,6 @@ const BottomSheetWrapper = styled("div")({
   zIndex: 10,
   maxWidth: "768px",
   margin: "0 auto",
+  paddingBottom: "24px",
   gap: "12px",
 });

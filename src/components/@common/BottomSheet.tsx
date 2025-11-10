@@ -30,6 +30,7 @@ const BottomSheetWrapper = styled("div")({
   borderTopLeftRadius: "16px",
   borderTopRightRadius: "16px",
   padding: "12px 20px",
+  paddingBottom: "32px",
   zIndex: 1000,
   maxWidth: "768px",
   margin: "0 auto",

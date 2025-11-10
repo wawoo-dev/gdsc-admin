@@ -17,24 +17,33 @@ const AfterPartyAddParticipantBottomSheet = ({
 }: AfterPartyAddParticipantBottomSheetProps) => {
   return (
     <>
-      <Text typo="h2">추가할 학생의 이름을 검색해주세요.</Text>
-      <Text typo="h2" style={{ width: "100%" }}>
-        <SearchInput
-          type="text"
-          placeholder="이름을 입력하세요"
-          value={searchTerm}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-        />
-      </Text>
-      <Text typo="h2" style={{ width: "100%" }}>
-        <CheckButton variant="contained" onClick={handleSearch} disabled={isLoading}>
-          {isLoading ? "조회 중..." : "조회하기"}
-        </CheckButton>
-      </Text>
+      <Wrapper>
+        <Text typo="h2">추가할 학생의 이름을 검색해주세요.</Text>
+        <Text typo="h2" style={{ width: "80%" }}>
+          <SearchInput
+            type="text"
+            placeholder="이름을 입력하세요"
+            value={searchTerm}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+          />
+        </Text>
+        <Text typo="h2" style={{ width: "80%" }}>
+          <CheckButton variant="contained" onClick={handleSearch} disabled={isLoading}>
+            {isLoading ? "조회 중..." : "조회하기"}
+          </CheckButton>
+        </Text>
+      </Wrapper>
     </>
   );
 };
 export default AfterPartyAddParticipantBottomSheet;
+const Wrapper = styled("div")({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: "16px",
+  width: "100%",
+});
 
 const SearchInput = styled("input")({
   "width": "100%",
