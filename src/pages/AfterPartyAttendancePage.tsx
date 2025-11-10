@@ -118,6 +118,8 @@ export default function AfterPartyAttendancePage() {
 
   const handleParticipantAdded = () => {
     queryClient.invalidateQueries({ queryKey: [QueryKey.afterPartyAttendances] });
+    setSearchTerm("");
+    setSearchName("");
     setIsBottomSheetOpen(true);
   };
 
