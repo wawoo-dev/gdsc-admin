@@ -46,9 +46,7 @@ export default function AfterPartyAttendancePage() {
   );
 
   useEffect(() => {
-    if (eventParticipantList && !isEditMode) {
-      setSelectedIds(initialSelectedIds);
-    }
+    setSelectedIds(initialSelectedIds);
   }, [eventParticipantList, initialSelectedIds, isEditMode]);
 
   const mutation = usePutAfterPartyAttendanceMutation();
