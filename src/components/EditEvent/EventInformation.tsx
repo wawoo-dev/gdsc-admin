@@ -17,7 +17,7 @@ import "dayjs/locale/ko";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { CSSProperties, useEffect, useState } from "react";
-import { color, space } from "wowds-tokens";
+import { color, space, typography } from "wowds-tokens";
 import Button from "wowds-ui/Button";
 import DropDown from "wowds-ui/DropDown";
 import DropDownOption from "wowds-ui/DropDownOption";
