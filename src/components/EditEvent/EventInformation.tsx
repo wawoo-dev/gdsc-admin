@@ -1,31 +1,31 @@
-import { CSSProperties, useEffect, useState } from "react";
-import { css } from "@emotion/react";
-import { TextField } from "@mui/material";
-import { DatePicker, TimePicker } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DateRangePicker } from "@mui/x-date-pickers-pro";
-import { AdapterDayjs as AdapterDayjsPro } from "@mui/x-date-pickers-pro/AdapterDayjs";
-import { LocalizationProvider as LocalizationProviderPro } from "@mui/x-date-pickers-pro/LocalizationProvider";
-import dayjs from "dayjs";
-import "dayjs/locale/ko";
-import timezone from "dayjs/plugin/timezone";
-import utc from "dayjs/plugin/utc";
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.locale("ko");
-import { color, space } from "wowds-tokens";
-import Button from "wowds-ui/Button";
-import DropDown from "wowds-ui/DropDown";
-import DropDownOption from "wowds-ui/DropDownOption";
-import { CopyUrlModal } from "./Modal/CopyUrlModal";
 import { Flex } from "@/components/@common/Flex";
 import { Space } from "@/components/@common/Space";
 import { Text } from "@/components/@common/Text";
 import { useCreateEventMutation } from "@/hooks/mutations/useCreateEventMutation";
 import { useUpdateBasicInfoEventMutation } from "@/hooks/mutations/useUpdateBasicInfoEventMutation";
-import { EventType, CreateEventRequest } from "@/types/dtos/event";
+import { CreateEventRequest, EventType } from "@/types/dtos/event";
+import { css } from "@emotion/react";
+import { TextField } from "@mui/material";
+import { DatePicker, TimePicker } from "@mui/x-date-pickers";
+import { DateRangePicker } from "@mui/x-date-pickers-pro";
+import { AdapterDayjs as AdapterDayjsPro } from "@mui/x-date-pickers-pro/AdapterDayjs";
+import { LocalizationProvider as LocalizationProviderPro } from "@mui/x-date-pickers-pro/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import dayjs from "dayjs";
+import "dayjs/locale/ko";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+import { CSSProperties, useEffect, useState } from "react";
+import { color, space, typography } from "wowds-tokens";
+import Button from "wowds-ui/Button";
+import DropDown from "wowds-ui/DropDown";
+import DropDownOption from "wowds-ui/DropDownOption";
+import { CopyUrlModal } from "./Modal/CopyUrlModal";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.locale("ko");
 
 const parseISO = (s?: string): Date | undefined => {
   if (!s) {
@@ -75,6 +75,7 @@ export const EventInformation = ({
   );
 
   const [venue, setVenue] = useState<string>("");
+  const [description, setDescription] = useState<string>(formValue?.description || "");
   const [title, setTitle] = useState<string>(formValue?.name || "");
   const [mainEventMaxCount, setMainEventMaxCount] = useState<string>(
     formValue?.mainEventMaxApplicantCount?.toString() || "",
@@ -97,6 +98,7 @@ export const EventInformation = ({
   const [initialState, setInitialState] = useState<{
     title: string;
     venue: string;
+    description: string;
     regularRoleOnlyStatus: "ENABLED" | "DISABLED";
     selectedRange: { from: Date | undefined; to: Date | undefined } | undefined;
     selectedEventDate: Date | undefined;
@@ -107,6 +109,7 @@ export const EventInformation = ({
   }>(() => ({
     title: formValue?.name || "",
     venue: formValue?.venue || "",
+    description: formValue?.description || "",
     regularRoleOnlyStatus: formValue?.regularRoleOnlyStatus || "DISABLED",
     selectedRange: formValue
       ? {
@@ -126,6 +129,7 @@ export const EventInformation = ({
     return (
       title !== initialState.title ||
       venue !== initialState.venue ||
+      description !== initialState.description ||
       regularRoleOnlyStatus !== initialState.regularRoleOnlyStatus ||
       JSON.stringify(selectedRange) !== JSON.stringify(initialState.selectedRange) ||
       JSON.stringify(selectedEventDate) !== JSON.stringify(initialState.selectedEventDate) ||
@@ -156,6 +160,7 @@ export const EventInformation = ({
         to: parseISO(formValue.applicationPeriod?.endDate),
       });
       setSelectedEventDate(parseISO(formValue.startAt));
+      setDescription(formValue.description);
       setVenue(formValue.venue);
       setTitle(formValue.name);
       setMainEventMaxCount(formValue.mainEventMaxApplicantCount?.toString() || "");
@@ -168,6 +173,7 @@ export const EventInformation = ({
       setInitialState({
         title: formValue.name,
         venue: formValue.venue,
+        description: formValue.description,
         regularRoleOnlyStatus: formValue.regularRoleOnlyStatus,
         selectedRange: {
           from: parseISO(formValue.applicationPeriod?.startDate),
@@ -184,6 +190,7 @@ export const EventInformation = ({
       setSelectedEventDate(undefined);
       setVenue("");
       setTitle("");
+      setDescription("");
       setMainEventMaxCount("");
       setAfterPartyMaxCount("");
       setRegularRoleOnlyStatus("DISABLED");
@@ -194,6 +201,7 @@ export const EventInformation = ({
       setInitialState({
         title: "",
         venue: "",
+        description: "",
         regularRoleOnlyStatus: "DISABLED",
         selectedRange: undefined,
         selectedEventDate: undefined,
@@ -204,6 +212,10 @@ export const EventInformation = ({
       });
     }
   }, [formValue, eventId]);
+
+  const handleDescriptionChange = (value: string) => {
+    setDescription(value);
+  };
 
   const handleVenueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setVenue(event.target.value);
@@ -233,6 +245,7 @@ export const EventInformation = ({
     const basicInfoData: CreateEventRequest = {
       name: title,
       venue: venue,
+      description: description,
       regularRoleOnlyStatus: regularRoleOnlyStatus,
       applicationPeriod: {
         startDate: parseDate(selectedRange?.from),
@@ -253,6 +266,7 @@ export const EventInformation = ({
               ...prev,
               name: title,
               venue: venue,
+              description: description,
               regularRoleOnlyStatus: regularRoleOnlyStatus,
               applicationPeriod: {
                 startDate: parseDate(selectedRange?.from),
@@ -281,6 +295,7 @@ export const EventInformation = ({
             setInitialState({
               title: title,
               venue: venue,
+              description: description,
               regularRoleOnlyStatus: regularRoleOnlyStatus,
               selectedRange: selectedRange,
               selectedEventDate: selectedEventDate,
@@ -306,6 +321,7 @@ export const EventInformation = ({
           setInitialState({
             title: title,
             venue: venue,
+            description: description,
             regularRoleOnlyStatus: regularRoleOnlyStatus,
             selectedRange: selectedRange,
             selectedEventDate: selectedEventDate,
@@ -335,265 +351,293 @@ export const EventInformation = ({
       >
         <Text typo="h2">행사 기본 정보를 입력해주세요</Text>
         <Space height="lg" />
-        <Flex justify="start" align="start" style={{ flexWrap: "wrap" }} gap="lg">
-          {/* 행사 이름 - 신청 범위 */}
-          <Flex
-            gap="sm"
-            justify="start"
-            align="end"
-            style={{ flex: "0 0 100%", marginBottom: "16px" }}
-          >
-            <TextField
-              label="행사이름"
-              placeholder="행사 이름을 입력해주세요"
-              style={{ ...formItemStyle, backgroundColor: "white" }}
-              value={title}
-              onChange={handleTitleChange}
-              variant="outlined"
-              fullWidth
-              size="small"
-            />
-            <DropDown
-              label="신청범위"
-              placeholder="신청 범위를 선택해주세요"
-              style={{
-                ...formItemStyle,
-                pointerEvents: eventId && isApplicationInPeriod() ? "none" : "auto",
-                opacity: eventId && isApplicationInPeriod() ? 0.6 : 1,
-              }}
-              value={regularRoleOnlyStatus === "ENABLED" ? "only-member" : "everyone"}
-              onChange={value =>
-                setRegularRoleOnlyStatus(
-                  value.selectedValue === "only-member" ? "ENABLED" : "DISABLED",
-                )
-              }
+        <Flex align="flex-end" gap="lg">
+          <Flex justify="start" align="start" style={{ flexWrap: "wrap", flex: 1 }} gap="lg">
+            {/* 행사 이름 - 신청 범위 */}
+            <Flex
+              gap="sm"
+              justify="start"
+              align="end"
+              style={{ flex: "0 0 100%", marginBottom: "16px" }}
             >
-              <DropDownOption value="only-member" text="정회원만 신청 가능" />
-              <DropDownOption value="everyone" text="모두 신청 가능" />
-            </DropDown>
-          </Flex>
-          {/* 신청 시작일/종료일/장소 */}
-          <Flex
-            gap="sm"
-            justify="start"
-            align="start"
-            style={{ flex: "0 0 100%", marginBottom: "16px" }}
-          >
-            <LocalizationProviderPro dateAdapter={AdapterDayjsPro} adapterLocale="ko">
-              <DateRangePicker
-                value={[
-                  selectedRange?.from ? dayjs(selectedRange.from) : null,
-                  selectedRange?.to ? dayjs(selectedRange.to) : null,
-                ]}
-                calendars={1}
-                label="행사 신청 기간"
-                onChange={newValue => {
-                  const [startDate, endDate] = newValue || [null, null];
-
-                  const processedStartDate = startDate?.toDate();
-                  const processedEndDate = endDate?.toDate();
-
-                  if (processedStartDate) {
-                    // 시작일 시간을 00:00:00으로 설정
-                    processedStartDate.setHours(0, 0, 0, 0);
-                  }
-
-                  if (processedEndDate) {
-                    // 종료일 시간을 23:59:59로 설정
-                    processedEndDate.setHours(23, 59, 59, 0);
-                  }
-
-                  setSelectedRange({
-                    from: processedStartDate,
-                    to: processedEndDate,
-                  });
-                }}
-                slotProps={{
-                  textField: {
-                    fullWidth: true,
-                    sx: { backgroundColor: "white" },
-                    size: "small",
-                  },
-                }}
+              <TextField
+                label="행사이름"
+                placeholder="행사 이름을 입력해주세요"
+                style={{ ...formItemStyle, backgroundColor: "white" }}
+                value={title}
+                onChange={handleTitleChange}
+                variant="outlined"
+                fullWidth
+                size="small"
               />
-            </LocalizationProviderPro>
-            <TextField
-              value={venue}
-              onChange={handleVenueChange}
-              label="행사 장소"
-              placeholder="행사 장소를 입력해주세요"
-              style={{ flex: "0 0 calc(33.33% - 8px)", backgroundColor: "white" }}
-              variant="outlined"
-              fullWidth
-              size="small"
-            />
-          </Flex>
-          {/* 진행 날짜/시간 */}
-          <Flex
-            gap="sm"
-            justify="start"
-            align="start"
-            style={{ flex: "0 0 100%", marginBottom: "16px" }}
-          >
-            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ko">
-              <Flex gap="sm" style={{ flex: "0 0 calc(50% - 8px)" }}>
-                <DatePicker
-                  label="행사 진행 날짜"
-                  value={selectedEventDate ? dayjs(selectedEventDate) : null}
+              <DropDown
+                label="신청범위"
+                placeholder="신청 범위를 선택해주세요"
+                style={{
+                  ...formItemStyle,
+                  pointerEvents: eventId && isApplicationInPeriod() ? "none" : "auto",
+                  opacity: eventId && isApplicationInPeriod() ? 0.6 : 1,
+                }}
+                value={regularRoleOnlyStatus === "ENABLED" ? "only-member" : "everyone"}
+                onChange={value =>
+                  setRegularRoleOnlyStatus(
+                    value.selectedValue === "only-member" ? "ENABLED" : "DISABLED",
+                  )
+                }
+              >
+                <DropDownOption value="only-member" text="정회원만 신청 가능" />
+                <DropDownOption value="everyone" text="모두 신청 가능" />
+              </DropDown>
+            </Flex>
+            {/* 신청 시작일/종료일/장소 */}
+            <Flex
+              gap="sm"
+              justify="start"
+              align="start"
+              style={{ flex: "0 0 100%", marginBottom: "16px" }}
+            >
+              <LocalizationProviderPro dateAdapter={AdapterDayjsPro} adapterLocale="ko">
+                <DateRangePicker
+                  value={[
+                    selectedRange?.from ? dayjs(selectedRange.from) : null,
+                    selectedRange?.to ? dayjs(selectedRange.to) : null,
+                  ]}
+                  calendars={1}
+                  label="행사 신청 기간"
                   onChange={newValue => {
-                    const newDate = newValue?.toDate();
-                    setSelectedEventDate(newDate);
-                  }}
-                  minDate={selectedRange?.from ? dayjs(selectedRange.from) : undefined}
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      sx: { backgroundColor: "white" },
-                      size: "small",
-                    },
-                  }}
-                />
-                <TimePicker
-                  label="행사 진행 시간"
-                  value={selectedEventDate ? dayjs(selectedEventDate).tz("Asia/Seoul") : null}
-                  onChange={newValue => {
-                    if (newValue && selectedEventDate) {
-                      // 기존 날짜에 새로운 시간을 적용 (한국 시간대 기준)
-                      const newDate = dayjs(selectedEventDate)
-                        .hour(newValue.hour())
-                        .minute(newValue.minute())
-                        .second(0)
-                        .millisecond(0)
-                        .toDate();
-                      setSelectedEventDate(newDate);
-                    }
-                  }}
-                  views={["hours", "minutes"]}
-                  format="HH:mm"
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      sx: { backgroundColor: "white" },
-                      size: "small",
-                    },
-                  }}
-                />
-              </Flex>
-            </LocalizationProvider>
-          </Flex>
-          {/* 인원 제한/뒷풀이 제한 */}
-          <Flex
-            gap="sm"
-            justify="start"
-            align="start"
-            style={{ flex: "0 0 100%", marginBottom: "16px" }}
-          >
-            <div style={{ flex: "0 0 calc(50% - 8px)" }}>
-              <Text typo="body1" style={{ marginBottom: "8px" }}>
-                행사 인원 제한
-              </Text>
-              <Flex gap="sm" style={{ marginBottom: "8px", justifyContent: "left" }}>
-                <label>
-                  <input
-                    type="radio"
-                    name="mainEventLimit"
-                    checked={!mainEventLimitEnabled}
-                    onChange={() => setMainEventLimitEnabled(false)}
-                    style={{ marginRight: "4px" }}
-                  />
-                  없음
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="mainEventLimit"
-                    checked={mainEventLimitEnabled}
-                    onChange={() => setMainEventLimitEnabled(true)}
-                    style={{ marginRight: "4px" }}
-                  />
-                  있음
-                </label>
-              </Flex>
-              {mainEventLimitEnabled && (
-                <TextField
-                  label="제한 인원"
-                  placeholder="제한 인원(20)"
-                  value={mainEventMaxCount}
-                  onChange={handleMainEventMaxCountChange}
-                  variant="outlined"
-                  fullWidth
-                  type="number"
-                  style={{ backgroundColor: "white" }}
-                  inputProps={{
-                    min: totalAttendeesCount > 0 ? totalAttendeesCount : 1,
-                    pattern: "[0-9]*",
-                    inputMode: "numeric",
-                  }}
-                  size="small"
-                />
-              )}
-            </div>
-            <div style={{ flex: "0 0 calc(50% - 8px)" }}>
-              {eventId && formValue?.afterPartyStatus === "ENABLED" && (
-                <>
-                  <Text typo="body1" style={{ marginBottom: "8px" }}>
-                    뒤풀이 인원 제한
-                  </Text>
-                  <Flex gap="sm" style={{ marginBottom: "8px", justifyContent: "left" }}>
-                    <label>
-                      <input
-                        type="radio"
-                        name="afterPartyLimit"
-                        checked={!afterPartyLimitEnabled}
-                        onChange={() => setAfterPartyLimitEnabled(false)}
-                        style={{ marginRight: "4px" }}
-                      />
-                      없음
-                    </label>
-                    <label>
-                      <input
-                        type="radio"
-                        name="afterPartyLimit"
-                        checked={afterPartyLimitEnabled}
-                        onChange={() => setAfterPartyLimitEnabled(true)}
-                        style={{ marginRight: "4px" }}
-                      />
-                      있음
-                    </label>
-                  </Flex>
+                    const [startDate, endDate] = newValue || [null, null];
 
-                  {afterPartyLimitEnabled && (
-                    <TextField
-                      label="제한 인원"
-                      placeholder="제한 인원(20)"
-                      value={afterPartyMaxCount}
-                      onChange={handleAfterPartyMaxCountChange}
-                      variant="outlined"
-                      fullWidth
-                      type="number"
-                      style={{ backgroundColor: "white" }}
-                      inputProps={{
-                        min: totalAttendeesCount > 0 ? totalAttendeesCount : 1,
-                        pattern: "[0-9]*",
-                        inputMode: "numeric",
-                      }}
-                      size="small"
+                    const processedStartDate = startDate?.toDate();
+                    const processedEndDate = endDate?.toDate();
+
+                    if (processedStartDate) {
+                      // 시작일 시간을 00:00:00으로 설정
+                      processedStartDate.setHours(0, 0, 0, 0);
+                    }
+
+                    if (processedEndDate) {
+                      // 종료일 시간을 23:59:59로 설정
+                      processedEndDate.setHours(23, 59, 59, 0);
+                    }
+
+                    setSelectedRange({
+                      from: processedStartDate,
+                      to: processedEndDate,
+                    });
+                  }}
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      sx: { backgroundColor: "white" },
+                      size: "small",
+                    },
+                  }}
+                />
+              </LocalizationProviderPro>
+              <TextField
+                value={venue}
+                onChange={handleVenueChange}
+                label="행사 장소"
+                placeholder="행사 장소를 입력해주세요"
+                style={{ flex: "0 0 calc(33.33% - 8px)", backgroundColor: "white" }}
+                variant="outlined"
+                fullWidth
+                size="small"
+              />
+            </Flex>
+            {/* 진행 날짜/시간 */}
+            <Flex
+              gap="sm"
+              justify="start"
+              align="start"
+              style={{ flex: "0 0 100%", marginBottom: "16px" }}
+            >
+              <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ko">
+                <Flex gap="sm" style={{ flex: "0 0 calc(50% - 8px)" }}>
+                  <DatePicker
+                    label="행사 진행 날짜"
+                    value={selectedEventDate ? dayjs(selectedEventDate) : null}
+                    onChange={newValue => {
+                      const newDate = newValue?.toDate();
+                      setSelectedEventDate(newDate);
+                    }}
+                    minDate={selectedRange?.from ? dayjs(selectedRange.from) : undefined}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        sx: { backgroundColor: "white" },
+                        size: "small",
+                      },
+                    }}
+                  />
+                  <TimePicker
+                    label="행사 진행 시간"
+                    value={selectedEventDate ? dayjs(selectedEventDate).tz("Asia/Seoul") : null}
+                    onChange={newValue => {
+                      if (newValue && selectedEventDate) {
+                        // 기존 날짜에 새로운 시간을 적용 (한국 시간대 기준)
+                        const newDate = dayjs(selectedEventDate)
+                          .hour(newValue.hour())
+                          .minute(newValue.minute())
+                          .second(0)
+                          .millisecond(0)
+                          .toDate();
+                        setSelectedEventDate(newDate);
+                      }
+                    }}
+                    views={["hours", "minutes"]}
+                    format="HH:mm"
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        sx: { backgroundColor: "white" },
+                        size: "small",
+                      },
+                    }}
+                  />
+                </Flex>
+              </LocalizationProvider>
+            </Flex>
+            {/* 인원 제한/뒷풀이 제한 */}
+            <Flex
+              gap="sm"
+              justify="start"
+              align="start"
+              style={{ flex: "0 0 100%", marginBottom: "16px" }}
+            >
+              <div style={{ flex: "0 0 calc(50% - 8px)" }}>
+                <Text typo="body1" style={{ marginBottom: "8px" }}>
+                  행사 인원 제한
+                </Text>
+                <Flex gap="sm" style={{ marginBottom: "8px", justifyContent: "left" }}>
+                  <label>
+                    <input
+                      type="radio"
+                      name="mainEventLimit"
+                      checked={!mainEventLimitEnabled}
+                      onChange={() => setMainEventLimitEnabled(false)}
+                      style={{ marginRight: "4px" }}
                     />
-                  )}
-                </>
-              )}
-            </div>
+                    없음
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="mainEventLimit"
+                      checked={mainEventLimitEnabled}
+                      onChange={() => setMainEventLimitEnabled(true)}
+                      style={{ marginRight: "4px" }}
+                    />
+                    있음
+                  </label>
+                </Flex>
+                {mainEventLimitEnabled && (
+                  <TextField
+                    label="제한 인원"
+                    placeholder="제한 인원(20)"
+                    value={mainEventMaxCount}
+                    onChange={handleMainEventMaxCountChange}
+                    variant="outlined"
+                    fullWidth
+                    type="number"
+                    style={{ backgroundColor: "white" }}
+                    inputProps={{
+                      min: totalAttendeesCount > 0 ? totalAttendeesCount : 1,
+                      pattern: "[0-9]*",
+                      inputMode: "numeric",
+                    }}
+                    size="small"
+                  />
+                )}
+              </div>
+              <div style={{ flex: "0 0 calc(50% - 8px)" }}>
+                {eventId && formValue?.afterPartyStatus === "ENABLED" && (
+                  <>
+                    <Text typo="body1" style={{ marginBottom: "8px" }}>
+                      뒤풀이 인원 제한
+                    </Text>
+                    <Flex gap="sm" style={{ marginBottom: "8px", justifyContent: "left" }}>
+                      <label>
+                        <input
+                          type="radio"
+                          name="afterPartyLimit"
+                          checked={!afterPartyLimitEnabled}
+                          onChange={() => setAfterPartyLimitEnabled(false)}
+                          style={{ marginRight: "4px" }}
+                        />
+                        없음
+                      </label>
+                      <label>
+                        <input
+                          type="radio"
+                          name="afterPartyLimit"
+                          checked={afterPartyLimitEnabled}
+                          onChange={() => setAfterPartyLimitEnabled(true)}
+                          style={{ marginRight: "4px" }}
+                        />
+                        있음
+                      </label>
+                    </Flex>
+
+                    {afterPartyLimitEnabled && (
+                      <TextField
+                        label="제한 인원"
+                        placeholder="제한 인원(20)"
+                        value={afterPartyMaxCount}
+                        onChange={handleAfterPartyMaxCountChange}
+                        variant="outlined"
+                        fullWidth
+                        type="number"
+                        style={{ backgroundColor: "white" }}
+                        inputProps={{
+                          min: totalAttendeesCount > 0 ? totalAttendeesCount : 1,
+                          pattern: "[0-9]*",
+                          inputMode: "numeric",
+                        }}
+                        size="small"
+                      />
+                    )}
+                  </>
+                )}
+              </div>
+            </Flex>
+            <Flex direction="column" align="flex-start">
+              <Text typo="body1" style={{ marginBottom: "8px" }}>
+                행사 설명
+              </Text>
+              <textarea
+                placeholder="행사 신청 설명을 입력해주세요"
+                value={description}
+                onChange={e => handleDescriptionChange(e.target.value)}
+                css={css({
+                  "width": "100%",
+                  "height": "100px",
+                  "padding": "12px",
+                  "border": "1px solid #ccc",
+                  "borderRadius": "4px",
+                  ...typography.body1,
+                  "fontFamily": "inherit",
+                  "resize": "vertical",
+                  "backgroundColor": "white",
+                  "&:focus": {
+                    outline: "none",
+                    borderColor: "#1976d2",
+                    boxShadow: "0 0 0 2px rgba(25, 118, 210, 0.2)",
+                  },
+                })}
+              />
+            </Flex>
           </Flex>
+          <Button
+            onClick={handleSave}
+            size="sm"
+            disabled={
+              createEventMutation.isPending || updateBasicInfoMutation.isPending || !hasChanges()
+            }
+          >
+            {eventId ? "저장하기" : "게시하기"}
+          </Button>
         </Flex>
-        <Button
-          onClick={handleSave}
-          size="sm"
-          disabled={
-            createEventMutation.isPending || updateBasicInfoMutation.isPending || !hasChanges()
-          }
-        >
-          {eventId ? "저장하기" : "게시하기"}
-        </Button>
       </div>
 
       {/* URL 복사 모달 */}
