@@ -2,6 +2,7 @@ import { useUpdateEventFormMutation } from "@/hooks/mutations/useUpdateEventForm
 import { EventType, UpdateEventFormRequest } from "@/types/dtos/event";
 import { useEffect, useState } from "react";
 import { Link as LinkIcon } from "wowds-icons";
+import { color } from "wowds-tokens";
 import Button from "wowds-ui/Button";
 import { Flex } from "../@common/Flex";
 import { Space } from "../@common/Space";
@@ -302,6 +303,7 @@ export const EventForm = ({
           icon={<LinkIcon stroke="primary" />}
           onClick={handleCopyUrl}
           disabled={!eventId}
+          style={{ backgroundColor: color.blueDisabled }}
         >
           {copied ? "복사 완료!" : "URL 복사하기"}
         </Button>
