@@ -1,15 +1,12 @@
-import { useState, useEffect } from "react";
-import { css } from "@emotion/react";
+import { useUpdateEventFormMutation } from "@/hooks/mutations/useUpdateEventFormMutation";
+import { EventType, UpdateEventFormRequest } from "@/types/dtos/event";
+import { useEffect, useState } from "react";
 import { Link as LinkIcon } from "wowds-icons";
-import { typography } from "wowds-tokens";
 import Button from "wowds-ui/Button";
-import { FormField } from "./FormField";
-import { FormFieldProps } from "./FormField";
 import { Flex } from "../@common/Flex";
 import { Space } from "../@common/Space";
 import { Text } from "../@common/Text";
-import { useUpdateEventFormMutation } from "@/hooks/mutations/useUpdateEventFormMutation";
-import { EventType, UpdateEventFormRequest } from "@/types/dtos/event";
+import { FormField, FormFieldProps } from "./FormField";
 const getFormFields = (formValue: EventType | null): FormFieldProps[] => {
   return [
     {
@@ -91,7 +88,6 @@ export const EventForm = ({
   eventId?: number;
   totalAttendeesCount: number;
 }) => {
-  const [description, setDescription] = useState<string>(formValue?.applicationDescription || "");
   const [formFields, setFormFields] = useState<FormFieldProps[]>(getFormFields(formValue));
   const [requiredById, setRequiredById] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(formFields.map(field => [field.id, true])),
@@ -100,10 +96,8 @@ export const EventForm = ({
 
   // 초기 상태 저장
   const [initialState, setInitialState] = useState<{
-    description: string;
     formValue: EventType | null;
   }>(() => ({
-    description: formValue?.applicationDescription || "",
     formValue: formValue,
   }));
 
@@ -115,19 +109,15 @@ export const EventForm = ({
       return false;
     }
 
-    // description 변경 확인
-    const descriptionChanged = description !== initialState.description;
-
     // formValue의 관련 필드들 변경 확인
     const formValueChanged =
-      formValue.applicationDescription !== initialState.formValue.applicationDescription ||
       formValue.afterPartyStatus !== initialState.formValue.afterPartyStatus ||
       formValue.prePaymentStatus !== initialState.formValue.prePaymentStatus ||
       formValue.postPaymentStatus !== initialState.formValue.postPaymentStatus ||
       formValue.rsvpQuestionStatus !== initialState.formValue.rsvpQuestionStatus ||
       formValue.noticeConfirmQuestionStatus !== initialState.formValue.noticeConfirmQuestionStatus;
 
-    return descriptionChanged || formValueChanged;
+    return formValueChanged;
   };
 
   // 복사할 URL 생성 (eventId가 있을 때만)
@@ -238,7 +228,6 @@ export const EventForm = ({
 
   useEffect(() => {
     if (formValue) {
-      setDescription(formValue.applicationDescription);
       const newFormFields = getFormFields(formValue);
       setFormFields(newFormFields);
       // optionalChecked 값에 따라 requiredById 설정
@@ -248,28 +237,21 @@ export const EventForm = ({
 
       // 초기 상태 업데이트 (formValue가 변경될 때만)
       setInitialState(() => ({
-        description: formValue.applicationDescription || "",
         formValue: formValue,
       }));
     } else {
-      setDescription("");
       const newFormFields = getFormFields(null);
       setFormFields(newFormFields);
       setRequiredById(Object.fromEntries(newFormFields.map(field => [field.id, true])));
 
       // 초기 상태 업데이트
       setInitialState({
-        description: "",
         formValue: null,
       });
     }
   }, [formValue]);
 
-  const handleDescriptionChange = (value: string) => {
-    setDescription(value);
-  };
   const buildEventPayload = (event: EventType): UpdateEventFormRequest => ({
-    applicationDescription: event.applicationDescription,
     afterPartyStatus: event.afterPartyStatus,
     prePaymentStatus: event.prePaymentStatus,
     postPaymentStatus: event.postPaymentStatus,
@@ -283,9 +265,8 @@ export const EventForm = ({
       return;
     }
 
-    // 최신 description을 병합하여 페이로드 생성
-    setFormValues(prev => (prev ? { ...prev, applicationDescription: description } : prev));
-    const nextEvent = { ...formValue, applicationDescription: description };
+    setFormValues(prev => (prev ? { ...prev } : prev));
+    const nextEvent = { ...formValue };
     const eventPayload = buildEventPayload(nextEvent);
 
     if (eventId) {
@@ -297,7 +278,6 @@ export const EventForm = ({
             console.log("이벤트 폼 정보가 성공적으로 수정되었습니다.");
             // 저장 성공 후 초기 상태 업데이트
             setInitialState({
-              description: description,
               formValue: nextEvent,
             });
           },
@@ -333,27 +313,6 @@ export const EventForm = ({
         </Button>
       </Flex>
       <Space height={30} />
-      <textarea
-        placeholder="행사 신청 폼 설명을 입력해주세요"
-        value={description}
-        onChange={e => handleDescriptionChange(e.target.value)}
-        css={css({
-          "width": "100%",
-          "height": "100px",
-          "padding": "12px",
-          "border": "1px solid #ccc",
-          "borderRadius": "4px",
-          ...typography.body1,
-          "fontFamily": "inherit",
-          "resize": "vertical",
-          "&:focus": {
-            outline: "none",
-            borderColor: "#1976d2",
-            boxShadow: "0 0 0 2px rgba(25, 118, 210, 0.2)",
-          },
-        })}
-      />
-      <Space height={32} />
       <Flex gap="sm" direction="column">
         {formFields.map(field => (
           <FormField

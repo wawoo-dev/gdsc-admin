@@ -1,9 +1,3 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import Tabs from "wowds-ui/Tabs";
-import TabsContent from "wowds-ui/TabsContent";
-import TabsItem from "wowds-ui/TabsItem";
-import TabsList from "wowds-ui/TabsList";
 import { Space } from "@/components/@common/Space";
 import { AfterPartyManagement } from "@/components/EditEvent/AfterPartyManagement";
 import { ApplyMember } from "@/components/EditEvent/ApplyMembers";
@@ -11,6 +5,12 @@ import { EventForm } from "@/components/EditEvent/EventForm";
 import { EventInformation } from "@/components/EditEvent/EventInformation";
 import { useGetEvent } from "@/hooks/queries/useGetEvent";
 import { EventType } from "@/types/dtos/event";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import Tabs from "wowds-ui/Tabs";
+import TabsContent from "wowds-ui/TabsContent";
+import TabsItem from "wowds-ui/TabsItem";
+import TabsList from "wowds-ui/TabsList";
 
 export const EditEventPage = () => {
   const { eventId: eventIdParam } = useParams<{ eventId?: string }>();
@@ -28,7 +28,7 @@ export const EditEventPage = () => {
         name: "",
         venue: "추후 공지 예정",
         startAt: "",
-        applicationDescription: "",
+        description: "",
         applicationPeriod: {
           startDate: new Date().toISOString(),
           endDate: new Date().toISOString(),
