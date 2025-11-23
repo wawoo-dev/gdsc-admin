@@ -167,7 +167,11 @@ export const EventInformation = ({
       setAfterPartyMaxCount(formValue.afterPartyMaxApplicantCount?.toString() || "");
       setRegularRoleOnlyStatus(formValue.regularRoleOnlyStatus);
       setMainEventLimitEnabled(eventId ? (formValue.mainEventMaxApplicantCount || 0) > 0 : true);
-      setAfterPartyLimitEnabled(formValue.afterPartyStatus === "DISABLED" ? false : true);
+      setAfterPartyLimitEnabled(
+        formValue.afterPartyStatus === "DISABLED"
+          ? false
+          : (formValue.afterPartyMaxApplicantCount || 0) > 0,
+      );
 
       // 초기 상태 업데이트 (formValue가 변경될 때만)
       setInitialState({
@@ -183,7 +187,10 @@ export const EventInformation = ({
         mainEventMaxCount: formValue.mainEventMaxApplicantCount?.toString() || "",
         afterPartyMaxCount: formValue.afterPartyMaxApplicantCount?.toString() || "",
         mainEventLimitEnabled: eventId ? (formValue.mainEventMaxApplicantCount || 0) > 0 : true,
-        afterPartyLimitEnabled: formValue.afterPartyStatus === "DISABLED" ? false : true,
+        afterPartyLimitEnabled:
+          formValue.afterPartyStatus === "DISABLED"
+            ? false
+            : (formValue.afterPartyMaxApplicantCount || 0) > 0,
       });
     } else {
       setSelectedRange(undefined);
@@ -212,6 +219,11 @@ export const EventInformation = ({
       });
     }
   }, [formValue, eventId]);
+
+  useEffect(() => {
+    console.log("뒤풀이 인원 가능?", afterPartyLimitEnabled);
+    console.log("뒤풀이 인원 몇명?", afterPartyMaxCount);
+  }, [afterPartyLimitEnabled, afterPartyMaxCount]);
 
   const handleDescriptionChange = (value: string) => {
     setDescription(value);
@@ -255,7 +267,9 @@ export const EventInformation = ({
       afterPartyMaxApplicantCount:
         formValue?.afterPartyStatus === "DISABLED"
           ? null
-          : formValue?.afterPartyMaxApplicantCount || null,
+          : afterPartyLimitEnabled
+            ? parseInt(afterPartyMaxCount) || 0
+            : null,
       mainEventMaxApplicantCount: mainEventLimitEnabled ? parseInt(mainEventMaxCount) || 0 : null,
     };
 
