@@ -236,9 +236,10 @@ export const EventForm = ({
       );
 
       // 초기 상태 업데이트 (formValue가 변경될 때만)
-      setInitialState(() => ({
-        formValue: formValue,
-      }));
+      if (initialState.formValue === null)
+        setInitialState(() => ({
+          formValue: formValue,
+        }));
     } else {
       const newFormFields = getFormFields(null);
       setFormFields(newFormFields);
