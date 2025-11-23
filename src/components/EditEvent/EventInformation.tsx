@@ -153,7 +153,6 @@ export const EventInformation = ({
 
   useEffect(() => {
     if (formValue) {
-      console.log(formValue);
       // setFormValues는 제거 - 부모에서 이미 관리하고 있음
       setSelectedRange({
         from: parseISO(formValue.applicationPeriod?.startDate),
@@ -219,11 +218,6 @@ export const EventInformation = ({
       });
     }
   }, [formValue, eventId]);
-
-  useEffect(() => {
-    console.log("뒤풀이 인원 가능?", afterPartyLimitEnabled);
-    console.log("뒤풀이 인원 몇명?", afterPartyMaxCount);
-  }, [afterPartyLimitEnabled, afterPartyMaxCount]);
 
   const handleDescriptionChange = (value: string) => {
     setDescription(value);
