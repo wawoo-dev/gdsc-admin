@@ -36,6 +36,7 @@ export interface EventBasicInfoType {
   name: string;
   venue: string;
   startAt: string; // ISO 8601 날짜 문자열
+  description: string;
   applicationPeriod: ApplicationPeriod;
   regularRoleOnlyStatus: "ENABLED" | "DISABLED";
   afterPartyMaxApplicantCount: number | null;
@@ -43,7 +44,6 @@ export interface EventBasicInfoType {
 }
 
 export interface EventFormType {
-  applicationDescription: string;
   afterPartyStatus: "ENABLED" | "DISABLED";
   prePaymentStatus: "ENABLED" | "DISABLED";
   postPaymentStatus: "ENABLED" | "DISABLED";
@@ -55,7 +55,7 @@ export interface EventType {
   name: string;
   venue: string;
   startAt: string; // ISO 8601 날짜 문자열
-  applicationDescription: string;
+  description: string;
   applicationPeriod: ApplicationPeriod;
   regularRoleOnlyStatus: "ENABLED" | "DISABLED";
   afterPartyStatus: "ENABLED" | "DISABLED";
