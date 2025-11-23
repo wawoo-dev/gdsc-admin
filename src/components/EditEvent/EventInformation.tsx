@@ -553,7 +553,6 @@ export const EventInformation = ({
                     onChange={handleMainEventMaxCountChange}
                     variant="outlined"
                     fullWidth
-                    type="number"
                     style={{ backgroundColor: "white" }}
                     inputProps={{
                       min: totalAttendeesCount > 0 ? totalAttendeesCount : 1,
@@ -601,7 +600,6 @@ export const EventInformation = ({
                         onChange={handleAfterPartyMaxCountChange}
                         variant="outlined"
                         fullWidth
-                        type="number"
                         style={{ backgroundColor: "white" }}
                         inputProps={{
                           min: totalAttendeesCount > 0 ? totalAttendeesCount : 1,
