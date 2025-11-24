@@ -154,6 +154,7 @@ export const ApplyMember = ({ title }: { title: string }) => {
         setOpen={setDeleteMemberOpen}
         selectedParticipants={selectedParticipants}
         onDeleteSuccess={handleDeleteSuccess}
+        title={title}
       />
       <Flex gap="sm">
         <SearchBar

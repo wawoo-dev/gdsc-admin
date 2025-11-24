@@ -91,7 +91,7 @@ const AfterPartyNotFoundInternal = ({
         </MemberInputWrapper>
         <MemberInputWrapper>
           <Text typo="h3" color="mono600" style={{ display: "flex", alignItems: "center" }}>
-            학번
+            학번<Text color="primary">*</Text>
           </Text>
           <MemberInput
             type="text"
@@ -110,7 +110,7 @@ const AfterPartyNotFoundInternal = ({
         </CheckButton>
         <CheckButton
           variant="contained"
-          disabled={phone.trim() === ""}
+          disabled={phone.trim() === "" || studentId.trim() === ""}
           onClick={() => {
             handleAddNotFoundMember();
           }}
