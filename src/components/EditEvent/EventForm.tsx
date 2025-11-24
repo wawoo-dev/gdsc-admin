@@ -2,6 +2,7 @@ import { useUpdateEventFormMutation } from "@/hooks/mutations/useUpdateEventForm
 import { EventType, UpdateEventFormRequest } from "@/types/dtos/event";
 import { useEffect, useState } from "react";
 import { Link as LinkIcon } from "wowds-icons";
+import { color } from "wowds-tokens";
 import Button from "wowds-ui/Button";
 import { Flex } from "../@common/Flex";
 import { Space } from "../@common/Space";
@@ -236,9 +237,10 @@ export const EventForm = ({
       );
 
       // 초기 상태 업데이트 (formValue가 변경될 때만)
-      setInitialState(() => ({
-        formValue: formValue,
-      }));
+      if (initialState.formValue === null)
+        setInitialState(() => ({
+          formValue: formValue,
+        }));
     } else {
       const newFormFields = getFormFields(null);
       setFormFields(newFormFields);
@@ -301,6 +303,7 @@ export const EventForm = ({
           icon={<LinkIcon stroke="primary" />}
           onClick={handleCopyUrl}
           disabled={!eventId}
+          style={{ backgroundColor: color.blueDisabled }}
         >
           {copied ? "복사 완료!" : "URL 복사하기"}
         </Button>
