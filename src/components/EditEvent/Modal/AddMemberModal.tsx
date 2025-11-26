@@ -205,6 +205,19 @@ export const AddMemberModal = ({
                       />
                     </div>
                   ))}
+              <Text
+                typo="body2"
+                color="mono800"
+                style={{
+                  textDecoration: "underline",
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  setPhase("NONE_MEMBER_SEARCH");
+                }}
+              >
+                아니요, 회원 명단에 없는 사람입니다.
+              </Text>
               <Space height={76} />
               <div style={{ display: "flex", gap: "12px", width: "70%" }}>
                 <Button
@@ -252,6 +265,7 @@ export const AddMemberModal = ({
                   setSearchResults([]);
                   setSelectedMember(undefined);
                   setName("");
+                  setOpen(false);
                 }}
               />
             </>
