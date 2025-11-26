@@ -153,7 +153,6 @@ export const EventInformation = ({
 
   useEffect(() => {
     if (formValue) {
-      console.log(formValue);
       // setFormValues는 제거 - 부모에서 이미 관리하고 있음
       setSelectedRange({
         from: parseISO(formValue.applicationPeriod?.startDate),
@@ -167,7 +166,11 @@ export const EventInformation = ({
       setAfterPartyMaxCount(formValue.afterPartyMaxApplicantCount?.toString() || "");
       setRegularRoleOnlyStatus(formValue.regularRoleOnlyStatus);
       setMainEventLimitEnabled(eventId ? (formValue.mainEventMaxApplicantCount || 0) > 0 : true);
-      setAfterPartyLimitEnabled(formValue.afterPartyStatus === "DISABLED" ? false : true);
+      setAfterPartyLimitEnabled(
+        formValue.afterPartyStatus === "DISABLED"
+          ? false
+          : (formValue.afterPartyMaxApplicantCount || 0) > 0,
+      );
 
       // 초기 상태 업데이트 (formValue가 변경될 때만)
       setInitialState({
@@ -183,7 +186,10 @@ export const EventInformation = ({
         mainEventMaxCount: formValue.mainEventMaxApplicantCount?.toString() || "",
         afterPartyMaxCount: formValue.afterPartyMaxApplicantCount?.toString() || "",
         mainEventLimitEnabled: eventId ? (formValue.mainEventMaxApplicantCount || 0) > 0 : true,
-        afterPartyLimitEnabled: formValue.afterPartyStatus === "DISABLED" ? false : true,
+        afterPartyLimitEnabled:
+          formValue.afterPartyStatus === "DISABLED"
+            ? false
+            : (formValue.afterPartyMaxApplicantCount || 0) > 0,
       });
     } else {
       setSelectedRange(undefined);
@@ -255,7 +261,9 @@ export const EventInformation = ({
       afterPartyMaxApplicantCount:
         formValue?.afterPartyStatus === "DISABLED"
           ? null
-          : formValue?.afterPartyMaxApplicantCount || null,
+          : afterPartyLimitEnabled
+            ? parseInt(afterPartyMaxCount) || 0
+            : null,
       mainEventMaxApplicantCount: mainEventLimitEnabled ? parseInt(mainEventMaxCount) || 0 : null,
     };
 
@@ -539,7 +547,6 @@ export const EventInformation = ({
                     onChange={handleMainEventMaxCountChange}
                     variant="outlined"
                     fullWidth
-                    type="number"
                     style={{ backgroundColor: "white" }}
                     inputProps={{
                       min: totalAttendeesCount > 0 ? totalAttendeesCount : 1,
@@ -587,7 +594,6 @@ export const EventInformation = ({
                         onChange={handleAfterPartyMaxCountChange}
                         variant="outlined"
                         fullWidth
-                        type="number"
                         style={{ backgroundColor: "white" }}
                         inputProps={{
                           min: totalAttendeesCount > 0 ? totalAttendeesCount : 1,
