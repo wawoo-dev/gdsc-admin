@@ -44,6 +44,8 @@ export const NoneMemberParticipate = ({
     } catch (error) {
       console.error("비회원 참가자 등록 중 오류 발생:", error);
       alert("등록 중 오류가 발생했습니다. 다시 시도해주세요.");
+    } finally {
+      handleBack();
     }
   };
 
@@ -55,7 +57,7 @@ export const NoneMemberParticipate = ({
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px", padding: "20px" }}>
-      <Text typo="h1">
+      <Text typo="h1" style={{ textAlign: "center" }}>
         {selectedName} 이름의 학생이 어드민에 없어요. <br />
         신청 명단에 새로 추가하시겠어요?
       </Text>
@@ -66,7 +68,7 @@ export const NoneMemberParticipate = ({
         <TextField placeholder="01012345678" label="전화번호" value={phone} onChange={setPhone} />
       </div>
 
-      <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
+      <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end", marginTop: "24px" }}>
         <Button variant="outline" onClick={handleReset}>
           뒤로가기
         </Button>

@@ -73,13 +73,13 @@ const AfterPartySearchBottomSheet = ({
       console.log("Search term is empty. Cannot add not found member.");
       return;
     }
-    if (studentId === "" || /^[A-Za-z][0-9]{6}$/.test(studentId)) {
+    if (/^[A-Za-z][0-9]{6}$/.test(studentId)) {
       if (!/^01[016789][0-9]{8}$/.test(phone)) {
         setInvalidMessage("전화번호 형식이 올바르지 않습니다. ex) 010-1234-5678");
         return;
       }
     } else {
-      setInvalidMessage("학번 형식이 올바르지 않습니다. ex) A123456 or 빈칸");
+      setInvalidMessage("학번 형식이 올바르지 않습니다. ex) A123456");
       return;
     }
     try {
