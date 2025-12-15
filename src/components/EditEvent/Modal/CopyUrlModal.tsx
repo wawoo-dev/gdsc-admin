@@ -90,6 +90,7 @@ export const CopyUrlModal = ({ open, onClose, url }: CopyUrlModalProps) => {
           }}
           placeholder={url}
           css={css({
+            "width": "100%",
             "& .MuiInputBase-root": {
               "backgroundColor": color.backgroundAlternative,
               "&:hover": {
@@ -106,6 +107,7 @@ export const CopyUrlModal = ({ open, onClose, url }: CopyUrlModalProps) => {
           onClick={handleCopyUrl}
           size="lg"
           css={css({
+            "width": "100%",
             "backgroundColor": copied ? color.success : color.primary,
             "&:hover": {
               backgroundColor: copied ? color.success : color.primary,
