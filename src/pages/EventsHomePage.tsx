@@ -18,7 +18,7 @@ export const EventsHomePage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const pageSize = 20;
 
-  const { data } = useEventList(currentPage, pageSize); // useEventList는 1부터 시작
+  const { data } = useEventList(currentPage, pageSize, ["createdAt,desc"]); // useEventList는 1부터 시작
   const eventContent = data?.content ?? [];
 
   // 검색어 debounce 적용 (300ms 지연)
@@ -28,6 +28,25 @@ export const EventsHomePage = () => {
   const filteredEvents = eventContent.filter(event =>
     event.event.name?.toLowerCase().includes(debouncedSearchQuery?.toLowerCase()),
   );
+
+  const statusOrder: Record<string, number> = {
+    APPLICATION_OPEN: 1,
+    ONGOING: 2,
+    BEFORE_APPLICATION: 3,
+    APPLICATION_CLOSED: 4,
+    EVENT_ENDED: 5,
+  };
+
+  const sortedEvents = [...filteredEvents].sort((a, b) => {
+    const orderA = statusOrder[a.eventStatus] || 99;
+    const orderB = statusOrder[b.eventStatus] || 99;
+
+    if (orderA !== orderB) {
+      return orderA - orderB;
+    }
+
+    return new Date(b.event.startAt).getTime() - new Date(a.event.startAt).getTime();
+  });
 
   // 페이지 변경 핸들러
   const handlePageChange = (page: number) => {
@@ -76,8 +95,8 @@ export const EventsHomePage = () => {
         </Link>
 
         {/* 실제 이벤트 데이터 리스트 */}
-        {filteredEvents.length > 0 ? (
-          filteredEvents.map(item => (
+        {sortedEvents.length > 0 ? (
+          sortedEvents.map(item => (
             <OfflineEventCard
               key={item.event.eventId}
               eventId={item.event.eventId}

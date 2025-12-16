@@ -105,9 +105,7 @@ export const CopyUrlModal = ({ open, onClose, url }: CopyUrlModalProps) => {
         {/* 복사 버튼 */}
         <Button
           onClick={handleCopyUrl}
-          size="lg"
           css={css({
-            "width": "100%",
             "backgroundColor": copied ? color.success : color.primary,
             "&:hover": {
               backgroundColor: copied ? color.success : color.primary,
