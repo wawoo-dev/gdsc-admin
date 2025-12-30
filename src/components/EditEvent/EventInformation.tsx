@@ -20,6 +20,7 @@ import DropDown from "wowds-ui/DropDown";
 import DropDownOption from "wowds-ui/DropDownOption";
 import { CopyUrlModal } from "./Modal/CopyUrlModal";
 
+import { endOfDay, startOfDay } from "date-fns";
 import "dayjs/locale/ko";
 import { DateRangePicker } from "./DateRangePicker";
 
@@ -407,16 +408,8 @@ export const EventInformation = ({
               <DateRangePicker
                 value={selectedRange}
                 onChange={newValue => {
-                  const startDate = newValue?.from;
-                  const endDate = newValue?.to;
-
-                  // 시작일, 종료일 시간 설정
-                  if (startDate) {
-                    startDate.setHours(0, 0, 0, 0);
-                  }
-                  if (endDate) {
-                    endDate.setHours(23, 59, 59, 0);
-                  }
+                  const startDate = newValue?.from ? startOfDay(newValue.from) : undefined;
+                  const endDate = newValue?.to ? endOfDay(newValue.to) : undefined;
 
                   setSelectedRange({ from: startDate, to: endDate });
                 }}
