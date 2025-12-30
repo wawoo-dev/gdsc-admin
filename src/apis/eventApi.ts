@@ -1,6 +1,5 @@
 // api/events.ts
 
-import { apiClient } from ".";
 import { AfterPartyData } from "@/components/EditEvent/mockData/afterPartyMockData";
 import {
   AfterPartyAttendanceListResponse,
@@ -13,6 +12,7 @@ import {
   UpdateEventFormRequest,
   UpdateEventRequest,
 } from "@/types/dtos/event";
+import { apiClient } from ".";
 
 export const eventApi = {
   createEvent: async (eventData: CreateEventRequest): Promise<{ eventId: string }> => {
@@ -35,21 +35,37 @@ export const eventApi = {
     const response = await apiClient.get<EventType>(`/common/events/${eventId}`);
     return response.data;
   },
+  getSearchEventList: async (
+    page: number = 1,
+    size: number = 20,
+    sort: string = "",
+    name: string,
+  ): Promise<EventResponse> => {
+    const params = new URLSearchParams({
+      name,
+      page: String(page),
+      size: String(size),
+      sort,
+    });
+
+    const response = await apiClient.get<EventResponse>(
+      `/admin/events/search?${params.toString()}`,
+    );
+    return response.data;
+  },
   getEventList: async (
     page: number = 1,
     size: number = 20,
-    sort: string[] = [],
+    sort: string = "",
   ): Promise<EventResponse> => {
     const params = new URLSearchParams({
       page: String(page),
       size: String(size),
-    });
-
-    sort.forEach(value => {
-      params.append("sort", value);
+      sort,
     });
 
     const response = await apiClient.get<EventResponse>(`/admin/events?${params.toString()}`);
+
     return response.data;
   },
   getParticipants: async (
