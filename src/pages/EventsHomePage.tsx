@@ -18,16 +18,11 @@ export const EventsHomePage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const pageSize = 20;
 
-  const { data } = useEventList(currentPage, pageSize, ["startAt,desc"]); // useEventList는 1부터 시작
-  const eventContent = data?.content ?? [];
-
   // 검색어 debounce 적용 (300ms 지연)
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
-  // 검색어에 따라 이벤트 필터링
-  const filteredEvents = eventContent.filter(event =>
-    event.event.name?.toLowerCase().includes(debouncedSearchQuery?.toLowerCase()),
-  );
+  const { data } = useEventList(currentPage, pageSize, "startAt,desc", debouncedSearchQuery); // useEventList는 1부터 시작
+  const eventContent = data?.content ?? [];
 
   // 페이지 변경 핸들러
   const handlePageChange = (page: number) => {
@@ -76,8 +71,8 @@ export const EventsHomePage = () => {
         </Link>
 
         {/* 실제 이벤트 데이터 리스트 */}
-        {filteredEvents.length > 0 ? (
-          filteredEvents.map(item => (
+        {eventContent.length > 0 ? (
+          eventContent.map(item => (
             <OfflineEventCard
               key={item.event.eventId}
               eventId={item.event.eventId}
