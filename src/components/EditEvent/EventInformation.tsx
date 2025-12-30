@@ -1,27 +1,28 @@
-import { CSSProperties, useEffect, useState } from "react";
-import { css } from "@emotion/react";
-import { TextField } from "@mui/material";
-import { DatePicker, TimePicker } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DateRangePicker } from "@mui/x-date-pickers-pro";
-import { AdapterDayjs as AdapterDayjsPro } from "@mui/x-date-pickers-pro/AdapterDayjs";
-import { LocalizationProvider as LocalizationProviderPro } from "@mui/x-date-pickers-pro/LocalizationProvider";
-import dayjs from "dayjs";
-import timezone from "dayjs/plugin/timezone";
-import utc from "dayjs/plugin/utc";
-import { color, space, typography } from "wowds-tokens";
-import Button from "wowds-ui/Button";
-import DropDown from "wowds-ui/DropDown";
-import DropDownOption from "wowds-ui/DropDownOption";
-import { CopyUrlModal } from "./Modal/CopyUrlModal";
 import { Flex } from "@/components/@common/Flex";
 import { Space } from "@/components/@common/Space";
 import { Text } from "@/components/@common/Text";
 import { useCreateEventMutation } from "@/hooks/mutations/useCreateEventMutation";
 import { useUpdateBasicInfoEventMutation } from "@/hooks/mutations/useUpdateBasicInfoEventMutation";
 import { CreateEventRequest, EventType } from "@/types/dtos/event";
+import { css } from "@emotion/react";
+import { TextField } from "@mui/material";
+import { DatePicker, TimePicker } from "@mui/x-date-pickers";
+
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+import { CSSProperties, useEffect, useState } from "react";
+import { color, space, typography } from "wowds-tokens";
+import Button from "wowds-ui/Button";
+import DropDown from "wowds-ui/DropDown";
+import DropDownOption from "wowds-ui/DropDownOption";
+import { CopyUrlModal } from "./Modal/CopyUrlModal";
+
+import { endOfDay, startOfDay } from "date-fns";
 import "dayjs/locale/ko";
+import { DateRangePicker } from "./DateRangePicker";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -404,44 +405,15 @@ export const EventInformation = ({
               align="start"
               style={{ flex: "0 0 100%", marginBottom: "16px" }}
             >
-              <LocalizationProviderPro dateAdapter={AdapterDayjsPro} adapterLocale="ko">
-                <DateRangePicker
-                  value={[
-                    selectedRange?.from ? dayjs(selectedRange.from) : null,
-                    selectedRange?.to ? dayjs(selectedRange.to) : null,
-                  ]}
-                  calendars={1}
-                  label="행사 신청 기간"
-                  onChange={newValue => {
-                    const [startDate, endDate] = newValue || [null, null];
+              <DateRangePicker
+                value={selectedRange}
+                onChange={newValue => {
+                  const startDate = newValue?.from ? startOfDay(newValue.from) : undefined;
+                  const endDate = newValue?.to ? endOfDay(newValue.to) : undefined;
 
-                    const processedStartDate = startDate?.toDate();
-                    const processedEndDate = endDate?.toDate();
-
-                    if (processedStartDate) {
-                      // 시작일 시간을 00:00:00으로 설정
-                      processedStartDate.setHours(0, 0, 0, 0);
-                    }
-
-                    if (processedEndDate) {
-                      // 종료일 시간을 23:59:59로 설정
-                      processedEndDate.setHours(23, 59, 59, 0);
-                    }
-
-                    setSelectedRange({
-                      from: processedStartDate,
-                      to: processedEndDate,
-                    });
-                  }}
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      sx: { backgroundColor: "white" },
-                      size: "small",
-                    },
-                  }}
-                />
-              </LocalizationProviderPro>
+                  setSelectedRange({ from: startDate, to: endDate });
+                }}
+              />
               <TextField
                 value={venue}
                 onChange={handleVenueChange}
@@ -613,7 +585,7 @@ export const EventInformation = ({
               </Text>
               <textarea
                 placeholder="행사 신청 설명을 입력해주세요"
-                value={description}
+                value={description ?? ""}
                 onChange={e => handleDescriptionChange(e.target.value)}
                 css={css({
                   "width": "100%",
