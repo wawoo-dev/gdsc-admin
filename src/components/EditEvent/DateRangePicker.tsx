@@ -68,7 +68,7 @@ const StyledDayPicker = styled(DayPicker)`
 
 interface DateRangePickerProps {
   value?: { from: Date | undefined; to?: Date };
-  onChange?: (range: { from: Date | undefined; to?: Date } | undefined) => void;
+  onChange: (range: { from: Date | undefined; to?: Date } | undefined) => void;
 }
 
 export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
@@ -122,7 +122,27 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
           horizontal: "left",
         }}
       >
-        <StyledDayPicker mode="range" selected={value} onSelect={onChange} locale={ko} />
+        <StyledDayPicker
+          mode="range"
+          selected={value}
+          onSelect={range => {
+            // 기간이 선택되어있을 때 새로운 날짜 클릭 시 시작일부터 다시 선택하도록
+            if (value?.from && value?.to && range?.from) {
+              const clickedDate =
+                range.from.getTime() !== value.from.getTime() ? range.from : range.to;
+
+              onChange({ from: clickedDate, to: undefined });
+              return;
+            }
+
+            onChange(range);
+
+            if (range?.from && range?.to) {
+              handleClose();
+            }
+          }}
+          locale={ko}
+        />
       </Popover>
     </>
   );
