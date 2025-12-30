@@ -44,9 +44,9 @@ export const eventApi = {
     const response = await apiClient.get<EventResponse>(`/admin/events/search`, {
       params: {
         name,
-        page: String(page),
-        size: String(size),
-        sort,
+        page,
+        size,
+        sort: sort || undefined,
       },
     });
     return response.data;
@@ -57,7 +57,7 @@ export const eventApi = {
     sort: string = "",
   ): Promise<EventResponse> => {
     const response = await apiClient.get<EventResponse>(`/admin/events`, {
-      params: { page: String(page), size: String(size), sort },
+      params: { page, size, sort },
     });
 
     return response.data;
@@ -70,7 +70,7 @@ export const eventApi = {
   ): Promise<EventParticipantsResponse> => {
     const res = await apiClient.get<EventParticipantsResponse>(
       `/admin/event-participations/applicants`,
-      { params: { event: eventId, page, size, sort } },
+      { params: { event: eventId, page, size, sort: sort || undefined } },
     );
     return res.data;
   },
@@ -116,7 +116,7 @@ export const eventApi = {
     const response = await apiClient.get<AfterPartyData>(
       `/admin/event-participations/after-party/applicants`,
       {
-        params: { event: eventId, page, size, sort },
+        params: { event: eventId, page, size, sort: sort || undefined },
       },
     );
     return response.data;
