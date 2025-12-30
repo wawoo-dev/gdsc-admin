@@ -41,16 +41,14 @@ export const eventApi = {
     sort: string = "",
     name: string,
   ): Promise<EventResponse> => {
-    const params = new URLSearchParams({
-      name,
-      page: String(page),
-      size: String(size),
-      sort,
+    const response = await apiClient.get<EventResponse>(`/admin/events/search`, {
+      params: {
+        name,
+        page: String(page),
+        size: String(size),
+        sort,
+      },
     });
-
-    const response = await apiClient.get<EventResponse>(
-      `/admin/events/search?${params.toString()}`,
-    );
     return response.data;
   },
   getEventList: async (
@@ -58,13 +56,9 @@ export const eventApi = {
     size: number = 20,
     sort: string = "",
   ): Promise<EventResponse> => {
-    const params = new URLSearchParams({
-      page: String(page),
-      size: String(size),
-      sort,
+    const response = await apiClient.get<EventResponse>(`/admin/events`, {
+      params: { page: String(page), size: String(size), sort },
     });
-
-    const response = await apiClient.get<EventResponse>(`/admin/events?${params.toString()}`);
 
     return response.data;
   },
