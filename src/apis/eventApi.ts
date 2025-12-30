@@ -35,8 +35,21 @@ export const eventApi = {
     const response = await apiClient.get<EventType>(`/common/events/${eventId}`);
     return response.data;
   },
-  getEventList: async (page: number = 1, size: number = 20): Promise<EventResponse> => {
-    const response = await apiClient.get<EventResponse>(`/admin/events?page=${page}&size=${size}`);
+  getEventList: async (
+    page: number = 1,
+    size: number = 20,
+    sort: string[] = [],
+  ): Promise<EventResponse> => {
+    const params = new URLSearchParams({
+      page: String(page),
+      size: String(size),
+    });
+
+    sort.forEach(value => {
+      params.append("sort", value);
+    });
+
+    const response = await apiClient.get<EventResponse>(`/admin/events?${params.toString()}`);
     return response.data;
   },
   getParticipants: async (

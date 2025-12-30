@@ -1,6 +1,6 @@
-import { useState } from "react";
 import { css } from "@emotion/react";
 import { Text } from "components/@common/Text";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Box from "wowds-ui/Box";
 import Pagination from "wowds-ui/Pagination";
@@ -18,7 +18,7 @@ export const EventsHomePage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const pageSize = 20;
 
-  const { data } = useEventList(currentPage, pageSize); // useEventList는 1부터 시작
+  const { data } = useEventList(currentPage, pageSize, ["startAt,desc"]); // useEventList는 1부터 시작
   const eventContent = data?.content ?? [];
 
   // 검색어 debounce 적용 (300ms 지연)
