@@ -50,6 +50,6 @@ const StyledButton = styled(Button)({
   padding: "6px 12px",
   minWidth: "49px",
   height: "30px",
-  fontFamily: "SUIT v1",
+  fontFamily: "SUIT",
   fontWeight: 600,
 });

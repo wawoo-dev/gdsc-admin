@@ -17,13 +17,13 @@ export const typo = {
     line-height: 16px;
   `,
   h1: css`
-    font-family: Roboto;
+    font-family: SUIT;
     font-size: 36px;
     font-weight: 400;
     line-height: 48px;
   `,
   h5: css`
-    font-family: Roboto;
+    font-family: SUIT;
     font-size: 24px;
     font-weight: 400;
     line-height: 32px;
@@ -35,20 +35,20 @@ export const typo = {
     line-height: 20.8px;
   `,
   button1: css`
-    font-family: Roboto;
+    font-family: SUIT;
     font-size: 24px;
     font-weight: 500;
     line-height: 108px;
     letter-spacing: 0.46px;
   `,
   body1: css`
-    font-family: Roboto;
+    font-family: SUIT;
     font-size: 16px;
     font-weight: 400;
     line-height: 24px;
   `,
   body2: css`
-    font-family: Roboto;
+    font-family: SUIT;
     font-size: 14px;
     font-weight: 400;
     line-height: 22.4px;
