@@ -99,7 +99,7 @@ const StyledModalContentWrapper = styled("main")({
 });
 
 const StyledTitle = styled(Typography)({
-  fontFamily: "SUIT v1",
+  fontFamily: "SUIT",
   fontSize: "32px",
   fontWeight: 700,
   lineHeight: "41.6px",

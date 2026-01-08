@@ -10,7 +10,7 @@ import Router from "@/routes/Router";
 
 const theme = createTheme({
   typography: {
-    fontFamily: "Roboto",
+    fontFamily: "SUIT, sans-serif",
   },
   palette: {
     primary: {

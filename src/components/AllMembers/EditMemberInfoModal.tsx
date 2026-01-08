@@ -275,7 +275,7 @@ const StyledInfoRowWrapper = styled(Box)({
 
 const StyledTitle = styled(Typography)({
   marginBottom: "20px",
-  fontFamily: "SUIT v1",
+  fontFamily: "SUIT",
   fontSize: "32px",
   fontWeight: 700,
   lineHeight: "41.6px",
@@ -335,7 +335,7 @@ const StyledButton = styled(Button)({
   width: "328px",
   height: "48px",
   padding: "16px 0",
-  fontFamily: "SUIT v1",
+  fontFamily: "SUIT",
   fontSize: "16px",
   fontWeight: 600,
   lineHeight: "16px",
