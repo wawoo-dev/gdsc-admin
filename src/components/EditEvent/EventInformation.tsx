@@ -18,10 +18,11 @@ import { color, space, typography } from "wowds-tokens";
 import Button from "wowds-ui/Button";
 import DropDown from "wowds-ui/DropDown";
 import DropDownOption from "wowds-ui/DropDownOption";
-import { CopyUrlModal } from "./Modal/CopyUrlModal";
 
+import RoutePath from "@/routes/routePath";
 import { endOfDay, startOfDay } from "date-fns";
 import "dayjs/locale/ko";
+import { useNavigate } from "react-router-dom";
 import { DateRangePicker } from "./DateRangePicker";
 
 dayjs.extend(utc);
@@ -55,7 +56,8 @@ export const EventInformation = ({
   eventId?: number;
   totalAttendeesCount: number;
 }) => {
-  const [eventUrl, setEventUrl] = useState("");
+  const navigate = useNavigate();
+
   const createEventMutation = useCreateEventMutation();
   const updateBasicInfoMutation = useUpdateBasicInfoEventMutation();
   //const [formValues, setFormValues] = useState<EventType | null>(formValue);
@@ -93,7 +95,6 @@ export const EventInformation = ({
   const [afterPartyLimitEnabled, setAfterPartyLimitEnabled] = useState<boolean>(
     eventId ? (formValue?.afterPartyMaxApplicantCount || 0) > 0 : true,
   );
-  const [copyUrlModalOpen, setCopyUrlModalOpen] = useState(false);
 
   // 초기 상태 저장
   const [initialState, setInitialState] = useState<{
@@ -124,6 +125,13 @@ export const EventInformation = ({
     mainEventLimitEnabled: eventId ? (formValue?.mainEventMaxApplicantCount || 0) > 0 : true,
     afterPartyLimitEnabled: eventId ? (formValue?.afterPartyMaxApplicantCount || 0) > 0 : true,
   }));
+
+  // 행사 생성 가능 여부
+  const isCreationValid = !!(
+    title &&
+    selectedEventDate &&
+    ((mainEventLimitEnabled && Number(mainEventMaxCount) > 0) || !mainEventLimitEnabled)
+  );
 
   // 데이터 변경사항 감지
   const hasChanges = () => {
@@ -323,22 +331,7 @@ export const EventInformation = ({
       // 새 이벤트 생성
       createEventMutation.mutate(basicInfoData, {
         onSuccess: data => {
-          updateFormValues();
-          setCopyUrlModalOpen(true);
-          setEventUrl(`${import.meta.env.VITE_EVENT_URL}/event/${data.eventId}`);
-          // 저장 성공 후 초기 상태 업데이트
-          setInitialState({
-            title: title,
-            venue: venue,
-            description: description,
-            regularRoleOnlyStatus: regularRoleOnlyStatus,
-            selectedRange: selectedRange,
-            selectedEventDate: selectedEventDate,
-            mainEventMaxCount: mainEventMaxCount,
-            afterPartyMaxCount: afterPartyMaxCount,
-            mainEventLimitEnabled: mainEventLimitEnabled,
-            afterPartyLimitEnabled: afterPartyLimitEnabled,
-          });
+          navigate(`${RoutePath.EditEvent}/${data.eventId}`, { replace: true });
           console.log("이벤트가 성공적으로 생성되었습니다:", data);
         },
         onError: error => {
@@ -610,20 +603,15 @@ export const EventInformation = ({
             onClick={handleSave}
             size="sm"
             disabled={
-              createEventMutation.isPending || updateBasicInfoMutation.isPending || !hasChanges()
+              eventId
+                ? updateBasicInfoMutation.isPending || !hasChanges()
+                : createEventMutation.isPending || !isCreationValid
             }
           >
             {eventId ? "저장하기" : "게시하기"}
           </Button>
         </Flex>
       </div>
-
-      {/* URL 복사 모달 */}
-      <CopyUrlModal
-        open={copyUrlModalOpen}
-        onClose={() => setCopyUrlModalOpen(false)}
-        url={eventUrl}
-      />
     </>
   );
 };
