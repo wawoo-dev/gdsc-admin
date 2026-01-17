@@ -126,6 +126,13 @@ export const EventInformation = ({
     afterPartyLimitEnabled: eventId ? (formValue?.afterPartyMaxApplicantCount || 0) > 0 : true,
   }));
 
+  // 행사 생성 가능 여부
+  const isCreationValid = !!(
+    title &&
+    selectedEventDate &&
+    ((mainEventLimitEnabled && Number(mainEventMaxCount) > 0) || !mainEventLimitEnabled)
+  );
+
   // 데이터 변경사항 감지
   const hasChanges = () => {
     return (
@@ -596,7 +603,9 @@ export const EventInformation = ({
             onClick={handleSave}
             size="sm"
             disabled={
-              createEventMutation.isPending || updateBasicInfoMutation.isPending || !hasChanges()
+              eventId
+                ? updateBasicInfoMutation.isPending || !hasChanges()
+                : createEventMutation.isPending || !isCreationValid
             }
           >
             {eventId ? "저장하기" : "게시하기"}
