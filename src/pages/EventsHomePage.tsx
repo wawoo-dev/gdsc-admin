@@ -80,7 +80,7 @@ export const EventsHomePage = () => {
               startAt={item.event.startAt}
               applicationStart={item.event.applicationPeriod.startDate}
               applicationEnd={item.event.applicationPeriod.endDate}
-              totalAttendeesCount={item.totalAttendeesCount}
+              currentApplicantCount={item.mainEventCurrentApplicantCount}
               eventStatus={item.eventStatus}
               onClick={() => navigate(`${RoutePath.EditEvent}/${item.event.eventId}`)}
             />

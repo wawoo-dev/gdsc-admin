@@ -1,12 +1,12 @@
 // components/OfflineEventCard.tsx
-import { ComponentProps } from "react";
-import { Text } from "components/@common/Text";
-import Box from "wowds-ui/Box";
-import Tag from "wowds-ui/Tag";
 import { Flex } from "@/components/@common/Flex";
 import { Space } from "@/components/@common/Space";
 import { useCountdown } from "@/hooks/contexts/useCountDownDate";
 import { EventStatus } from "@/types/entities/event";
+import { Text } from "components/@common/Text";
+import { ComponentProps } from "react";
+import Box from "wowds-ui/Box";
+import Tag from "wowds-ui/Tag";
 
 interface OfflineEventCardProps {
   eventId: number;
@@ -14,7 +14,7 @@ interface OfflineEventCardProps {
   startAt: string;
   applicationStart: string;
   applicationEnd: string;
-  totalAttendeesCount: number;
+  currentApplicantCount: number;
   eventStatus: EventStatus;
   onClick: () => void;
 }
@@ -44,7 +44,7 @@ export const OfflineEventCard = ({
   startAt,
   applicationStart,
   applicationEnd,
-  totalAttendeesCount,
+  currentApplicantCount,
   eventStatus,
   onClick,
 }: OfflineEventCardProps) => {
@@ -85,7 +85,7 @@ export const OfflineEventCard = ({
             </Text>
             <Space height={5} />
             <Text typo="body1" color="sub">
-              참석인원: {totalAttendeesCount}명
+              신청 인원: {currentApplicantCount}명
             </Text>
           </>
         }
