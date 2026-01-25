@@ -11,6 +11,7 @@ export const useGetSearchMemberListQuery = (
     queryKey: [QueryKey.searchMemberList, eventId, name],
     queryFn: () => eventApi.getSearchMemberList(eventId, name),
     enabled: enabled && name.trim() !== "",
-    staleTime: 1000 * 60, // 1분
+    staleTime: 0,
+    gcTime: 0,
   });
 };

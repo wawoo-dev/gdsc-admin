@@ -35,6 +35,9 @@ importers:
       axios:
         specifier: ^1.6.7
         version: 1.11.0(debug@4.4.1)
+      date-fns:
+        specifier: ^4.1.0
+        version: 4.1.0
       dayjs:
         specifier: ^1.11.11
         version: 1.11.18
@@ -47,6 +50,9 @@ importers:
       react:
         specifier: ^18.2.0
         version: 18.3.1
+      react-day-picker:
+        specifier: ^9.12.0
+        version: 9.12.0(react@18.3.1)
       react-dom:
         specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
@@ -66,8 +72,8 @@ importers:
         specifier: ^0.1.6
         version: 0.1.6
       wowds-ui:
-        specifier: ^0.2.0
-        version: 0.2.6(next@15.5.3(@babel/core@7.28.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^0.3.1
+        version: 0.3.1(next@15.5.3(@babel/core@7.28.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       zustand:
         specifier: ^4.4.7
         version: 4.5.7(@types/react@18.3.24)(react@18.3.1)
@@ -3667,8 +3673,8 @@ packages:
   randomfill@1.0.4:
     resolution: {integrity: sha512-87lcbR8+MhcWcUiQ+9e+Rwx8MyR2P7qnt15ynUlbm3TU/fjbgz4GsvfSUDTemtCCtVCqb4ZcEFlyPNTh9bBTLw==}
 
-  react-day-picker@9.9.0:
-    resolution: {integrity: sha512-NtkJbuX6cl/VaGNb3sVVhmMA6LSMnL5G3xNL+61IyoZj0mUZFWTg4hmj7PHjIQ8MXN9dHWhUHFoJWG6y60DKSg==}
+  react-day-picker@9.12.0:
+    resolution: {integrity: sha512-t8OvG/Zrciso5CQJu5b1A7yzEmebvST+S3pOVQJWxwjjVngyG/CA2htN/D15dLI4uTEuLLkbZyS4YYt480FAtA==}
     engines: {node: '>=18'}
     peerDependencies:
       react: '>=16.8.0'
@@ -4558,8 +4564,8 @@ packages:
   wowds-tokens@0.1.6:
     resolution: {integrity: sha512-AitpIpeuVIxz6mXevyLx2JI34ydLwgOMPzO7byb65XPs/Mhi8KJ3DQZBEBjsQ/arWjXPugVJRRIO4oMZ2lkzdg==}
 
-  wowds-ui@0.2.6:
-    resolution: {integrity: sha512-PHtLpQxkM3rFwo0RrVUXeHVbgsiM+sMZXyXFiE5beWqVP75JukFXbFpH1umWppW14Fz5wJZQsNxfOq6Ft8JI0Q==}
+  wowds-ui@0.3.1:
+    resolution: {integrity: sha512-n1KSCR/3TNvZ0SxkxbHNmLL1nzPCqd7Mr7WmOysmqVMG0kaXClo4gRW2BtFrQqxle5qZBMercUxj17nVEPJt7A==}
     peerDependencies:
       next: '>=14.2.25'
       react: ^18.2.0
@@ -8508,7 +8514,7 @@ snapshots:
       randombytes: 2.1.0
       safe-buffer: 5.2.1
 
-  react-day-picker@9.9.0(react@18.3.1):
+  react-day-picker@9.12.0(react@18.3.1):
     dependencies:
       '@date-fns/tz': 1.4.1
       date-fns: 4.1.0
@@ -9594,13 +9600,13 @@ snapshots:
 
   wowds-tokens@0.1.6: {}
 
-  wowds-ui@0.2.6(next@15.5.3(@babel/core@7.28.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  wowds-ui@0.3.1(next@15.5.3(@babel/core@7.28.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       clsx: 2.1.1
       lottie-react: 2.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       next: 15.5.3(@babel/core@7.28.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
-      react-day-picker: 9.9.0(react@18.3.1)
+      react-day-picker: 9.12.0(react@18.3.1)
       uuid: 10.0.0
       wowds-icons: 0.1.6
     transitivePeerDependencies:

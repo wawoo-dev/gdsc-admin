@@ -36,7 +36,6 @@ export default function Layout() {
 const StyledLayoutWrapper = styled(Stack)({
   minHeight: "100vh",
   flexDirection: "row",
-  margin: "-8px",
   position: "relative",
   minWidth: "100%",
 });

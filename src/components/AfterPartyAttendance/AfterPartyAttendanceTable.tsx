@@ -1,4 +1,6 @@
+import { useEffect, useRef } from "react";
 import styled from "@emotion/styled";
+import { color } from "wowds-tokens";
 import { Text } from "../@common/Text";
 import CheckIcon from "@/assets/check.svg?react";
 import { EventParticipantDto } from "@/types/dtos/event";
@@ -8,6 +10,8 @@ interface AfterPartyAttendanceTableProps {
   isEditMode?: boolean;
   selectedIds: Set<number>;
   onSelectedIdsChange: (selectedIds: Set<number>) => void;
+  searchName: string;
+  handleNotFoundName: () => void;
 }
 
 export default function AfterPartyAttendanceTable({
@@ -15,6 +19,8 @@ export default function AfterPartyAttendanceTable({
   afterPartyParticipants,
   selectedIds,
   onSelectedIdsChange,
+  searchName,
+  handleNotFoundName,
 }: AfterPartyAttendanceTableProps) {
   const handleToggle = (eventParticipationId: number) => {
     if (!isEditMode) {
@@ -29,6 +35,56 @@ export default function AfterPartyAttendanceTable({
     }
     onSelectedIdsChange(newSet);
   };
+  const scrolledRef = useRef(false);
+
+  useEffect(() => {
+    // 검색어 바뀌면 다시 스크롤 허용
+    scrolledRef.current = false;
+  }, [searchName]);
+
+  useEffect(() => {
+    // 새 검색 결과가 렌더되면 다시 스크롤 허용
+    scrolledRef.current = false;
+  }, [afterPartyParticipants]);
+
+  useEffect(() => {
+    if (!searchName?.trim()) {
+      return;
+    }
+    if (!afterPartyParticipants?.length) {
+      return;
+    }
+    if (scrolledRef.current) {
+      return;
+    }
+
+    // retry helper to wait until DOM paints the row
+    const tryScrollIntoView = (targetId: string, attempts = 5) => {
+      if (attempts <= 0) {
+        return;
+      }
+      const el = document.getElementById(targetId);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        scrolledRef.current = true; // mark success
+      } else {
+        requestAnimationFrame(() => tryScrollIntoView(targetId, attempts - 1));
+      }
+    };
+
+    const term = searchName.trim().toLowerCase();
+    const matches = afterPartyParticipants.filter(
+      p => (p.participant?.name || "").toLowerCase() === term,
+    );
+
+    if (matches.length === 0) {
+      handleNotFoundName();
+      return;
+    }
+
+    const targetId = `afterparty-row-${matches[0].eventParticipationId}`;
+    requestAnimationFrame(() => tryScrollIntoView(targetId));
+  }, [searchName, afterPartyParticipants, handleNotFoundName]);
 
   return (
     <Container>
@@ -58,16 +114,23 @@ export default function AfterPartyAttendanceTable({
 
           return (
             <ListItem
+              id={`afterparty-row-${participant.eventParticipationId}`} //스크롤 타깃
               key={participant.eventParticipationId}
               onClick={() => handleToggle(participant.eventParticipationId)}
               isSelected={isSelected && isEditMode}
               isClickable={isEditMode}
+              isSearchTerm={
+                !!searchName &&
+                (participant.participant?.name || "").toLowerCase() === searchName.toLowerCase()
+              }
             >
-              <Text style={{ flex: 1.2 }}>
+              <Text style={{ flex: 1.2, color: isSelected ? color.mono700 : "inherit" }}>
                 {participant.participant?.studentId || `회원 ID: ${participant.memberId}`}
               </Text>
-              <Text style={{ flex: 1 }}>{participant.participant?.name || "정보 없음"}</Text>
-              <Text style={{ flex: 1.5 }}>
+              <Text style={{ flex: 1, color: isSelected ? color.mono700 : "inherit" }}>
+                {participant.participant?.name || "정보 없음"}
+              </Text>
+              <Text style={{ flex: 1.5, color: isSelected ? color.mono700 : "inherit" }}>
                 {participant.participant?.phone ? participant.participant.phone.slice(-4) : "-"}
               </Text>
               {isEditMode ? (
@@ -88,6 +151,7 @@ export default function AfterPartyAttendanceTable({
 const Container = styled.div`
   width: 100%;
   margin: 16px auto;
+  margin-bottom: 60px;
 `;
 
 const Header = styled.div`
@@ -111,18 +175,17 @@ const List = styled.div`
   flex-direction: column;
 `;
 
-const ListItem = styled.div<{ isSelected: boolean; isClickable: boolean }>`
+const ListItem = styled.div<{ isSelected: boolean; isClickable: boolean; isSearchTerm: boolean }>`
   display: flex;
   align-items: center;
   padding: 12px 8px;
   gap: 16px;
   background-color: ${props => (props.isSelected ? "#f5f5f5" : "#ffffff")};
-  border: 1px solid #f0f0f0;
+  border: ${props => (props.isSearchTerm ? "1px solid #2196f3" : "1px solid #f0f0f0")};
   border-radius: 4px;
   margin-bottom: 8px;
   cursor: ${props => (props.isClickable ? "pointer" : "default")};
   transition: all 0.2s;
-
   &:hover {
     background-color: ${props => {
       if (!props.isClickable) {

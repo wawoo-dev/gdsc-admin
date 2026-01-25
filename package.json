@@ -22,17 +22,19 @@
     "@tanstack/react-query": "^5.17.1",
     "@tanstack/react-query-devtools": "^5.17.1",
     "axios": "^1.6.7",
+    "date-fns": "^4.1.0",
     "dayjs": "^1.11.11",
     "file-saver": "^2.0.5",
     "qrcode.react": "^4.2.0",
     "react": "^18.2.0",
+    "react-day-picker": "^9.12.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.21.3",
     "react-toastify": "^10.0.4",
     "typescript": "^5.7.3",
     "wowds-icons": "^0.1.6",
     "wowds-tokens": "^0.1.6",
-    "wowds-ui": "^0.2.0",
+    "wowds-ui": "^0.3.1",
     "zustand": "^4.4.7"
   },
   "devDependencies": {
@@ -74,5 +76,6 @@
       "eslint --fix",
       "prettier --write"
     ]
-  }
+  },
+  "packageManager": "pnpm@10.19.0+sha512.c9fc7236e92adf5c8af42fd5bf1612df99c2ceb62f27047032f4720b33f8eacdde311865e91c411f2774f618d82f320808ecb51718bfa82c060c4ba7c76a32b8"
 }

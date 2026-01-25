@@ -1,6 +1,5 @@
 // api/events.ts
 
-import { apiClient } from ".";
 import { AfterPartyData } from "@/components/EditEvent/mockData/afterPartyMockData";
 import {
   AfterPartyAttendanceListResponse,
@@ -13,6 +12,7 @@ import {
   UpdateEventFormRequest,
   UpdateEventRequest,
 } from "@/types/dtos/event";
+import { apiClient } from ".";
 
 export const eventApi = {
   createEvent: async (eventData: CreateEventRequest): Promise<{ eventId: string }> => {
@@ -35,8 +35,31 @@ export const eventApi = {
     const response = await apiClient.get<EventType>(`/common/events/${eventId}`);
     return response.data;
   },
-  getEventList: async (page: number = 1, size: number = 20): Promise<EventResponse> => {
-    const response = await apiClient.get<EventResponse>(`/admin/events?page=${page}&size=${size}`);
+  getSearchEventList: async (
+    page: number = 1,
+    size: number = 20,
+    sort: string = "",
+    name: string,
+  ): Promise<EventResponse> => {
+    const response = await apiClient.get<EventResponse>(`/admin/events/search`, {
+      params: {
+        name,
+        page,
+        size,
+        sort: sort || undefined,
+      },
+    });
+    return response.data;
+  },
+  getEventList: async (
+    page: number = 1,
+    size: number = 20,
+    sort: string = "",
+  ): Promise<EventResponse> => {
+    const response = await apiClient.get<EventResponse>(`/admin/events`, {
+      params: { page, size, sort },
+    });
+
     return response.data;
   },
   getParticipants: async (
@@ -47,7 +70,7 @@ export const eventApi = {
   ): Promise<EventParticipantsResponse> => {
     const res = await apiClient.get<EventParticipantsResponse>(
       `/admin/event-participations/applicants`,
-      { params: { event: eventId, page, size, sort } },
+      { params: { event: eventId, page, size, sort: sort || undefined } },
     );
     return res.data;
   },
@@ -93,7 +116,7 @@ export const eventApi = {
     const response = await apiClient.get<AfterPartyData>(
       `/admin/event-participations/after-party/applicants`,
       {
-        params: { event: eventId, page, size, sort },
+        params: { event: eventId, page, size, sort: sort || undefined },
       },
     );
     return response.data;
@@ -167,6 +190,16 @@ export const eventApi = {
         afterPartyUpdateTarget: data.afterPartyUpdateTarget,
       },
     );
+    return response.data;
+  },
+  postAfterPartyOnsiteAttendance: async (
+    eventId: number,
+    participant: { name: string; studentId: string; phone: string },
+  ) => {
+    const response = await apiClient.post(`/admin/event-participations/join/onsite`, {
+      eventId: eventId,
+      participant,
+    });
     return response.data;
   },
 };
