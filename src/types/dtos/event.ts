@@ -70,7 +70,8 @@ export interface EventType {
 // content 안에 들어가는 타입
 export interface EventContent {
   event: EventType;
-  totalAttendeesCount: number;
+  mainEventCurrentApplicantCount: number;
+  afterPartyCurrentApplicantCount: number;
   eventStatus: EventStatus;
 }
 
@@ -134,7 +135,7 @@ export type AfterPartyAttendanceStatus = "NONE" | "NOT_ATTENDED" | "ATTENDED";
 export type PaymentStatus = "NONE" | "UNPAID" | "PAID";
 
 export interface AfterPartyAttendanceListResponse {
-  totalAttendeesCount: number;
+  mainEventCurrentApplicantCount: number;
   attendedAfterApplyingCount: number;
   notAttendedAfterApplyingCount: number;
   onSiteApplicationCount: number;

@@ -1,6 +1,3 @@
-import { useEffect, useState } from "react";
-import styled from "@emotion/styled";
-import { useParams } from "react-router-dom";
 import { Space } from "@/components/@common/Space";
 import { AfterPartyManagement } from "@/components/EditEvent/AfterPartyManagement";
 import { ApplyMember } from "@/components/EditEvent/ApplyMembers";
@@ -8,6 +5,9 @@ import { EventForm } from "@/components/EditEvent/EventForm";
 import { EventInformation } from "@/components/EditEvent/EventInformation";
 import { useGetEvent } from "@/hooks/queries/useGetEvent";
 import { EventType } from "@/types/dtos/event";
+import styled from "@emotion/styled";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 export const EditEventPage = () => {
   const { eventId: eventIdParam } = useParams<{ eventId?: string }>();
@@ -59,7 +59,7 @@ export const EditEventPage = () => {
         formValue={formValues}
         setFormValues={setformValues}
         eventId={id || undefined}
-        totalAttendeesCount={eventData?.totalAttendeesCount || 0}
+        currentApplicantCount={eventData?.currentApplicantCount || 0}
       />
 
       {eventIdParam !== "new" && (
@@ -83,7 +83,7 @@ export const EditEventPage = () => {
               formValue={formValues}
               setFormValues={setformValues}
               eventId={id || undefined}
-              totalAttendeesCount={eventData?.totalAttendeesCount || 0}
+              currentApplicantCount={eventData?.currentApplicantCount || 0}
             />
           </TabContent>
           <TabContent isActive={activeTab === "tab2"}>

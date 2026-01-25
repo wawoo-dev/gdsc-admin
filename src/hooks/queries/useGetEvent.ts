@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
 import { eventApi } from "@/apis/eventApi";
+import { useQuery } from "@tanstack/react-query";
 
 export const useGetEvent = (eventId: number | null) => {
   return useQuery({
@@ -14,7 +14,7 @@ export const useGetEvent = (eventId: number | null) => {
       const event = eventListResponse.content.find(c => c.event.eventId === eventId);
       return {
         eventData: event?.event || null,
-        totalAttendeesCount: event?.totalAttendeesCount,
+        currentApplicantCount: event?.mainEventCurrentApplicantCount,
       };
     },
     enabled: eventId !== null && eventId > 0,
