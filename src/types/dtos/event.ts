@@ -70,7 +70,8 @@ export interface EventType {
 // content 안에 들어가는 타입
 export interface EventContent {
   event: EventType;
-  totalAttendeesCount: number;
+  mainEventCurrentApplicantCount: number;
+  afterPartyCurrentApplicantCount: number;
   eventStatus: EventStatus;
 }
 
