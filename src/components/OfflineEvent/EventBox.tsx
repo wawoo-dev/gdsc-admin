@@ -85,7 +85,7 @@ export const OfflineEventCard = ({
             </Text>
             <Space height={5} />
             <Text typo="body1" color="sub">
-              신청 인원: {currentApplicantCount}명
+              신청인원: {currentApplicantCount}명
             </Text>
           </>
         }
