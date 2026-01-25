@@ -150,7 +150,7 @@ const StyledDataGrid = styled(DataGrid)({
 });
 
 const StyledTitle = styled(Typography)({
-  fontFamily: "SUIT v1",
+  fontFamily: "SUIT",
   fontSize: "32px",
   fontWeight: 700,
   lineHeight: "41.6px",

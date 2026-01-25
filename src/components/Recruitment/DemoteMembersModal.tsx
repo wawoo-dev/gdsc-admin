@@ -108,7 +108,7 @@ const StyledModalContentWrapper = styled("main")({
 });
 
 const StyledTitle = styled(Typography)({
-  fontFamily: "SUIT v1",
+  fontFamily: "SUIT",
   fontSize: "32px",
   fontWeight: 700,
   lineHeight: "41.6px",
@@ -136,7 +136,7 @@ const StyledButton = styled(Button)({
   height: "48px",
   padding: "16px 0",
   marginTop: "auto",
-  fontFamily: "SUIT v1",
+  fontFamily: "SUIT",
   fontSize: "16px",
   fontWeight: 600,
   lineHeight: "16px",
@@ -182,7 +182,7 @@ const StyledTextField = styled(TextField)({
 
 const StyledText = styled(Typography)({
   color: "#6B6B6B",
-  fontFamily: "SUIT v1",
+  fontFamily: "SUIT",
   fontSize: "14px",
   fontWeight: 600,
   lineHeight: "14px",

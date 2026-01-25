@@ -12,7 +12,7 @@ export const Text = styled.p<{
   color?: ColorKey;
   css?: ReturnType<typeof css>;
 }>`
-  font-family: "SUIT v1", "Apple SD Gothic Neo";
+  font-family: "SUIT", "Apple SD Gothic Neo";
   ${({ typo = "body1" }) => wowTypo[typo]};
   color: ${({ color = "textBlack" }) => wowColor[color]};
   text-align: start;

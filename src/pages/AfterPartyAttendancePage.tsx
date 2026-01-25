@@ -1,32 +1,39 @@
-import { useState, useMemo, useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import BottomSheet from "@/components/@common/BottomSheet";
 import MobileLayout from "@/components/@layout/MobileLayout";
 import AfterPartyAttendanceHeader from "@/components/AfterPartyAttendance/AfterPartyAttendanceHeader";
 import AfterPartyAttendanceSummary from "@/components/AfterPartyAttendance/AfterPartyAttendanceSummary";
 import AfterPartyAttendanceTable from "@/components/AfterPartyAttendance/AfterPartyAttendanceTable";
+import AfterPartyBottomSearch from "@/components/AfterPartyAttendance/AfterPartyBottomSearch";
+import AfterPartySearchBottomSheet from "@/components/AfterPartyAttendance/AfterPartySearchBottomSheet";
 import { QueryKey } from "@/constants/queryKey";
 import usePutAfterPartyAttendanceMutation from "@/hooks/mutations/usePutAfterPartyAttendancesMutation";
 import useRevokeAfterPartyAttendanceMutation from "@/hooks/mutations/useRevokeAfterPartyAttendanceMutation";
 import useGetAfterPartyAttendancesQuery from "@/hooks/queries/useGetAfterPartyAttendancesQuery";
-import { useGetEvent } from "@/hooks/queries/useGetEvent";
+import { useGetSpecificEventQuery } from "@/hooks/queries/useGetSpecificEvent";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
 
 export default function AfterPartyAttendancePage() {
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
   const eventId = id ? parseInt(id, 10) : 0;
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchName, setSearchName] = useState("");
+  const [notFound, setNotFound] = useState(false);
 
   const {
     eventParticipantList,
-    totalAttendeesCount,
+    currentApplicantCount,
     attendedAfterApplyingCount,
     notAttendedAfterApplyingCount,
     onSiteApplicationCount,
   } = useGetAfterPartyAttendancesQuery(eventId);
 
-  const eventData = useGetEvent(eventId);
+  const eventData = useGetSpecificEventQuery(eventId);
 
   const initialSelectedIds = useMemo(
     () =>
@@ -39,15 +46,15 @@ export default function AfterPartyAttendancePage() {
   );
 
   useEffect(() => {
-    if (eventParticipantList && !isEditMode) {
-      setSelectedIds(initialSelectedIds);
-    }
+    setSelectedIds(initialSelectedIds);
   }, [eventParticipantList, initialSelectedIds, isEditMode]);
 
   const mutation = usePutAfterPartyAttendanceMutation();
   const revokeMutation = useRevokeAfterPartyAttendanceMutation();
 
   const handleSave = async () => {
+    setSearchTerm("");
+    setSearchName("");
     const initialIdsArray = Array.from(initialSelectedIds).sort();
     const currentIdsArray = Array.from(selectedIds).sort();
 
@@ -107,19 +114,33 @@ export default function AfterPartyAttendancePage() {
     }
   };
 
-  const handleSearchModalClose = () => {
-    setIsEditMode(false);
-  };
-
   const handleParticipantAdded = () => {
     queryClient.invalidateQueries({ queryKey: [QueryKey.afterPartyAttendances] });
+    setSearchTerm("");
+    setSearchName("");
+    setIsBottomSheetOpen(true);
+  };
+
+  const handleNotFoundName = () => {
+    setNotFound(true);
+    setIsBottomSheetOpen(true);
+  };
+  const onCloseBottomSheet = () => {
+    setIsBottomSheetOpen(false);
+    setNotFound(false); // notFound 케이스면 함께 리셋 추천
+    setSearchName("");
+    setSearchTerm("");
+  };
+
+  const handleSearchParticipant = () => {
+    setSearchName(searchTerm);
   };
 
   return (
     <MobileLayout
       header={
         <AfterPartyAttendanceHeader
-          headerTitle={eventData.data?.eventData?.name || "뒤풀이 참석자 관리"}
+          headerTitle={eventData.data?.name || "뒤풀이 참석자 관리"}
           onEditClick={() => {
             if (isEditMode) {
               handleSave();
@@ -132,7 +153,7 @@ export default function AfterPartyAttendancePage() {
       }
     >
       <AfterPartyAttendanceSummary
-        totalCount={totalAttendeesCount}
+        totalCount={currentApplicantCount}
         appliedAndAttendedCount={attendedAfterApplyingCount}
         appliedAndNotAttendedCount={notAttendedAfterApplyingCount}
         onSiteAppliedCount={onSiteApplicationCount}
@@ -142,14 +163,27 @@ export default function AfterPartyAttendancePage() {
         afterPartyParticipants={eventParticipantList || []}
         selectedIds={selectedIds}
         onSelectedIdsChange={setSelectedIds}
+        searchName={searchName}
+        handleNotFoundName={handleNotFoundName}
       />
-      {/* 바텀시트 구현 필요 */}
       {isEditMode && (
-        <div>
-          <p>검색 모달 (추후 구현)</p>
-          <button onClick={handleSearchModalClose}>닫기</button>
-          <button onClick={handleParticipantAdded}>참가자 추가 (테스트)</button>
-        </div>
+        <AfterPartyBottomSearch
+          handleParticipantAdded={handleParticipantAdded}
+          handleSearch={handleSearchParticipant}
+          setSearchTerm={setSearchTerm}
+          searchTerm={searchTerm}
+        />
+      )}
+      {isBottomSheetOpen && (
+        <BottomSheet onCloseBottomSheet={onCloseBottomSheet}>
+          <AfterPartySearchBottomSheet
+            setNotFound={setNotFound}
+            notFound={notFound}
+            searchName={searchName}
+            onCloseBottomSheet={onCloseBottomSheet}
+            eventId={eventId}
+          />
+        </BottomSheet>
       )}
     </MobileLayout>
   );

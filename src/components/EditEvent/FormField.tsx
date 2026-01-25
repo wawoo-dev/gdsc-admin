@@ -2,7 +2,7 @@ import { Text } from "components/@common/Text";
 import Box from "wowds-ui/Box";
 import RadioButton from "wowds-ui/RadioButton";
 import RadioGroup from "wowds-ui/RadioGroup";
-import { Switch } from "@mui/material";
+import Switch from "wowds-ui/Switch";
 import { Flex } from "../@common/Flex";
 
 type Option = { value: string; label: string };
@@ -36,9 +36,9 @@ export const FormField = (props: FormFieldProps) => {
 
   const enabled = "optional" in props && props.optional ? props.optionalChecked : true;
 
-  const handleSwitchChange = (_event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
+  const handleSwitchChange = () => {
     if ("optional" in props && props.optional === true && props.onOptionalChange) {
-      props.onOptionalChange(checked);
+      props.onOptionalChange(!props.optionalChecked);
     }
   };
 
@@ -67,15 +67,13 @@ export const FormField = (props: FormFieldProps) => {
             </RadioGroup>
           )}
           {optional && (
-            //NOTE: wowds-ui/Switch는 disabled/checked 구현이 되어 있지 않아 mui 로 교체
-            <Flex justify="flex-end">
-              <Switch
-                checked={enabled}
-                onChange={handleSwitchChange}
-                name={title}
-                disabled={isDisabled}
-              />
-            </Flex>
+            <Switch
+              style={{ justifyContent: "flex-end" }}
+              checked={enabled}
+              onChange={handleSwitchChange}
+              value={title}
+              disabled={isDisabled}
+            />
           )}
         </Flex>
       }

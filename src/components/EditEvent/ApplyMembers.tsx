@@ -154,6 +154,7 @@ export const ApplyMember = ({ title }: { title: string }) => {
         setOpen={setDeleteMemberOpen}
         selectedParticipants={selectedParticipants}
         onDeleteSuccess={handleDeleteSuccess}
+        title={title}
       />
       <Flex gap="sm">
         <SearchBar
@@ -200,12 +201,17 @@ export const ApplyMember = ({ title }: { title: string }) => {
               nickname,
               eventParticipationId,
             }: ParticipationContent) => {
+              // participant가 null인 경우 스킵
+              if (!participant) {
+                return null;
+              }
+
               const isNonRegular = participantRole !== "REGULAR";
 
               // ✅ 공통 셀 스타일 생성기: 필요 시 추가 스타일을 합쳐서 사용
               const cellStyle = (extra?: React.CSSProperties) => ({
                 ...(isNonRegular ? { backgroundColor: "#FFF0F0" } : {}),
-                ...(extra ?? {}),
+                ...extra,
               });
 
               return (
