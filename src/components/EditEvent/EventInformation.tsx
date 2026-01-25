@@ -49,12 +49,12 @@ export const EventInformation = ({
   formValue,
   setFormValues,
   eventId,
-  totalAttendeesCount,
+  currentApplicantCount,
 }: {
   formValue: EventType | null;
   setFormValues: (value: React.SetStateAction<EventType | null>) => void;
   eventId?: number;
-  totalAttendeesCount: number;
+  currentApplicantCount: number;
 }) => {
   const navigate = useNavigate();
 
@@ -514,7 +514,7 @@ export const EventInformation = ({
                     fullWidth
                     style={{ backgroundColor: "white" }}
                     inputProps={{
-                      min: totalAttendeesCount > 0 ? totalAttendeesCount : 1,
+                      min: currentApplicantCount > 0 ? currentApplicantCount : 1,
                       pattern: "[0-9]*",
                       inputMode: "numeric",
                     }}
@@ -561,7 +561,7 @@ export const EventInformation = ({
                         fullWidth
                         style={{ backgroundColor: "white" }}
                         inputProps={{
-                          min: totalAttendeesCount > 0 ? totalAttendeesCount : 1,
+                          min: currentApplicantCount > 0 ? currentApplicantCount : 1,
                           pattern: "[0-9]*",
                           inputMode: "numeric",
                         }}

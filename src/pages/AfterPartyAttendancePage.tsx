@@ -1,6 +1,3 @@
-import { useState, useMemo, useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
 import BottomSheet from "@/components/@common/BottomSheet";
 import MobileLayout from "@/components/@layout/MobileLayout";
 import AfterPartyAttendanceHeader from "@/components/AfterPartyAttendance/AfterPartyAttendanceHeader";
@@ -13,6 +10,9 @@ import usePutAfterPartyAttendanceMutation from "@/hooks/mutations/usePutAfterPar
 import useRevokeAfterPartyAttendanceMutation from "@/hooks/mutations/useRevokeAfterPartyAttendanceMutation";
 import useGetAfterPartyAttendancesQuery from "@/hooks/queries/useGetAfterPartyAttendancesQuery";
 import { useGetSpecificEventQuery } from "@/hooks/queries/useGetSpecificEvent";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
 
 export default function AfterPartyAttendancePage() {
   const [isEditMode, setIsEditMode] = useState(false);
@@ -27,7 +27,7 @@ export default function AfterPartyAttendancePage() {
 
   const {
     eventParticipantList,
-    totalAttendeesCount,
+    currentApplicantCount,
     attendedAfterApplyingCount,
     notAttendedAfterApplyingCount,
     onSiteApplicationCount,
@@ -153,7 +153,7 @@ export default function AfterPartyAttendancePage() {
       }
     >
       <AfterPartyAttendanceSummary
-        totalCount={totalAttendeesCount}
+        totalCount={currentApplicantCount}
         appliedAndAttendedCount={attendedAfterApplyingCount}
         appliedAndNotAttendedCount={notAttendedAfterApplyingCount}
         onSiteAppliedCount={onSiteApplicationCount}

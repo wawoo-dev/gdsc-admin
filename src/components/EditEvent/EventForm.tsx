@@ -82,12 +82,12 @@ export const EventForm = ({
   formValue,
   setFormValues,
   eventId,
-  totalAttendeesCount,
+  currentApplicantCount,
 }: {
   formValue: EventType | null;
   setFormValues: (value: React.SetStateAction<EventType | null>) => void;
   eventId?: number;
-  totalAttendeesCount: number;
+  currentApplicantCount: number;
 }) => {
   const [formFields, setFormFields] = useState<FormFieldProps[]>(getFormFields(formValue));
   const [requiredById, setRequiredById] = useState<Record<string, boolean>>(() =>
@@ -326,7 +326,7 @@ export const EventForm = ({
             isDisabled={
               //NOTE: 신청 인원이 한 명이라도 생긴 경우 뒷풀이, 선입금, 후정산 질문은 비활성화
               eventId &&
-              totalAttendeesCount > 0 &&
+              currentApplicantCount > 0 &&
               (field.id === "noticeConfirm" ||
                 field.id === "afterParty" ||
                 field.id === "prePayment" ||

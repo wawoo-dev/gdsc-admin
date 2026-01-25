@@ -135,7 +135,7 @@ export type AfterPartyAttendanceStatus = "NONE" | "NOT_ATTENDED" | "ATTENDED";
 export type PaymentStatus = "NONE" | "UNPAID" | "PAID";
 
 export interface AfterPartyAttendanceListResponse {
-  totalAttendeesCount: number;
+  mainEventCurrentApplicantCount: number;
   attendedAfterApplyingCount: number;
   notAttendedAfterApplyingCount: number;
   onSiteApplicationCount: number;
