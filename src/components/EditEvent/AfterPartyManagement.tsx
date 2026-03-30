@@ -18,7 +18,11 @@ import { useUpdateAfterPartyStatusMutation } from "@/hooks/mutations/useUpdateAf
 import { useUpdateAllAfterPartyStatusMutation } from "@/hooks/mutations/useUpdateAllAfterPartyStatusMutation";
 import { useGetAfterPartyApplicants } from "@/hooks/queries/useGetAfterPartyApplicants";
 import { isDigitStart, onlyDigits, isEnglishStart, isKoreanStart } from "@/utils/searchQuery";
-export const AfterPartyManagement = () => {
+export const AfterPartyManagement = ({
+  afterPartyEnabled,
+}: {
+  afterPartyEnabled: boolean;
+}) => {
   const { eventId } = useParams<{ eventId: string }>();
   const id = Number(eventId);
 
@@ -33,7 +37,7 @@ export const AfterPartyManagement = () => {
     data: apiData,
     isLoading,
     error,
-  } = useGetAfterPartyApplicants(id, currentPage, pageSize, sortKey);
+  } = useGetAfterPartyApplicants(id, currentPage, pageSize, sortKey, afterPartyEnabled);
 
   // 로컬 상태 업데이트를 위한 onSuccess 콜백
   const handleLocalStateUpdate = (
@@ -291,7 +295,7 @@ export const AfterPartyManagement = () => {
             {apiData?.applicants?.totalElements || 0}명
           </Text>
         </Text>
-        <Button variant="solid" size="sm" onClick={() => setModalOpen(true)}>
+        <Button variant="solid" size="sm" onClick={() => setModalOpen(true)} disabled={!afterPartyEnabled}>
           뒤풀이 인원 확인
         </Button>
       </Flex>
