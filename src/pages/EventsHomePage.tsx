@@ -9,7 +9,7 @@ import SearchBar from "wowds-ui/SearchBar";
 import { Space } from "@/components/@common/Space";
 import { OfflineEventCard } from "@/components/OfflineEvent/EventBox";
 import { useDebounce } from "@/hooks/common/useDebounce";
-import { useEventList } from "@/hooks/queries/useGetEventQueries";
+import { useGetEventList } from "@/hooks/queries/useGetEventList";
 import RoutePath from "@/routes/routePath";
 
 export const EventsHomePage = () => {
@@ -21,7 +21,7 @@ export const EventsHomePage = () => {
   // 검색어 debounce 적용 (300ms 지연)
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
-  const { data } = useEventList(currentPage, pageSize, "startAt,desc", debouncedSearchQuery); // useEventList는 1부터 시작
+  const { data } = useGetEventList(currentPage, pageSize, "startAt,desc", debouncedSearchQuery);
   const eventContent = data?.content ?? [];
 
   // 페이지 변경 핸들러

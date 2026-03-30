@@ -1,10 +1,10 @@
-// hooks/useEventList.ts
+// hooks/queries/useGetEventList.ts
 import { eventApi } from "@/apis/eventApi";
 import { QueryKey } from "@/constants/queryKey";
 import { EventResponse } from "@/types/dtos/event";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-export const useEventList = (
+export const useGetEventList = (
   page: number = 1,
   size: number = 20,
   sort: string = "",
