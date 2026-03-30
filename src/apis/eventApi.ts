@@ -4,6 +4,7 @@ import { AfterPartyData } from "@/components/EditEvent/mockData/afterPartyMockDa
 import {
   AfterPartyAttendanceListResponse,
   CreateEventRequest,
+  EventContent,
   EventParticipantsResponse,
   EventResponse,
   EventType,
@@ -31,8 +32,8 @@ export const eventApi = {
     const response = await apiClient.put(`/admin/events/${eventId}/form-info`, eventData);
     return response.data;
   },
-  getSpecificEvent: async (eventId: number): Promise<EventType> => {
-    const response = await apiClient.get<EventType>(`/common/events/${eventId}`);
+  getSpecificEvent: async (eventId: number): Promise<EventContent> => {
+    const response = await apiClient.get<EventContent>(`/admin/events/${eventId}`);
     return response.data;
   },
   getEventList: async (
