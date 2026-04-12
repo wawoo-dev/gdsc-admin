@@ -4,6 +4,7 @@ import { AfterPartyData } from "@/components/EditEvent/mockData/afterPartyMockDa
 import {
   AfterPartyAttendanceListResponse,
   CreateEventRequest,
+  EventContent,
   EventParticipantsResponse,
   EventResponse,
   EventType,
@@ -31,35 +32,24 @@ export const eventApi = {
     const response = await apiClient.put(`/admin/events/${eventId}/form-info`, eventData);
     return response.data;
   },
-  getSpecificEvent: async (eventId: number): Promise<EventType> => {
-    const response = await apiClient.get<EventType>(`/common/events/${eventId}`);
-    return response.data;
-  },
-  getSearchEventList: async (
-    page: number = 1,
-    size: number = 20,
-    sort: string = "",
-    name: string,
-  ): Promise<EventResponse> => {
-    const response = await apiClient.get<EventResponse>(`/admin/events/search`, {
-      params: {
-        name,
-        page,
-        size,
-        sort: sort || undefined,
-      },
-    });
+  getSpecificEvent: async (eventId: number): Promise<EventContent> => {
+    const response = await apiClient.get<EventContent>(`/admin/events/${eventId}`);
     return response.data;
   },
   getEventList: async (
     page: number = 1,
     size: number = 20,
     sort: string = "",
+    name: string = "",
   ): Promise<EventResponse> => {
-    const response = await apiClient.get<EventResponse>(`/admin/events`, {
-      params: { page, size, sort },
+    const response = await apiClient.get<EventResponse>(`/admin/events/search`, {
+      params: {
+        ...(name && { name }),
+        page,
+        size,
+        sort: sort || undefined,
+      },
     });
-
     return response.data;
   },
   getParticipants: async (

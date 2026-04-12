@@ -8,11 +8,12 @@ export const useGetAfterPartyApplicants = (
   page: number = 0,
   size: number = 20,
   sort: string = "",
+  afterPartyEnabled: boolean = true,
 ) => {
   return useQuery<AfterPartyData>({
     queryKey: ["afterPartyApplicants", eventId, page, size, sort],
     queryFn: () => eventApi.getAfterPartyApplicants(eventId, page, size, sort),
     staleTime: 60_000,
-    enabled: !!eventId,
+    enabled: !!eventId && afterPartyEnabled,
   });
 };

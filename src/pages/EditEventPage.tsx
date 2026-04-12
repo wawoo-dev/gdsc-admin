@@ -90,7 +90,7 @@ export const EditEventPage = () => {
             <ApplyMember title={formValues?.name || ""} />
           </TabContent>
           <TabContent isActive={activeTab === "tab3"}>
-            <AfterPartyManagement />
+            <AfterPartyManagement afterPartyEnabled={formValues?.afterPartyStatus === "ENABLED"} />
           </TabContent>
         </>
       )}

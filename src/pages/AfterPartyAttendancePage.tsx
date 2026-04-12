@@ -140,7 +140,7 @@ export default function AfterPartyAttendancePage() {
     <MobileLayout
       header={
         <AfterPartyAttendanceHeader
-          headerTitle={eventData.data?.name || "뒤풀이 참석자 관리"}
+          headerTitle={eventData.data?.event.name || "뒤풀이 참석자 관리"}
           onEditClick={() => {
             if (isEditMode) {
               handleSave();

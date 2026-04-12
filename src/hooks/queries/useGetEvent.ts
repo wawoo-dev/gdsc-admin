@@ -9,12 +9,10 @@ export const useGetEvent = (eventId: number | null) => {
         return null;
       }
 
-      // 전체 이벤트 목록에서 특정 이벤트 찾기
-      const eventListResponse = await eventApi.getEventList(0, 100);
-      const event = eventListResponse.content.find(c => c.event.eventId === eventId);
+      const eventContent = await eventApi.getSpecificEvent(eventId);
       return {
-        eventData: event?.event || null,
-        currentApplicantCount: event?.mainEventCurrentApplicantCount,
+        eventData: eventContent.event,
+        currentApplicantCount: eventContent.mainEventCurrentApplicantCount,
       };
     },
     enabled: eventId !== null && eventId > 0,
